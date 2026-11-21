@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.calyxlabs.qpepclient"
+    android:versionCode="225"
+    android:versionName="RC 1.0.0">
+
+    <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="Calyx QPEP Client"
+        android:resizeableActivity="true"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+
+        <activity
+            android:name="com.calyxlabs.qpepclient.MainActivity"
+            android:configChanges="orientation|screenLayout|uiMode|screenSize|smallestScreenSize|density|keyboardHidden"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:label="Calyx QPEP Client">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

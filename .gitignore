@@ -1,0 +1,40 @@
+# OpenQPEP v1.0.0-rc (Release Candidate 1.0.0)
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Compiled native artifacts (build locally via make -C protocol/calyx_qpep/native/csrc)
+*.so
+*.dylib
+*.dll
+*.o
+target/
+
+# Android / Gradle local build caches
+.gradle/
+local.properties
+*.iml
+build/
+
+# Secrets, Signing Keystores & Proprietary Backends (NEVER COMMIT)
+*.p12
+*.jks
+*.keystore
+*.pem
+*.key
+*.env
+.env
+*.db
+*.sqlite*
+OpenQPEP_ServerFiles/
+AIUpdateInstructions.md
+backend/
+website_server/
+directory_server/
+messenger_server/
+calyxmail_backend/

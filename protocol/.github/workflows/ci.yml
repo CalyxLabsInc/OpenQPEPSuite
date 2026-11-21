@@ -1,0 +1,15 @@
+# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
+name: OpenQPEP CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: make -C calyx_qpep/native/csrc
+      - run: pip install -e .
+      - run: python3 -m calyx_qpep.cli verify-vectors
+      - run: python3 -m unittest discover -s tests -v

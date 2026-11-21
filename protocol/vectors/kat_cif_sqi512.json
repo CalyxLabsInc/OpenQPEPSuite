@@ -1,0 +1,26 @@
+{
+  "schema": "openqpep-kat-v2",
+  "family": "beyond_lwe",
+  "protocol_version": "OpenQPEP/RC-1.0.0",
+  "universal_version": "1.0.0-rc",
+  "suite_id": "CIF-SQI-512",
+  "suite_name": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny \u2014 All Devices)",
+  "qlx_tier": "CIF-SQI-512",
+  "qvs_tier": "QHS-512",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0-rc|)",
+  "drbg_seed_hex": "505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f",
+  "message_utf8": "OpenQPEP RC 1.0.0 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020524320312e302e302044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "beyond_lwe": {
+    "key_hash": "B5A928804BDFEF01B3D71A8B7154258DB0FF6B436CFFABCC9D1A55033CDA034F",
+    "public_material_bytes": 567,
+    "public_material_sha3_512": "85df1d08766a36ab04d4217398dc986635e8a7e574784afb525fa6fdfb1b462e08a4d52831e388a01be4d9317f070194c420276e32351373b8f977357b804743",
+    "ct_bytes": 1025,
+    "ct_sha3_512": "4bf4aa7ef3241363641f841c1eb064636295b4d987d4ee75136ca937488809b585b812c81bdb93d885b7828562c95ba968d3519f490b3b2f89d14498013c202a",
+    "sig_bytes": 4814,
+    "sig_sha3_512": "0fa0b9cf17d56f59618f2d8e1bedda9a9201e65aff96301c09b69b4d463303cd365be2146c202007a4bd3820fb5e017306ed39e235c021b7c7d6f4f65a84cf30",
+    "qpkrf_roundtrip_verified": true,
+    "decrypt_verified": true,
+    "signature_verified": true
+  }
+}

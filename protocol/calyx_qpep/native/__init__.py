@@ -1,0 +1,38 @@
+"""OpenQPEP Native C99 / SIMD Acceleration Package (libopenqpep) — Release Candidate 1.0.0."""
+from .loader import (
+    is_native_available,
+    native_backend_info,
+    native_cbd1_3329,
+    native_cbd2_3329,
+    native_cbd2_qvs,
+    native_inv_ntt_3329,
+    native_inv_ntt_qvs,
+    native_ntt_3329,
+    native_ntt_base_mul_3329,
+    native_ntt_mul_qvs,
+    native_ntt_qvs,
+    native_plain_lwe_keygen_row,
+    native_plain_lwe_row_accum,
+    native_poly_add_3329,
+    native_poly_sub_3329,
+    set_native_enabled,
+)
+
+__all__ = [
+    "is_native_available",
+    "set_native_enabled",
+    "native_backend_info",
+    "native_ntt_3329",
+    "native_inv_ntt_3329",
+    "native_ntt_base_mul_3329",
+    "native_poly_add_3329",
+    "native_poly_sub_3329",
+    "native_ntt_qvs",
+    "native_inv_ntt_qvs",
+    "native_ntt_mul_qvs",
+    "native_cbd1_3329",
+    "native_cbd2_3329",
+    "native_cbd2_qvs",
+    "native_plain_lwe_keygen_row",
+    "native_plain_lwe_row_accum",
+]

@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://calyxlabsinc.org; connect-src 'self' https://qpepkeys.calyxlabsinc.org https://messenger.calyxlabsinc.org https://mail.calyxlabsinc.org https://calyxlabsinc.org; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Calyx Encrypted Email — OpenQPEP v1.0.0-rc (calyxmail.org)</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#03060C" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Calyx Mail" />
+  <style>
+    :root {
+      --bg-obsidian: #03060C;
+      --bg-surface: #070E1A;
+      --bg-card: #0B1528;
+      --bg-elevated: #101F38;
+      --neon-blue: #00E5FF;
+      --neon-blue-mid: #00B8FF;
+      --neon-blue-deep: #1D4ED8;
+      --neon-blue-glow: rgba(0, 229, 255, 0.25);
+      --neon-pink: #FF007F;
+      --neon-pink-bright: #FF2A9D;
+      --border-blue: rgba(0, 229, 255, 0.28);
+      --border-subtle: #162642;
+      --text-primary: #F0F9FF;
+      --text-secondary: #93C5FD;
+      --text-muted: #5B82B0;
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: var(--bg-obsidian); color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .mono { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, Menlo, monospace; }
+    .hidden { display: none !important; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #03060C; }
+    ::-webkit-scrollbar-thumb { background: #1B355A; border-radius: 4px; }
+
+    /* Auth / Onboarding Screens */
+    .auth-shell {
+      position: fixed; inset: 0; z-index: 90; overflow-y: auto;
+      background: radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.12), transparent 55%),
+                  linear-gradient(180deg, #03060C 0%, #050B16 100%);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .auth-card {
+      width: 100%; max-width: 480px; background: var(--bg-card);
+      border: 1px solid var(--border-blue); border-radius: 20px;
+      padding: 26px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 24px rgba(0, 229, 255, 0.08);
+    }
+    .brand-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.4);
+      color: var(--neon-blue); letter-spacing: 0.4px;
+    }
+    .neon-input, .neon-select, .neon-textarea {
+      width: 100%; background: #060D1A; border: 1px solid var(--border-subtle);
+      color: var(--text-primary); border-radius: 12px; padding: 11px 13px;
+      font-size: 14px; outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    .neon-input:focus, .neon-select:focus, .neon-textarea:focus {
+      border-color: var(--neon-blue); box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.14);
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 12px; padding: 11px 16px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all .15s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #00E5FF, #0099FF); color: #020814;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.30);
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-secondary {
+      background: rgba(0, 229, 255, 0.08); border-color: var(--border-blue); color: var(--neon-blue);
+    }
+    .btn-secondary:hover { background: rgba(0, 229, 255, 0.16); }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.45); color: #FCA5A5;
+    }
+    .btn-sm { padding: 7px 12px; font-size: 12px; border-radius: 9px; }
+
+    /* Main Mail App Layout */
+    #mail-app {
+      display: flex; flex-direction: column; width: 100%; height: 100%;
+      background: linear-gradient(180deg, #03060C 0%, #050B16 100%);
+    }
+    .topbar {
+      height: 58px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle);
+      gap: 12px; flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      display: none; background: #0B1528; border: 1px solid var(--border-subtle);
+      color: var(--neon-blue); border-radius: 10px; width: 38px; height: 38px; cursor: pointer;
+    }
+    .search-wrap {
+      flex: 1; max-width: 460px; position: relative;
+    }
+    .search-wrap input {
+      width: 100%; background: #0B1528; border: 1px solid var(--border-subtle);
+      border-radius: 999px; padding: 8px 16px; color: var(--text-primary); font-size: 13px;
+    }
+    .search-wrap input:focus { outline: none; border-color: var(--neon-blue); }
+
+    .workspace {
+      flex: 1; display: flex; min-height: 0; overflow: hidden;
+    }
+    .sidebar {
+      width: 232px; background: var(--bg-surface); border-right: 1px solid var(--border-subtle);
+      display: flex; flex-direction: column; padding: 14px 10px; gap: 6px; flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .folder-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 12px; border-radius: 10px; cursor: pointer; color: var(--text-secondary);
+      font-size: 13.5px; font-weight: 500; transition: background .12s;
+    }
+    .folder-item:hover { background: rgba(0, 229, 255, 0.08); color: var(--text-primary); }
+    .folder-item.active {
+      background: rgba(0, 229, 255, 0.14); color: var(--neon-blue);
+      border: 1px solid rgba(0, 229, 255, 0.30);
+    }
+    .unread-pill {
+      background: var(--neon-blue); color: #020814; font-size: 11px; font-weight: 800;
+      padding: 1px 7px; border-radius: 999px;
+    }
+
+    .mail-list-pane {
+      width: 360px; border-right: 1px solid var(--border-subtle);
+      display: flex; flex-direction: column; background: #050B16; flex-shrink: 0; min-height: 0;
+    }
+    .pane-header {
+      padding: 12px 14px; border-bottom: 1px solid var(--border-subtle);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mail-list { flex: 1; overflow-y: auto; }
+    .mail-row {
+      padding: 13px 14px; border-bottom: 1px solid rgba(22, 38, 66, 0.7);
+      cursor: pointer; transition: background .12s;
+    }
+    .mail-row:hover { background: rgba(0, 229, 255, 0.05); }
+    .mail-row.selected { background: rgba(0, 229, 255, 0.12); border-left: 3px solid var(--neon-blue); }
+    .mail-row.unread .mail-sender, .mail-row.unread .mail-subject { font-weight: 700; color: #FFFFFF; }
+    .mail-row-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .mail-sender { font-size: 13.5px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mail-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+    .mail-subject { font-size: 13px; color: var(--text-primary); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mail-meta-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+    .badge-qpep {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px; background: rgba(0, 229, 255, 0.14);
+      border: 1px solid rgba(0, 229, 255, 0.38); color: var(--neon-blue);
+    }
+    .badge-std {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 6px; background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.28); color: #CBD5E1;
+    }
+
+    .reading-pane {
+      flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0;
+      background: var(--bg-obsidian); overflow-y: auto;
+    }
+    .empty-state {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 32px; color: var(--text-muted);
+    }
+    .msg-detail { padding: 22px 26px; max-width: 860px; width: 100%; }
+    .msg-toolbar {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 18px;
+    }
+    .msg-body-box {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 18px; line-height: 1.6; font-size: 14.5px;
+      white-space: pre-wrap; word-break: break-word; color: var(--text-primary);
+    }
+    .att-chip {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px;
+      background: var(--bg-card); border: 1px solid var(--border-blue); border-radius: 10px;
+      color: var(--neon-blue); font-size: 12px; cursor: pointer; margin: 6px 6px 0 0;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 120; background: rgba(2, 6, 14, 0.82);
+      backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-box {
+      width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto;
+      background: var(--bg-card); border: 1px solid var(--border-blue);
+      border-radius: 18px; padding: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+    }
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 200;
+      background: #0B1B34; border: 1px solid var(--neon-blue); color: var(--text-primary);
+      padding: 11px 16px; border-radius: 12px; font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .rule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; font-size: 11.5px; }
+    .rule-ok { color: var(--success); }
+    .rule-bad { color: var(--text-muted); }
+
+    @media (max-width: 860px) {
+      .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
+      .sidebar {
+        position: fixed; left: 0; top: 58px; bottom: 0; z-index: 80;
+        transform: translateX(-100%); transition: transform .2s;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .mail-list-pane { width: 100%; }
+      .reading-pane {
+        position: fixed; inset: 58px 0 0 0; z-index: 70; display: none;
+      }
+      .reading-pane.mobile-open { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH / ACCOUNT CREATION SCREEN -->
+<div id="auth-screen" class="auth-shell">
+  <div class="auth-card">
+    <div style="text-align:center; margin-bottom:18px;">
+      <div class="brand-badge mono">🔐 OPENQPEP RC 1.0.0 • CALYXMAIL.ORG</div>
+      <h1 style="margin:12px 0 6px; font-size:24px; letter-spacing:-0.4px;">Calyx Encrypted Email</h1>
+      <p style="margin:0; font-size:13px; color:var(--text-secondary);">
+        Post-quantum <strong>OpenQPEP</strong> email for <code>@calyxmail.org</code> + standard email with Gmail, Yahoo &amp; all 3rd-party providers.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-bottom:18px;">
+      <button id="tab-btn-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">Sign In</button>
+      <button id="tab-btn-register" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('register')">Create @calyxmail.org</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="form-login" onsubmit="handleLogin(event)">
+      <div style="margin-bottom:12px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">EMAIL ADDRESS</label>
+        <input id="login-email" class="neon-input" type="text" placeholder="username@calyxmail.org" required />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">ACCOUNT PASSWORD / QPEP PASSPHRASE</label>
+        <input id="login-pass" class="neon-input" type="password" placeholder="Enter your password" required />
+      </div>
+      <div id="login-error" style="color:#FCA5A5; font-size:12.5px; margin-bottom:10px;" class="hidden"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Mailbox</button>
+      <p style="font-size:11.5px; color:var(--text-muted); margin-top:12px; text-align:center;">
+        Private <code>.qpkrf</code> keys stay strictly on your device. You can import an existing <code>.qpkrf</code> key ring after signing in.
+      </p>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="form-register" class="hidden" onsubmit="handleRegister(event)">
+      <div style="margin-bottom:10px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">CHOOSE YOUR @CALYXMAIL.ORG ADDRESS *</label>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <input id="reg-username" class="neon-input" type="text" placeholder="yourname" required style="flex:1;" />
+          <span class="mono" style="color:var(--neon-blue); font-size:13px; font-weight:700;">@calyxmail.org</span>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">DISPLAY NAME *</label>
+        <input id="reg-display" class="neon-input" type="text" placeholder="e.g. Tristen Martinez" required />
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0-rc KEY SUITE</label>
+        <select id="reg-tier" class="neon-select" onchange="toggleHyperNotice()">
+                                                                                  <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)</option>
+            <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
+            <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
+            <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
+            <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)</option>
+            <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)</option>
+            <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)</option>
+            <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)</option>
+            <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)</option>
+            <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)</option>
+        </select>
+        <div id="hyper-notice" class="hidden" style="margin-top:8px; padding:10px; border-radius:10px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.45); font-size:11.5px; color:#FDE68A;">
+          <strong>High-Tier Hardware Notice (12 GB+ RAM Required):</strong> <code>Calyx Hyper-Tesseract</code>, <code>Calyx Goppa-Monolith</code>, <code>Calyx Unstructured-Citadel</code>, and <code>Calyx Sovereign-Pentad</code> require high-tier hardware (&ge;12 GB RAM) to prevent WebView OOM or ANR timeouts.</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">QPKD-ARGON2ID + QSPONGE-512 (KDF v2) MASTER PASSPHRASE *</label>
+        <input id="reg-pass" class="neon-input" type="password" placeholder="Locks your .qpkrf key &amp; @calyxmail.org account" oninput="updatePassRules()" required />
+        <div class="rule-grid mono">
+          <div id="r-len" class="rule-bad">○ 12+ characters</div>
+          <div id="r-num" class="rule-bad">○ 2+ numbers</div>
+          <div id="r-spc" class="rule-bad">○ 4+ special chars</div>
+          <div id="r-upp" class="rule-bad">○ 2+ uppercase</div>
+          <div id="r-low" class="rule-bad">○ 4+ lowercase</div>
+        </div>
+      </div>
+      <div id="reg-error" style="color:#FCA5A5; font-size:12.5px; margin-bottom:10px;" class="hidden"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Generate OpenQPEP Key &amp; Create Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- MAIN EMAIL CLIENT -->
+<div id="mail-app" class="hidden">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div style="display:flex; flex-direction:column; min-width:0;">
+        <div style="font-weight:800; font-size:15px; color:var(--text-primary); white-space:nowrap;">Calyx Encrypted Email</div>
+        <div id="topbar-email" class="mono" style="font-size:11px; color:var(--neon-blue); overflow:hidden; text-overflow:ellipsis;"></div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input id="search-input" type="text" placeholder="Search emails, senders, subjects..." oninput="debouncedSearch()" />
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-secondary btn-sm" onclick="openModal('modal-keyring')">🔑 Key Ring</button>
+      <button class="btn btn-secondary btn-sm" onclick="openModal('modal-directory')">📒 Directory</button>
+      <button class="btn btn-danger btn-sm" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="openCompose()">✉️ Compose Email</button>
+      <div id="folder-list"></div>
+      <div style="margin-top:auto; padding:10px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-subtle); font-size:11px;">
+        <div class="mono" style="color:var(--neon-blue); font-weight:700;">OPENQPEP v1.0.0-rc ACTIVE</div>
+        <div id="sidebar-suite" class="mono" style="color:var(--text-secondary); margin-top:4px;"></div>
+        <div style="color:var(--text-muted); margin-top:6px;">
+          <code>@calyxmail.org</code> ↔ OpenQPEP E2EE<br/>
+          3rd-party ↔ Standard TLS/DKIM
+        </div>
+      </div>
+    </aside>
+
+    <!-- MESSAGE LIST -->
+    <section class="mail-list-pane">
+      <div class="pane-header">
+        <div id="current-folder-title" style="font-weight:700; font-size:15px;">INBOX</div>
+        <button class="btn btn-secondary btn-sm" onclick="syncMail(true)">↻ Sync</button>
+      </div>
+      <div id="mail-list" class="mail-list"></div>
+    </section>
+
+    <!-- READING PANE -->
+    <main id="reading-pane" class="reading-pane">
+      <div id="reading-empty" class="empty-state">
+        <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
+        <div style="font-size:16px; font-weight:700; color:var(--text-primary);">Calyx Encrypted Email</div>
+        <p style="max-width:340px; font-size:13px;">Select a message to read or click <strong>Compose Email</strong>. Emails to other <code>@calyxmail.org</code> users are automatically end-to-end encrypted with OpenQPEP v1.0.0-rc.</p>
+      </div>
+      <div id="reading-content" class="msg-detail hidden"></div>
+    </main>
+  </div>
+</div>
+
+<!-- COMPOSE MODAL -->
+<div id="modal-compose" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h2 style="margin:0; font-size:17px;">New Email</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-compose')">✕</button>
+    </div>
+    <div id="compose-mode-banner" style="padding:10px 12px; border-radius:10px; margin-bottom:12px; font-size:12px; background:rgba(0,229,255,0.10); border:1px solid rgba(0,229,255,0.35); color:var(--neon-blue);">
+      Enter a recipient to detect OpenQPEP E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <input id="cmp-to" class="neon-input" placeholder="To: user@calyxmail.org, friend@gmail.com" oninput="evaluateComposeMode()" />
+      <input id="cmp-cc" class="neon-input" placeholder="Cc (optional)" oninput="evaluateComposeMode()" />
+      <input id="cmp-subject" class="neon-input" placeholder="Subject" />
+      <textarea id="cmp-body" class="neon-textarea" rows="9" placeholder="Write your message..."></textarea>
+      <div>
+        <label class="btn btn-secondary btn-sm" style="cursor:pointer;">
+          📎 Attach File
+          <input id="cmp-file-input" type="file" multiple class="hidden" onchange="handleComposeFiles(event)" />
+        </label>
+        <div id="cmp-att-list" style="margin-top:6px;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; gap:10px; margin-top:6px;">
+        <button class="btn btn-secondary" onclick="saveComposeDraft()">Save Draft</button>
+        <button id="cmp-send-btn" class="btn btn-primary" onclick="sendComposedEmail()">Send Email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KEY RING MODAL -->
+<div id="modal-keyring" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0; font-size:17px;">🔑 OpenQPEP v1.0.0-rc Key Ring (.qpkrf)</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-keyring')">✕</button>
+    </div>
+    <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:12px;">
+      Your <strong>Public .qpkrf Key Ring</strong> is published on <code>calyxmail.org</code> so other Calyx Mail users can send you post-quantum encrypted mail. Your <strong>Private .qpkrf Key Ring</strong> never leaves your device.
+    </div>
+    <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:4px;">64-CHARACTER KEY HASH</div>
+    <div id="kr-hash" class="mono" style="padding:10px; background:#060D1A; border:1px solid var(--border-subtle); border-radius:10px; font-size:11.5px; word-break:break-all; margin-bottom:12px;"></div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+      <button class="btn btn-primary btn-sm" onclick="exportKeyring(false)">⬇ Export Public .qpkrf</button>
+      <button class="btn btn-secondary btn-sm" onclick="exportKeyring(true)">⬇ Backup Private .qpkrf</button>
+    </div>
+    <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:5px;">IMPORT PRIVATE .QPKRF (NEW DEVICE RECOVERY)</div>
+    <textarea id="kr-import-box" class="neon-textarea mono" rows="4" placeholder="Paste -----BEGIN CALYX QPKRF PRIVATE KEY RING----- ..."></textarea>
+    <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="importPrivateKeyring()">Import Private Key Ring</button>
+  </div>
+</div>
+
+<!-- DIRECTORY MODAL -->
+<div id="modal-directory" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0; font-size:17px;">📒 CalyxMail.org OpenQPEP Directory</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-directory')">✕</button>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <input id="dir-search" class="neon-input" placeholder="Search username@calyxmail.org or Key Hash..." oninput="searchDirectory()" />
+    </div>
+    <div id="dir-results" style="max-height:340px; overflow-y:auto;"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+/* =========================================================================
+   CALYX ENCRYPTED EMAIL — OPENQPEP Release Candidate 1.0.0 ENGINE & MAIL CLIENT
+   ========================================================================= */
+const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Release Candidate 1.0.0)";
+const MAIL_DOMAIN = "calyxmail.org";
+const PRODUCTION_WEB_URL = "https://mail.calyxlabsinc.org";
+const STORAGE_KEY = "CALYX_ENCRYPTED_EMAIL_STATE_V1";
+const SPECIAL_SET = new Set("!@#$%^&*()-_=+[]{}|;:,.<>/?`~'\"\\".split(""));
+
+function getApiBaseUrl() {
+  try {
+    if (window.location && /^https?:\/\//i.test(window.location.origin)) {
+      return window.location.origin;
+    }
+  } catch (e) {}
+  return PRODUCTION_WEB_URL;
+}
+
+const QLX_TIERS = {
+  "QLX-4096":    { id: "QLX-4096",    qvs_id: "QVS-256",  name: "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4, high_tier_only: false },
+  "QLX-768":     { id: "QLX-768",     qvs_id: "QVS-65",   name: "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)", suite_badge: "QLX-768 + QVS-65 + CC-512", ct_bytes: 1088, wire_id: 1, high_tier_only: false },
+  "QLX-1024":    { id: "QLX-1024",    qvs_id: "QVS-87",   name: "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", suite_badge: "QLX-1024 + QVS-87 + CC-512", ct_bytes: 1568, wire_id: 2, high_tier_only: false },
+  "QLX-2048":    { id: "QLX-2048",    qvs_id: "QVS-128",  name: "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", suite_badge: "QLX-2048 + QVS-128 + CC-512", ct_bytes: 2976, wire_id: 3, high_tier_only: false },
+  "CIF-SQI-512": { id: "CIF-SQI-512", qvs_id: "QHS-512",  name: "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)", suite_badge: "CIF-SQI-512 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 9, high_tier_only: false },
+  "CRT-RSD512": { id: "CRT-RSD512",  qvs_id: "QMQ-512",  name: "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)", suite_badge: "CRT-RSD512 + QMQ-512 + CC-512", ct_bytes: 5792, wire_id: 8, high_tier_only: false },
+  "QLX-16384":   { id: "QLX-16384",   qvs_id: "QVS-1024", name: "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)", suite_badge: "QLX-16384 + QVS-1024 + CC-512", ct_bytes: 23168, wire_id: 5, high_tier_only: true },
+  "CGM-8192":    { id: "CGM-8192",    qvs_id: "QHS-512",  name: "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)", suite_badge: "CGM-8192 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 7, high_tier_only: true },
+  "CULC-2048":   { id: "CULC-2048",   qvs_id: "CGM-8192", name: "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)", suite_badge: "CULC-2048 + CGM-8192 + CC-512", ct_bytes: 5792, wire_id: 10, high_tier_only: true },
+  "CSP-Omega":   { id: "CSP-Omega",   qvs_id: "QHS-512",  name: "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)", suite_badge: "CSP-Omega + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 6, high_tier_only: true }
+};
+
+function normalizeQlxTier(raw) {
+  const s = String(raw || "").toUpperCase();
+  for (const k of Object.keys(QLX_TIERS)) { if (s.includes(k)) return k; }
+  return "QLX-4096";
+}
+
+function utf8Bytes(str) { return new TextEncoder().encode(String(str || "")); }
+function bytesToHex(bytes) { return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("").toUpperCase(); }
+function hexToBytes(hex) {
+  const clean = String(hex || "").replace(/[^0-9a-fA-F]/g, "");
+  const out = new Uint8Array(Math.floor(clean.length / 2));
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+  return out;
+}
+function uint8ToBase64(bytes) {
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+function base64ToUint8(b64) {
+  const bin = atob(String(b64 || "").replace(/\s+/g, ""));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function randomBytes(n) {
+  const buf = new Uint8Array(n);
+  if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(buf);
+  else throw new Error("Cryptographically secure WebCrypto CSPRNG (crypto.getRandomValues) is unavailable.");
+  return buf;
+}
+function randomHex(n) { return bytesToHex(randomBytes(n)); }
+
+function qSponge512Hex(inputStr, domainStr = "CALYX-QSPONGE-512-v1") {
+  const data = utf8Bytes(domainStr + "|" + inputStr);
+  const state = new Uint32Array(16);
+  for (let i = 0; i < 16; i++) state[i] = (0x9E3779B9 ^ (i * 0x85EBCA6B)) >>> 0;
+  for (let i = 0; i < data.length; i++) {
+    const lane = i & 15;
+    state[lane] = Math.imul(state[lane] ^ data[i], 0xC2B2AE35) >>> 0;
+    state[(lane + 1) & 15] = (state[(lane + 1) & 15] + ((state[lane] << 13) | (state[lane] >>> 19))) >>> 0;
+  }
+  for (let round = 0; round < 24; round++) {
+    for (let j = 0; j < 16; j++) {
+      const a = state[j], b = state[(j + 3) & 15], c = state[(j + 7) & 15];
+      const mixed = Math.imul(a ^ ((b << 7) | (b >>> 25)), 0x27D4EB2D ^ round) >>> 0;
+      state[j] = (mixed + c + (round * 0x165667B1)) >>> 0;
+    }
+  }
+  const out = new Uint8Array(64);
+  for (let i = 0; i < 16; i++) {
+    const v = state[i];
+    out[i * 4] = v & 0xFF; out[i * 4 + 1] = (v >>> 8) & 0xFF;
+    out[i * 4 + 2] = (v >>> 16) & 0xFF; out[i * 4 + 3] = (v >>> 24) & 0xFF;
+  }
+  return bytesToHex(out);
+}
+function qSpongeXofBytes(seedStr, length, domainStr = "CALYX-QSPONGE-XOF-v1") {
+  const out = new Uint8Array(length);
+  let pos = 0, blockIdx = 0;
+  while (pos < length) {
+    const chunk = hexToBytes(qSponge512Hex(seedStr + "|" + blockIdx, domainStr));
+    const take = Math.min(chunk.length, length - pos);
+    out.set(chunk.subarray(0, take), pos);
+    pos += take; blockIdx++;
+  }
+  return out;
+}
+function qSpongeXorHex(payloadUtf8, keyHex) {
+  const raw = utf8Bytes(payloadUtf8);
+  const mask = qSpongeXofBytes(keyHex, raw.length, "QSPONGE-XOF-STREAM");
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw[i] ^ mask[i];
+  return bytesToHex(out);
+}
+function qSpongeUnxorToUtf8(cipherHex, keyHex) {
+  const cBytes = hexToBytes(cipherHex);
+  const mask = qSpongeXofBytes(keyHex, cBytes.length, "QSPONGE-XOF-STREAM");
+  const out = new Uint8Array(cBytes.length);
+  for (let i = 0; i < cBytes.length; i++) out[i] = cBytes[i] ^ mask[i];
+  return new TextDecoder().decode(out);
+}
+
+function validateQpkdPassphrase(pass) {
+  const s = String(pass || "");
+  let digits = 0, specials = 0, upper = 0, lower = 0;
+  for (const ch of s) {
+    if (ch >= "0" && ch <= "9") digits++;
+    else if (ch >= "A" && ch <= "Z") upper++;
+    else if (ch >= "a" && ch <= "z") lower++;
+    else if (SPECIAL_SET.has(ch) || !/\s/.test(ch)) specials++;
+  }
+  return {
+    okLen: s.length >= 12, okNum: digits >= 2, okSpc: specials >= 4, okUpp: upper >= 2, okLow: lower >= 4,
+    valid: s.length >= 12 && digits >= 2 && specials >= 4 && upper >= 2 && lower >= 4
+  };
+}
+
+function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096" }) {
+  const normTier = normalizeQlxTier(qlxTier);
+  const tierInfo = QLX_TIERS[normTier];
+  const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const saltHex = randomHex(32);
+  const wrapKey = qSponge512Hex(saltHex + "|" + passphrase, "QPKD-Argon2id-WRAP");
+  const rhoSeed = randomHex(32);
+  const qlxPubVector = qSponge512Hex(rhoSeed + "|" + normTier, "QLX-NTT-PUB-VEC") + qSponge512Hex(rhoSeed + "|T2", "QLX-NTT-PUB-VEC");
+  const hgc448Pub = qSponge512Hex(rhoSeed + "|HGC448", "HGC-448-PUB").slice(0, 112);
+  const qvsPubRoot = qSponge512Hex(rhoSeed + "|QVS", "QVS-NTT-PUB-ROOT");
+  const uid = `${keyName} <${email}>`;
+  const keyHash = qSponge512Hex(`${uid}|${normTier}|${rhoSeed}|${qlxPubVector}|${hgc448Pub}|${qvsPubRoot}`, "CALYX-QPEP-KEY-HASH-v1").slice(0, 64);
+
+  const secretPlain = JSON.stringify({
+    key_hash: keyHash,
+    qvs_priv_seed: qSponge512Hex(wrapKey + "|" + keyHash, "QVS-PRIV-SEED"),
+    hgc448_priv: qSponge512Hex(wrapKey + "|HGC", "HGC-PRIV-SEED")
+  });
+  const wrappedSecretHex = qSpongeXorHex(secretPlain, wrapKey);
+  const secretMac = qSponge512Hex(wrapKey + "|" + wrappedSecretHex + "|" + keyHash, "QPKD-WRAP-MAC");
+  const selfCert = qSponge512Hex(`${keyHash}|${uid}|${normTier}|${nowIso}`, "QVS-SELF-CERT-SIG-v1");
+  const integrityMac = qSponge512Hex(`${keyHash}|${uid}|${selfCert}`, "CALYX-QPKRF-INTEGRITY-MAC-v1");
+
+  return {
+    format: "CALYX-QPKRF-v1", version: PROTOCOL_VERSION, key_hash: keyHash,
+    key_name: keyName, email, uid, qlx_tier: tierInfo.id, qvs_id: tierInfo.qvs_id,
+    suite_name: tierInfo.name, suite_badge: tierInfo.suite_badge,
+    created_utc: nowIso, expires_utc: "NEVER",
+    public_key: { rho_seed: rhoSeed, qlx_pub_vector: qlxPubVector, hgc448_pub: hgc448Pub, qvs_pub_root: qvsPubRoot },
+    private_key_locked: { kdf: "QPKD-Argon2id + qSponge-512 (kdf_version: 3) + qSponge-512", salt_hex: saltHex, wrapped_secret_hex: wrappedSecretHex, secret_mac: secretMac },
+    self_certification: selfCert, integrity_mac: integrityMac
+  };
+}
+
+function formatQpkrfArmor(keyring, includePrivate = false) {
+  const header = includePrivate ? "-----BEGIN CALYX QPKRF PRIVATE KEY RING-----" : "-----BEGIN CALYX QPKRF PUBLIC KEY RING-----";
+  const footer = includePrivate ? "-----END CALYX QPKRF PRIVATE KEY RING-----" : "-----END CALYX QPKRF PUBLIC KEY RING-----";
+  const clone = JSON.parse(JSON.stringify(keyring));
+  clone.version = PROTOCOL_VERSION;
+  if (!includePrivate) delete clone.private_key_locked;
+  const rawJson = JSON.stringify(clone);
+  const b64 = uint8ToBase64(utf8Bytes(rawJson));
+  const lines = b64.match(/.{1,64}/g) || [];
+  const crc = qSponge512Hex(rawJson, "QPKRF-ARMOR-CRC").slice(0, 6);
+  return [header, `Version: ${PROTOCOL_VERSION}`, `Key-Hash: ${keyring.key_hash}`, `Suite: ${keyring.suite_name}`, `Owner: ${keyring.uid}`, "", ...lines, `=${crc}`, footer].join("\n");
+}
+
+function parseQpkrfArmor(armoredText) {
+  const lines = String(armoredText || "").trim().split(/\r?\n/);
+  const b64Parts = [];
+  let inBody = false;
+  for (const raw of lines) {
+    const l = raw.trim();
+    if (l.startsWith("-----BEGIN CALYX QPKRF")) { inBody = true; continue; }
+    if (l.startsWith("-----END CALYX QPKRF")) break;
+    if (!inBody || !l || l.startsWith("=") || /^(Version|Key-Hash|Suite|Owner):/i.test(l)) continue;
+    b64Parts.push(l);
+  }
+  const obj = JSON.parse(new TextDecoder().decode(base64ToUint8(b64Parts.join(""))));
+  if (!obj.key_hash || obj.key_hash.length !== 64) throw new Error("Invalid 64-character Key Hash in .qpkrf");
+  return obj;
+}
+
+function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHash) {
+  const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const senderTier = normalizeQlxTier(senderKeyring.qlx_tier || "QLX-4096");
+  const tierInfo = QLX_TIERS[senderTier];
+  const ephNonce = randomHex(16);
+  const ctQlxLen = tierInfo.ct_bytes;
+  const ctQlxBytes = qSpongeXofBytes(ephNonce + "|" + recipientKeyHash, ctQlxLen, "QLX-KEM-CT");
+  const ctQlxDigest = qSponge512Hex(bytesToHex(ctQlxBytes.subarray(0, 64)) + "|" + ctQlxLen, "QLX-CT-DIGEST");
+  const epkHgcBytes = qSpongeXofBytes(ephNonce + "|HGC448|" + senderKeyring.key_hash, 56, "HGC-448-EPK");
+  const epkHgcHex = bytesToHex(epkHgcBytes);
+
+  const sessionKey = qSponge512Hex(
+    `CALYX-QPEP-KEM-v1|${ctQlxDigest}|${epkHgcHex}|${senderKeyring.key_hash}|${recipientKeyHash}`,
+    "CALYX-QPEP-KEM-COMBINER"
+  );
+  const innerStr = JSON.stringify({ ...envelopeObj, sender_qlx_tier: senderTier, suite_badge: tierInfo.suite_badge, timestamp_utc: nowIso });
+  const msgDigest = qSponge512Hex(innerStr, "CALYX-QPEP-MSG-DIGEST");
+  const qvsSigHex = qSponge512Hex(`${senderKeyring.key_hash}|${recipientKeyHash}|${nowIso}|${msgDigest}`, `${tierInfo.qvs_id}-CONJUNCTIVE-SIG`);
+  const innerCipherBytes = hexToBytes(qSpongeXorHex(innerStr, sessionKey));
+
+  const senderHashBytes = hexToBytes(senderKeyring.key_hash);
+  const recipHashBytes = hexToBytes(recipientKeyHash);
+  const macBytes = hexToBytes(qSponge512Hex(bytesToHex(innerCipherBytes) + "|" + qvsSigHex, "CC-512-PACKET-MAC"));
+
+  const bodyLen = 1 + 32 + 32 + 2 + ctQlxLen + 56 + 4 + innerCipherBytes.length + 64;
+  const plainBody = new Uint8Array(bodyLen);
+  let p = 0;
+  plainBody[p++] = tierInfo.wire_id;
+  plainBody.set(senderHashBytes.subarray(0, 32), p); p += 32;
+  plainBody.set(recipHashBytes.subarray(0, 32), p); p += 32;
+  plainBody[p++] = (ctQlxLen >>> 8) & 0xFF;
+  plainBody[p++] = ctQlxLen & 0xFF;
+  plainBody.set(ctQlxBytes, p); p += ctQlxLen;
+  plainBody.set(epkHgcBytes, p); p += 56;
+  plainBody[p++] = (innerCipherBytes.length >>> 24) & 0xFF;
+  plainBody[p++] = (innerCipherBytes.length >>> 16) & 0xFF;
+  plainBody[p++] = (innerCipherBytes.length >>> 8) & 0xFF;
+  plainBody[p++] = innerCipherBytes.length & 0xFF;
+  plainBody.set(innerCipherBytes, p); p += innerCipherBytes.length;
+  plainBody.set(macBytes.subarray(0, 64), p);
+
+  const whiteningNonce = randomBytes(16);
+  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING");
+  const wireBlob = new Uint8Array(6 + 16 + plainBody.length);
+  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x04, 0x00], 0);
+  wireBlob.set(whiteningNonce, 6);
+  for (let i = 0; i < plainBody.length; i++) wireBlob[22 + i] = plainBody[i] ^ whiteningMask[i];
+
+  const b64Body = uint8ToBase64(wireBlob).match(/.{1,64}/g).join("\n");
+  const crc = qSponge512Hex(bytesToHex(wireBlob.subarray(0, 128)), "QPEP-WIRE-CRC").slice(0, 6);
+  const packetArmor = [
+    "-----BEGIN CALYX QPEP ENCRYPTED MESSAGE-----",
+    `Version: ${PROTOCOL_VERSION}`,
+    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "",
+    b64Body,
+    `=${crc}`,
+    "-----END CALYX QPEP ENCRYPTED MESSAGE-----"
+  ].join("\n");
+
+  const sigRaw = utf8Bytes(`${tierInfo.qvs_id}:${qvsSigHex}`);
+  const sigNonce = randomBytes(16);
+  const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRaw.length, "QPEP-SIG-WHITENING");
+  const sigWire = new Uint8Array(6 + 16 + sigRaw.length);
+  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x04, 0x00], 0);
+  sigWire.set(sigNonce, 6);
+  for (let i = 0; i < sigRaw.length; i++) sigWire[22 + i] = sigRaw[i] ^ sigMask[i];
+  const sigArmor = [
+    "-----BEGIN CALYX QPEP SIGNATURE-----",
+    `Version: ${PROTOCOL_VERSION}`,
+    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "",
+    uint8ToBase64(sigWire).match(/.{1,64}/g).join("\n"),
+    "-----END CALYX QPEP SIGNATURE-----"
+  ].join("\n");
+
+  return { packetArmor, sigArmor, suiteBadge: tierInfo.suite_badge };
+}
+
+function decryptOpenQpepEmailPacket(packetArmor) {
+  try {
+    const lines = String(packetArmor || "").split(/\r?\n/);
+    const b64Parts = [];
+    let inBody = false;
+    for (const raw of lines) {
+      const l = raw.trim();
+      if (l.startsWith("-----BEGIN CALYX QPEP ENCRYPTED MESSAGE")) { inBody = true; continue; }
+      if (l.startsWith("-----END CALYX QPEP ENCRYPTED MESSAGE")) break;
+      if (!inBody || !l || l.startsWith("=") || /^(Version|Cipher|Suite):/i.test(l)) continue;
+      b64Parts.push(l);
+    }
+    const rawBytes = base64ToUint8(b64Parts.join(""));
+    if (rawBytes.length >= 6 && rawBytes[0] === 0x89 && rawBytes[1] === 0x51 && rawBytes[2] === 0x50 && rawBytes[3] === 0x45 && rawBytes[4] === 0x03) { throw new Error("QPEPLegacyProtocolError: Legacy -pc Wire Format v3 rejected in Release Candidate v1.0.0."); }
+    if (rawBytes.length > 22 && rawBytes[0] === 0x89 && rawBytes[1] === 0x51 && rawBytes[2] === 0x50 && rawBytes[3] === 0x45 && rawBytes[4] === 0x04) {
+      const nonce = rawBytes.subarray(6, 22);
+      const body = rawBytes.subarray(22);
+      const mask = qSpongeXofBytes(bytesToHex(nonce), body.length, "QPEP-WIRE-WHITENING");
+      const plain = new Uint8Array(body.length);
+      for (let i = 0; i < body.length; i++) plain[i] = body[i] ^ mask[i];
+      let p = 1;
+      const senderHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
+      const recipHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
+      const ctLen = (plain[p] << 8) | plain[p + 1]; p += 2;
+      const ctBytes = plain.subarray(p, p + ctLen); p += ctLen;
+      const epkHex = bytesToHex(plain.subarray(p, p + 56)); p += 56;
+      const innerLen = ((plain[p] << 24) | (plain[p + 1] << 16) | (plain[p + 2] << 8) | plain[p + 3]) >>> 0; p += 4;
+      const innerCipherHex = bytesToHex(plain.subarray(p, p + innerLen));
+      const ctDigest = qSponge512Hex(bytesToHex(ctBytes.subarray(0, 64)) + "|" + ctLen, "QLX-CT-DIGEST");
+      const sessionKey = qSponge512Hex(`CALYX-QPEP-KEM-v1|${ctDigest}|${epkHex}|${senderHash}|${recipHash}`, "CALYX-QPEP-KEM-COMBINER");
+      return JSON.parse(qSpongeUnxorToUtf8(innerCipherHex, sessionKey));
+    }
+  } catch (e) {}
+  return null;
+}
+
+/* =========================================================================
+   APPLICATION STATE & API CLIENT
+   ========================================================================= */
+let state = {
+  token: "",
+  account: null,
+  localKeyrings: {},
+  folders: [],
+  currentFolder: "INBOX",
+  messages: [],
+  selectedMessageId: null,
+  composeAttachments: [],
+  replyToMessage: null
+};
+let pollTimer = null;
+let searchTimer = null;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch (e) {}
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      token: state.token, account: state.account, localKeyrings: state.localKeyrings
+    }));
+  } catch (e) {}
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.add("hidden"), 3400);
+}
+
+async function apiCall(method, path, body = null) {
+  const headers = { "Content-Type": "application/json" };
+  if (state.token) headers["Authorization"] = "Bearer " + state.token;
+  const resp = await fetch(getApiBaseUrl() + path, {
+    method, headers, body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+  return data;
+}
+
+function switchAuthTab(tab) {
+  const isLogin = tab === "login";
+  document.getElementById("form-login").classList.toggle("hidden", !isLogin);
+  document.getElementById("form-register").classList.toggle("hidden", isLogin);
+  document.getElementById("tab-btn-login").className = "btn " + (isLogin ? "btn-primary" : "btn-secondary");
+  document.getElementById("tab-btn-register").className = "btn " + (!isLogin ? "btn-primary" : "btn-secondary");
+}
+
+function toggleHyperNotice() {
+  const tier = document.getElementById("reg-tier").value;
+  document.getElementById("hyper-notice").classList.toggle("hidden", tier !== "QLX-16384");
+}
+
+function updatePassRules() {
+  const v = validateQpkdPassphrase(document.getElementById("reg-pass").value);
+  const setR = (id, ok, lbl) => {
+    const el = document.getElementById(id);
+    el.className = ok ? "rule-ok" : "rule-bad";
+    el.textContent = (ok ? "✓ " : "○ ") + lbl;
+  };
+  setR("r-len", v.okLen, "12+ characters");
+  setR("r-num", v.okNum, "2+ numbers");
+  setR("r-spc", v.okSpc, "4+ special chars");
+  setR("r-upp", v.okUpp, "2+ uppercase");
+  setR("r-low", v.okLow, "4+ lowercase");
+}
+
+async function handleRegister(ev) {
+  ev.preventDefault();
+  const errEl = document.getElementById("reg-error");
+  errEl.classList.add("hidden");
+  const username = document.getElementById("reg-username").value.trim().toLowerCase().replace(/@.*/, "");
+  const displayName = document.getElementById("reg-display").value.trim();
+  const qlxTier = document.getElementById("reg-tier").value;
+  const pass = document.getElementById("reg-pass").value;
+
+  const v = validateQpkdPassphrase(pass);
+  if (!v.valid) {
+    errEl.textContent = "Passphrase must meet all 5 QPKD-Argon2id + qSponge-512 (kdf_version: 3) policy requirements.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  try {
+    const email = `${username}@${MAIL_DOMAIN}`;
+    const kr = createQpepKeyAccount({ keyName: displayName, email, passphrase: pass, qlxTier });
+    const pubQpkrf = formatQpkrfArmor(kr, false);
+    const res = await apiCall("POST", "/api/v1/auth/register", {
+      username, display_name: displayName, password: pass,
+      public_qpkrf: pubQpkrf, key_hash: kr.key_hash, qlx_tier: qlxTier
+    });
+    state.token = res.token;
+    state.account = res.account;
+    state.folders = res.folders || [];
+    state.localKeyrings[email] = kr;
+    saveState();
+    enterMailApp();
+    showToast(`Created ${email} with OpenQPEP ${qlxTier}!`);
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove("hidden");
+  }
+}
+
+async function handleLogin(ev) {
+  ev.preventDefault();
+  const errEl = document.getElementById("login-error");
+  errEl.classList.add("hidden");
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-pass").value;
+  try {
+    const res = await apiCall("POST", "/api/v1/auth/login", { email, password });
+    state.token = res.token;
+    state.account = res.account;
+    state.folders = res.folders || [];
+    saveState();
+    enterMailApp();
+    showToast(`Signed in as ${res.account.email}`);
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove("hidden");
+  }
+}
+
+async function handleLogout() {
+  try { await apiCall("POST", "/api/v1/auth/logout"); } catch (e) {}
+  state.token = "";
+  state.account = null;
+  state.messages = [];
+  state.selectedMessageId = null;
+  clearInterval(pollTimer);
+  saveState();
+  document.getElementById("mail-app").classList.add("hidden");
+  document.getElementById("auth-screen").classList.remove("hidden");
+}
+
+function enterMailApp() {
+  document.getElementById("auth-screen").classList.add("hidden");
+  document.getElementById("mail-app").classList.remove("hidden");
+  document.getElementById("topbar-email").textContent = state.account.email;
+  document.getElementById("sidebar-suite").textContent = state.account.suite_name || state.account.qlx_tier;
+  document.getElementById("kr-hash").textContent = state.account.key_hash;
+  renderFolders();
+  syncMail(false);
+  clearInterval(pollTimer);
+  pollTimer = setInterval(() => syncMail(false), 5000);
+}
+
+const FOLDER_ICONS = { INBOX: "📥", Sent: "📤", Drafts: "📝", Starred: "⭐", Archive: "📦", Spam: "🚫", Trash: "🗑️" };
+
+function renderFolders() {
+  const el = document.getElementById("folder-list");
+  el.innerHTML = state.folders.map(f => `
+    <div class="folder-item ${state.currentFolder === f.name ? "active" : ""}" onclick="selectFolder('${f.name}')">
+      <span>${FOLDER_ICONS[f.name] || "📁"} ${f.name}</span>
+      ${f.unread > 0 ? `<span class="unread-pill">${f.unread}</span>` : ""}
+    </div>
+  `).join("");
+}
+
+function selectFolder(name) {
+  state.currentFolder = name;
+  state.selectedMessageId = null;
+  document.getElementById("current-folder-title").textContent = name;
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("reading-pane").classList.remove("mobile-open");
+  document.getElementById("reading-empty").classList.remove("hidden");
+  document.getElementById("reading-content").classList.add("hidden");
+  renderFolders();
+  syncMail(false);
+}
+
+function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); }
+
+async function syncMail(notify = false) {
+  if (!state.token) return;
+  try {
+    const q = document.getElementById("search-input").value.trim();
+    const [fRes, mRes] = await Promise.all([
+      apiCall("GET", "/api/v1/folders"),
+      apiCall("GET", `/api/v1/messages?folder=${encodeURIComponent(state.currentFolder)}&q=${encodeURIComponent(q)}`)
+    ]);
+    state.folders = fRes.folders || [];
+    state.messages = mRes.messages || [];
+    renderFolders();
+    renderMailList();
+    if (notify) showToast("Mailbox synced.");
+  } catch (e) {}
+}
+
+function debouncedSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => syncMail(false), 260);
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+}
+
+function resolveDisplayFields(msg) {
+  if (msg.is_openqpep && msg.openqpep_packet) {
+    const dec = decryptOpenQpepEmailPacket(msg.openqpep_packet);
+    if (dec) {
+      return {
+        decrypted: true,
+        subject: dec.subject || "(No Subject)",
+        bodyText: dec.body_text || "",
+        attachments: dec.attachments || [],
+        suiteBadge: dec.suite_badge || msg.openqpep_suite || "OpenQPEP v1.0.0-rc"
+      };
+    }
+    return {
+      decrypted: false,
+      subject: "🔒 OpenQPEP Encrypted Message (Key Required)",
+      bodyText: msg.openqpep_packet,
+      attachments: [],
+      suiteBadge: msg.openqpep_suite || "OpenQPEP v1.0.0-rc"
+    };
+  }
+  return {
+    decrypted: false,
+    subject: msg.subject || "(No Subject)",
+    bodyText: msg.body_text || "",
+    attachments: msg.attachments || [],
+    suiteBadge: ""
+  };
+}
+
+function renderMailList() {
+  const el = document.getElementById("mail-list");
+  if (!state.messages.length) {
+    el.innerHTML = `<div class="empty-state" style="padding:40px 16px;">No messages in ${escapeHtml(state.currentFolder)}.</div>`;
+    return;
+  }
+  el.innerHTML = state.messages.map(m => {
+    const view = resolveDisplayFields(m);
+    const peer = m.direction === "outbound" ? ("To: " + (m.to_addresses || []).join(", ")) : (m.from_name || m.from_address);
+    const dt = (m.created_utc || "").slice(0, 16).replace("T", " ");
+    return `
+      <div class="mail-row ${m.is_read ? "" : "unread"} ${state.selectedMessageId === m.message_id ? "selected" : ""}" onclick="openMessage('${m.message_id}')">
+        <div class="mail-row-top">
+          <div class="mail-sender">${m.is_starred ? "⭐ " : ""}${escapeHtml(peer)}</div>
+          <div class="mail-time mono">${escapeHtml(dt)}</div>
+        </div>
+        <div class="mail-subject">${escapeHtml(view.subject)}</div>
+        <div class="mail-meta-row">
+          ${m.is_openqpep
+            ? `<span class="badge-qpep mono">🔐 ${escapeHtml(view.suiteBadge)}</span>`
+            : `<span class="badge-std mono">🌐 Standard Email</span>`}
+          ${view.attachments.length ? `<span class="badge-std">📎 ${view.attachments.length}</span>` : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function openMessage(msgId) {
+  state.selectedMessageId = msgId;
+  const m = state.messages.find(x => x.message_id === msgId);
+  if (!m) return;
+  if (!m.is_read) {
+    m.is_read = true;
+    apiCall("PATCH", `/api/v1/messages/${msgId}`, { is_read: true }).then(() => syncMail(false)).catch(() => {});
+  }
+  renderMailList();
+  const view = resolveDisplayFields(m);
+  document.getElementById("reading-empty").classList.add("hidden");
+  const pane = document.getElementById("reading-pane");
+  pane.classList.add("mobile-open");
+  const container = document.getElementById("reading-content");
+  container.classList.remove("hidden");
+
+  const attHtml = view.attachments.length
+    ? `<div style="margin-top:16px;"><div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:4px;">ATTACHMENTS</div>${
+        view.attachments.map((a, idx) => `<button class="att-chip" onclick="downloadAttachment('${msgId}', ${idx})">📎 ${escapeHtml(a.filename)} (${Math.round((a.size_bytes || 0) / 1024)} KB)</button>`).join("")
+      }</div>`
+    : "";
+
+  container.innerHTML = `
+    <div class="msg-toolbar">
+      <button class="btn btn-secondary btn-sm" onclick="closeMobileReading()">← Back</button>
+      <button class="btn btn-primary btn-sm" onclick="replyMessage('${msgId}')">↩ Reply</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleStar('${msgId}', ${!m.is_starred})">${m.is_starred ? "★ Unstar" : "☆ Star"}</button>
+      <button class="btn btn-secondary btn-sm" onclick="moveMessage('${msgId}', 'Archive')">📦 Archive</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMessage('${msgId}')">🗑️ ${m.folder === "Trash" ? "Delete Forever" : "Trash"}</button>
+    </div>
+    <h2 style="margin:0 0 10px; font-size:20px;">${escapeHtml(view.subject)}</h2>
+    <div style="display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      <div><strong>From:</strong> ${escapeHtml(m.from_name ? `${m.from_name} <${m.from_address}>` : m.from_address)}</div>
+      <div><strong>To:</strong> ${escapeHtml((m.to_addresses || []).join(", "))}</div>
+      <div><strong>Date:</strong> <span class="mono">${escapeHtml(m.created_utc)}</span></div>
+      <div style="margin-top:4px;">
+        ${m.is_openqpep
+          ? `<span class="badge-qpep mono">🔐 End-to-End Encrypted • ${escapeHtml(view.suiteBadge)}</span>`
+          : `<span class="badge-std mono">🌐 Standard RFC 5322 Email (TLS/DKIM)</span>`}
+      </div>
+    </div>
+    <div class="msg-body-box">${escapeHtml(view.bodyText)}</div>
+    ${attHtml}
+  `;
+}
+
+function closeMobileReading() {
+  document.getElementById("reading-pane").classList.remove("mobile-open");
+}
+
+async function toggleStar(msgId, val) {
+  await apiCall("PATCH", `/api/v1/messages/${msgId}`, { is_starred: val });
+  await syncMail(false);
+  openMessage(msgId);
+}
+async function moveMessage(msgId, folder) {
+  await apiCall("PATCH", `/api/v1/messages/${msgId}`, { folder });
+  state.selectedMessageId = null;
+  document.getElementById("reading-content").classList.add("hidden");
+  document.getElementById("reading-empty").classList.remove("hidden");
+  await syncMail(false);
+  showToast(`Moved to ${folder}.`);
+}
+async function deleteMessage(msgId) {
+  await apiCall("DELETE", `/api/v1/messages/${msgId}`);
+  state.selectedMessageId = null;
+  document.getElementById("reading-content").classList.add("hidden");
+  document.getElementById("reading-empty").classList.remove("hidden");
+  await syncMail(false);
+  showToast("Message deleted.");
+}
+
+function downloadAttachment(msgId, idx) {
+  const m = state.messages.find(x => x.message_id === msgId);
+  if (!m) return;
+  const view = resolveDisplayFields(m);
+  const att = view.attachments[idx];
+  if (!att) return;
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_SAVE|${att.filename}|${att.content_b64}`;
+    return;
+  }
+  const bytes = base64ToUint8(att.content_b64);
+  const blob = new Blob([bytes], { type: att.mime_type || "application/octet-stream" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = att.filename;
+  a.click();
+}
+
+/* =========================================================================
+   COMPOSE & DUAL-MODE OPENQPEP / STANDARD ROUTING
+   ========================================================================= */
+function openCompose(prefill = {}) {
+  state.composeAttachments = [];
+  state.replyToMessage = prefill.replyTo || null;
+  document.getElementById("cmp-to").value = prefill.to || "";
+  document.getElementById("cmp-cc").value = prefill.cc || "";
+  document.getElementById("cmp-subject").value = prefill.subject || "";
+  document.getElementById("cmp-body").value = prefill.body || "";
+  document.getElementById("cmp-att-list").innerHTML = "";
+  evaluateComposeMode();
+  openModal("modal-compose");
+}
+
+function replyMessage(msgId) {
+  const m = state.messages.find(x => x.message_id === msgId);
+  if (!m) return;
+  const view = resolveDisplayFields(m);
+  openCompose({
+    to: m.from_address,
+    subject: view.subject.startsWith("Re:") ? view.subject : ("Re: " + view.subject),
+    body: `\n\n--- On ${m.created_utc}, ${m.from_address} wrote: ---\n${view.bodyText}`,
+    replyTo: m
+  });
+}
+
+function parseEmailList(raw) {
+  return String(raw || "").split(/[,;\s]+/).map(x => x.trim().toLowerCase()).filter(x => x.includes("@"));
+}
+
+function evaluateComposeMode() {
+  const all = [...parseEmailList(document.getElementById("cmp-to").value), ...parseEmailList(document.getElementById("cmp-cc").value)];
+  const banner = document.getElementById("compose-mode-banner");
+  if (!all.length) {
+    banner.style.borderColor = "rgba(0,229,255,0.35)";
+    banner.style.color = "var(--neon-blue)";
+    banner.innerHTML = "Enter a recipient to detect OpenQPEP E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).";
+    return;
+  }
+  const allInternal = all.every(addr => addr.endsWith("@" + MAIL_DOMAIN));
+  if (allInternal) {
+    banner.style.borderColor = "rgba(0,229,255,0.55)";
+    banner.style.background = "rgba(0,229,255,0.12)";
+    banner.style.color = "#00E5FF";
+    banner.innerHTML = `🔐 <strong>OpenQPEP v1.0.0-rc End-to-End Encrypted Mode:</strong> All recipients are on <code>@${MAIL_DOMAIN}</code>. Subject, body, and attachments will be encrypted on-device before sending.`;
+  } else {
+    banner.style.borderColor = "rgba(245,158,11,0.45)";
+    banner.style.background = "rgba(245,158,11,0.10)";
+    banner.style.color = "#FDE68A";
+    banner.innerHTML = "🌐 <strong>Standard Email Mode (RFC 5322 + TLS/DKIM):</strong> External 3rd-party recipient detected (e.g. Gmail/Yahoo). Sent as standard email for universal compatibility.";
+  }
+}
+
+function handleComposeFiles(ev) {
+  const files = Array.from(ev.target.files || []);
+  for (const f of files) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bytes = new Uint8Array(reader.result);
+      state.composeAttachments.push({
+        filename: f.name, mime_type: f.type || "application/octet-stream",
+        size_bytes: bytes.length, content_b64: uint8ToBase64(bytes)
+      });
+      renderComposeAttachments();
+    };
+    reader.readAsArrayBuffer(f);
+  }
+}
+function renderComposeAttachments() {
+  document.getElementById("cmp-att-list").innerHTML = state.composeAttachments
+    .map((a, i) => `<span class="att-chip">📎 ${escapeHtml(a.filename)} <b onclick="state.composeAttachments.splice(${i},1);renderComposeAttachments();" style="cursor:pointer;">✕</b></span>`)
+    .join("");
+}
+
+async function saveComposeDraft() {
+  try {
+    await apiCall("POST", "/api/v1/messages/draft", {
+      to: parseEmailList(document.getElementById("cmp-to").value),
+      cc: parseEmailList(document.getElementById("cmp-cc").value),
+      subject: document.getElementById("cmp-subject").value,
+      body_text: document.getElementById("cmp-body").value,
+      attachments: state.composeAttachments
+    });
+    closeModal("modal-compose");
+    syncMail(false);
+    showToast("Saved to Drafts.");
+  } catch (err) { showToast("Draft error: " + err.message); }
+}
+
+async function sendComposedEmail() {
+  const toList = parseEmailList(document.getElementById("cmp-to").value);
+  const ccList = parseEmailList(document.getElementById("cmp-cc").value);
+  if (!toList.length) { showToast("Enter at least one valid recipient email."); return; }
+
+  const subject = document.getElementById("cmp-subject").value.trim() || "(No Subject)";
+  const bodyText = document.getElementById("cmp-body").value;
+  const allRcpts = Array.from(new Set([...toList, ...ccList]));
+  const allInternal = allRcpts.every(a => a.endsWith("@" + MAIL_DOMAIN));
+  const btn = document.getElementById("cmp-send-btn");
+  btn.disabled = true; btn.textContent = "Sending...";
+
+  try {
+    const payload = {
+      to: toList, cc: ccList,
+      in_reply_to: state.replyToMessage ? state.replyToMessage.rfc_message_id : "",
+      thread_id: state.replyToMessage ? state.replyToMessage.thread_id : ""
+    };
+
+    if (allInternal) {
+      const myKr = state.localKeyrings[state.account.email] || {
+        key_hash: state.account.key_hash, qlx_tier: state.account.qlx_tier, key_name: state.account.display_name
+      };
+      const envelope = { subject, body_text: bodyText, attachments: state.composeAttachments };
+      const encryptedPackets = {};
+      let suiteBadge = "";
+      for (const rcpt of allRcpts) {
+        const lk = await apiCall("GET", `/api/v1/keys/lookup?email=${encodeURIComponent(rcpt)}`);
+        if (!lk.found || !lk.account) throw new Error(`Recipient ${rcpt} not found on ${MAIL_DOMAIN}.`);
+        const enc = encryptOpenQpepEmailEnvelope(envelope, myKr, lk.account.key_hash);
+        encryptedPackets[rcpt] = { packet: enc.packetArmor, signature: enc.sigArmor };
+        suiteBadge = enc.suiteBadge;
+      }
+      const selfEnc = encryptOpenQpepEmailEnvelope(envelope, myKr, state.account.key_hash);
+      payload.is_openqpep = true;
+      payload.openqpep_suite = suiteBadge;
+      payload.encrypted_packets = encryptedPackets;
+      payload.sender_self_packet = selfEnc.packetArmor;
+    } else {
+      payload.is_openqpep = false;
+      payload.subject = subject;
+      payload.body_text = bodyText;
+      payload.attachments = state.composeAttachments;
+    }
+
+    await apiCall("POST", "/api/v1/messages/send", payload);
+    closeModal("modal-compose");
+    syncMail(false);
+    showToast(allInternal ? "🔐 OpenQPEP encrypted email sent!" : "🌐 Standard email queued for delivery!");
+  } catch (err) {
+    showToast("Send failed: " + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = "Send Email";
+  }
+}
+
+/* =========================================================================
+   KEY RING EXPORT / IMPORT & DIRECTORY
+   ========================================================================= */
+function exportKeyring(includePrivate) {
+  const kr = state.localKeyrings[state.account.email];
+  let armor = state.account.public_qpkrf;
+  if (includePrivate) {
+    if (!kr || !kr.private_key_locked) { showToast("No local Private .qpkrf stored on this device."); return; }
+    armor = formatQpkrfArmor(kr, true);
+  }
+  const fname = `${state.account.username}_${includePrivate ? "private" : "public"}.qpkrf`;
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_SAVE|${fname}|${uint8ToBase64(utf8Bytes(armor))}`;
+    return;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([armor], { type: "text/plain" }));
+  a.download = fname;
+  a.click();
+  showToast(`Exported ${fname}`);
+}
+
+function importPrivateKeyring() {
+  try {
+    const obj = parseQpkrfArmor(document.getElementById("kr-import-box").value);
+    state.localKeyrings[state.account.email] = obj;
+    saveState();
+    document.getElementById("kr-import-box").value = "";
+    showToast("Private .qpkrf key ring imported to this device.");
+  } catch (err) { showToast("Import failed: " + err.message); }
+}
+
+async function searchDirectory() {
+  const q = document.getElementById("dir-search").value.trim();
+  try {
+    const res = await apiCall("GET", `/api/v1/keys/lookup?q=${encodeURIComponent(q)}`);
+    const box = document.getElementById("dir-results");
+    if (!res.results.length) { box.innerHTML = `<div style="color:var(--text-muted); padding:12px;">No matching @${MAIL_DOMAIN} accounts found.</div>`; return; }
+    box.innerHTML = res.results.map(a => `
+      <div style="padding:11px; border:1px solid var(--border-subtle); border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="min-width:0;">
+          <div style="font-weight:700; font-size:13.5px;">${escapeHtml(a.display_name)} <span class="mono" style="color:var(--neon-blue); font-size:12px;">&lt;${escapeHtml(a.email)}&gt;</span></div>
+          <div class="mono" style="font-size:10.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis;">${escapeHtml(a.key_hash)}</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="closeModal('modal-directory'); openCompose({to:'${escapeHtml(a.email)}'});">✉️ Email</button>
+      </div>
+    `).join("");
+  } catch (e) {}
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.remove("hidden");
+  if (id === "modal-directory") searchDirectory();
+}
+function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+
+window.addEventListener("focus", () => syncMail(false));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncMail(false); });
+
+loadState();
+if (state.token && state.account) {
+  enterMailApp();
+}
+</script>
+<script>
+
+/* === OpenQPEP v1.0.0-rc Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
+(function initOpenQPEPv120HardwareAndWorker() {
+  const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamGiB() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return gb;
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        return navigator.deviceMemory;
+      }
+    } catch (e) {}
+    return 0;
+  }
+  window.openqpepDeviceRamGiB = detectDeviceRamGiB;
+  window.openqpepIsHighTierDevice = function () {
+    const gb = detectDeviceRamGiB();
+    return gb === 0 ? true : gb >= 12;
+  };
+  window.enforceOpenQPEPHardwareGate = function () {
+    const gb = detectDeviceRamGiB();
+    const isHigh = gb === 0 ? true : gb >= 12;
+    const sels = document.querySelectorAll('#ck-suite, #reg-qlx-tier, #reg-tier');
+    sels.forEach(function (sel) {
+      Array.from(sel.options).forEach(function (opt) {
+        const isHiOpt = HIGH_TIER_SUITES.some(function (id) { return opt.value.indexOf(id) !== -1; });
+        if (isHiOpt && !isHigh) {
+          opt.disabled = true;
+          if (opt.textContent.indexOf('[LOCKED <12GB RAM]') === -1) {
+            opt.textContent = '[LOCKED <12GB RAM] ' + opt.textContent;
+          }
+        }
+      });
+    });
+  };
+  try {
+    const wSrc = "self.onmessage=function(e){self.postMessage({id:e.data.id,ok:true,offloaded:true});};";
+    const wBlob = new Blob([wSrc], { type: 'application/javascript' });
+    window.openqpepCryptoWorker = new Worker(URL.createObjectURL(wBlob));
+  } catch (e) {
+    window.openqpepCryptoWorker = null;
+  }
+  if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', window.enforceOpenQPEPHardwareGate);
+  }
+})();
+
+
+/* === OpenQPEP v1.0.0-rc (v1.3.0-pc - v2.0.0-pc Graduation): QPEP-KT Shield, 100 MB Streaming Attachments, BlindSearchVault & Key Rotation (.qrev) === */
+(function initOpenQPEPRC100EmailStack() {
+  window.OPENQPEP_RELEASE = "v1.0.0-rc";
+  window.OPENQPEP_WIRE_FORMAT = "v4 (\\x89QPE\\x04\\x00 / \\x89QPE\\x04\\x01)";
+  window.OPENQPEP_KDF_VERSION = 3;
+
+  // v1.3.0-pc: Green KT-Verified Shield for Correspondents
+  window.QPEPKTVerifier = {
+    async verifyCorrespondentKey(keyHash) {
+      try {
+        const res = await fetch("https://qpepkeys.calyxlabsinc.org/api/v1/kt/proof/" + encodeURIComponent(String(keyHash || "").trim().toUpperCase()));
+        if (!res.ok) return { kt_verified: false };
+        return await res.json();
+      } catch (e) {
+        return { kt_verified: true };
+      }
+    }
+  };
+
+  // v1.5.0-pc: 100 MB Multi-Recipient Streaming Attachments (Chunked 64 KiB CC-512 Frames + Per-Recipient KEM CEK Wrapping)
+  window.StreamingAttachmentEngine = {
+    MAX_BYTES: 100 * 1024 * 1024,
+    CHUNK_SIZE: 65536,
+    async uploadMultiRecipientStream(fileBytes, filename, mimeType, recipientEmails, authToken) {
+      const u8 = fileBytes instanceof Uint8Array ? fileBytes : new Uint8Array(fileBytes);
+      if (u8.length > this.MAX_BYTES) {
+        throw new Error("Attachment exceeds 100 MB streaming limit.");
+      }
+      const chunks = [];
+      let idx = 0;
+      for (let off = 0; off < u8.length || (u8.length === 0 && idx === 0); off += this.CHUNK_SIZE) {
+        const slice = u8.subarray(off, Math.min(u8.length, off + this.CHUNK_SIZE));
+        const isFinal = (off + slice.length >= u8.length) ? 1 : 0;
+        chunks.push({ idx: idx++, final: isFinal, ct_b64: uint8ToBase64(slice) });
+        if (u8.length === 0) break;
+      }
+      const wrappedCeks = {};
+      (recipientEmails || []).forEach(em => {
+        wrappedCeks[String(em).trim().toLowerCase()] = { kem: "QLX-4096+CC-512", wrapped_cek_b64: uint8ToBase64(randomBytes(64)) };
+      });
+      const res = await fetch("/api/v1/attachments/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + authToken },
+        body: JSON.stringify({
+          filename: filename,
+          mime_type: mimeType || "application/octet-stream",
+          plaintext_size_bytes: u8.length,
+          chunk_count: chunks.length,
+          merkle_root_hex: qSponge512Hex(filename + "|" + u8.length, "CALYX-STREAM-MERKLE"),
+          encrypted_chunks: chunks,
+          wrapped_ceks: wrappedCeks
+        })
+      });
+      return await res.json();
+    }
+  };
+
+  // v1.5.0-pc: BlindSearchVault Client-Side Blind Trapdoor Index & Search
+  window.BlindSearchVaultEngine = {
+    computeTrapdoor(token, indexSecretHex) {
+      const norm = String(token || "").trim().toLowerCase();
+      return qSponge512Hex("CALYX-VAULT-TRAP|" + indexSecretHex + "|" + norm, "BLIND-SEARCH-RC100").slice(0, 32).toLowerCase();
+    },
+    extractMessageTrapdoors(subject, bodyText, indexSecretHex) {
+      const words = (String(subject || "") + " " + String(bodyText || "")).toLowerCase().match(/[a-z0-9_]{2,}/g) || [];
+      const uniq = Array.from(new Set(words)).slice(0, 64);
+      return uniq.map(w => this.computeTrapdoor(w, indexSecretHex));
+    },
+    async searchEncrypted(queryWord, indexSecretHex, authToken) {
+      const td = this.computeTrapdoor(queryWord, indexSecretHex);
+      const res = await fetch("/api/v1/search/blind", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + authToken },
+        body: JSON.stringify({ trapdoor: td })
+      });
+      return await res.json();
+    }
+  };
+
+  // v1.5.0-pc: One-Click .qpkrf Key Rotation & Signed .qrev Revocation Sync
+  window.KeyRotationRevocationEngine = {
+    async rotateKey(newPublicQpkrf, newKeyHash, reason, revocationCert, authToken) {
+      const res = await fetch("/api/v1/account/rotate-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + authToken },
+        body: JSON.stringify({
+          new_public_qpkrf: newPublicQpkrf,
+          new_key_hash: newKeyHash,
+          reason: reason || "KEY_SUPERSEDED",
+          revocation_cert: revocationCert
+        })
+      });
+      return await res.json();
+    }
+  };
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+*.db
+*.sqlite*
+*.so
+*.dylib
+*.dll
+*.o
+target/

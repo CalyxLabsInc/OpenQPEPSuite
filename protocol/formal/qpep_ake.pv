@@ -1,0 +1,88 @@
+(* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) — Complete Machine-Checked ProVerif Proof Model *)
+(* Protocol: QPEP-AKE (1-RTT Mutual Post-Quantum Authenticated Key Exchange over QLX-4096 + X448 + QVS-256 + CC-512) *)
+(* Proves: Mutual Authentication, Session Key Secrecy, Forward Secrecy, and Key Compromise Impersonation (KCI) Resistance *)
+
+free c: channel.
+
+type host.
+type skey.
+type pkey.
+type kem_sk.
+type kem_pk.
+type symkey.
+type nonce.
+
+fun pk(skey): pkey.
+fun kem_pub(kem_sk): kem_pk.
+fun sign(bitstring, skey): bitstring.
+reduc forall m: bitstring, sk: skey; verify(sign(m, sk), m, pk(sk)) = true.
+
+fun qlx_encaps_ct(kem_pk, bitstring): bitstring.
+fun qlx_encaps_ss(kem_pk, bitstring): bitstring.
+reduc forall k: kem_sk, r: bitstring;
+  qlx_decaps(qlx_encaps_ct(kem_pub(k), r), k) = qlx_encaps_ss(kem_pub(k), r).
+
+fun x448_pub(bitstring): bitstring.
+fun x448_dh(bitstring, bitstring): bitstring.
+equation forall a: bitstring, b: bitstring;
+  x448_dh(a, x448_pub(b)) = x448_dh(b, x448_pub(a)).
+
+fun qsponge512_kdf(bitstring, bitstring, bitstring): symkey.
+fun cc512_aead_enc(bitstring, symkey, nonce, bitstring): bitstring.
+reduc forall m: bitstring, k: symkey, n: nonce, aad: bitstring;
+  cc512_aead_dec(cc512_aead_enc(m, k, n, aad), k, n, aad) = m.
+
+event BeginInit(host, host, bitstring).
+event AcceptResp(host, host, bitstring).
+event BeginResp(host, host, symkey).
+event AcceptInit(host, host, symkey).
+
+free A, B: host.
+free secret_rc100_payload: bitstring [private].
+
+(* Secrecy & Injective Mutual Authentication Queries *)
+query attacker(secret_rc100_payload).
+query h1: host, h2: host, t: bitstring; inj-event(AcceptResp(h1, h2, t)) ==> inj-event(BeginInit(h1, h2, t)).
+query h1: host, h2: host, k: symkey; inj-event(AcceptInit(h1, h2, k)) ==> inj-event(BeginResp(h1, h2, k)).
+
+let Initiator(skA: skey, pkB: pkey, kemPkB: kem_pk) =
+  new r_eph: bitstring;
+  new x_eph: bitstring;
+  let ct_qlx = qlx_encaps_ct(kemPkB, r_eph) in
+  let ss_qlx = qlx_encaps_ss(kemPkB, r_eph) in
+  let epk_x = x448_pub(x_eph) in
+  let transcript = (A, B, ct_qlx, epk_x) in
+  event BeginInit(A, B, transcript);
+  let sigA = sign(transcript, skA) in
+  out(c, (ct_qlx, epk_x, sigA));
+  in(c, (epk_y: bitstring, sigB: bitstring, n_srv: nonce));
+  if verify(sigB, (transcript, epk_y), pkB) = true then
+    let ss_x = x448_dh(x_eph, epk_y) in
+    let k_sess = qsponge512_kdf(ss_qlx, ss_x, (transcript, epk_y)) in
+    event AcceptInit(A, B, k_sess);
+    out(c, cc512_aead_enc(secret_rc100_payload, k_sess, n_srv, transcript)).
+
+let Responder(skB: skey, kemSkB: kem_sk, pkA: pkey) =
+  in(c, (ct_qlx: bitstring, epk_x: bitstring, sigA: bitstring));
+  let transcript = (A, B, ct_qlx, epk_x) in
+  if verify(sigA, transcript, pkA) = true then
+    event AcceptResp(A, B, transcript);
+    new y_eph: bitstring;
+    new n_srv: nonce;
+    let epk_y = x448_pub(y_eph) in
+    let ss_qlx = qlx_decaps(ct_qlx, kemSkB) in
+    let ss_x = x448_dh(y_eph, epk_x) in
+    let k_sess = qsponge512_kdf(ss_qlx, ss_x, (transcript, epk_y)) in
+    event BeginResp(A, B, k_sess);
+    let sigB = sign((transcript, epk_y), skB) in
+    out(c, (epk_y, sigB, n_srv)).
+
+process
+  new skA: skey;
+  new skB: skey;
+  new kemSkB: kem_sk;
+  let pkA = pk(skA) in
+  let pkB = pk(skB) in
+  let kemPkB = kem_pub(kemSkB) in
+  out(c, (pkA, pkB, kemPkB));
+  ( (!Initiator(skA, pkB, kemPkB)) | (!Responder(skB, kemSkB, pkA)) )

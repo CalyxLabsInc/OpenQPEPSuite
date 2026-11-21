@@ -1,0 +1,26 @@
+{
+  "schema": "openqpep-kat-v2",
+  "family": "beyond_lwe",
+  "protocol_version": "OpenQPEP/RC-1.0.0",
+  "universal_version": "1.0.0-rc",
+  "suite_id": "CGM-8192",
+  "suite_name": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based \u2014 HIGH-TIER HARDWARE ONLY)",
+  "qlx_tier": "CGM-8192",
+  "qvs_tier": "QHS-512",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0-rc|)",
+  "drbg_seed_hex": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
+  "message_utf8": "OpenQPEP RC 1.0.0 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020524320312e302e302044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "beyond_lwe": {
+    "key_hash": "2957087B018A942D49EF4805215F1B335B26C7F611B90B948E6ADE78D1378488",
+    "public_material_bytes": 244,
+    "public_material_sha3_512": "8f4e4c2917b0f0f739e9fc1d3412484e5e9ad49d2bd10dfab480d367de096930e8b3befaddca01ea7c6ed8dc9fc061b96b13df7e882392a980f1aea55ceb17c2",
+    "ct_bytes": 800,
+    "ct_sha3_512": "758153beb72a3e4f770a75842787c416ebc50ab18e7933c6bfc130d491e98c2fcabd7305338f2927fe9efcb7233665471a1ba434d0256f0d55b0012091204baa",
+    "sig_bytes": 3175,
+    "sig_sha3_512": "29a2feaeaa1441a339aa3c0466c2619814d0a21bc276739e00fb3c9f5a25da5b680aeb5200d370b2e8f42e7b208a52765cca4f928ec60759b427dae29ed7a90f",
+    "qpkrf_roundtrip_verified": true,
+    "decrypt_verified": true,
+    "signature_verified": true
+  }
+}

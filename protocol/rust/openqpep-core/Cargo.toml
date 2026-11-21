@@ -1,0 +1,22 @@
+# OpenQPEP v1.0.0-rc (Release Candidate 1.0.0)
+[package]
+name = "openqpep-core"
+version = "1.0.0-rc.1"
+edition = "2021"
+license = "LicenseRef-CPOSLS-1.0"
+description = "Memory-safe Rust core for OpenQPEP Release Candidate 1.0.0 (NTT_3329, NTT_8380417, Wire Format v4/v4.1, zeroize, PyO3/UniFFI/WASM)"
+repository = "https://github.com/CalyxLabsInc/OpenQPEP"
+
+[lib]
+name = "openqpep_core"
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[features]
+default = []
+python = ["pyo3"]
+uniffi-bindings = ["uniffi"]
+
+[dependencies]
+zeroize = { version = "1.8", features = ["derive"] }
+pyo3 = { version = "0.22", optional = true, features = ["extension-module"] }
+uniffi = { version = "0.28", optional = true }

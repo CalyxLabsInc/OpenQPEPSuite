@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Calyx QPEP Client",
+  "version": "1.0.0-rc.1",
+  "identifier": "com.calyxlabs.qpepclient.desktop",
+  "build": {
+    "frontendDist": "../android/source/app/src/main/assets"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Calyx QPEP Client — Release Candidate 1.0.0 (OpenQPEP/RC-1.0.0)",
+        "width": 1200,
+        "height": 820,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://calyxlabsinc.org; connect-src 'self' https://qpepkeys.calyxlabsinc.org https://calyxlabsinc.org; object-src 'none'; base-uri 'none';"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage", "dmg", "msi"],
+    "publisher": "Calyx Labs Inc.",
+    "license": "CPOSLS-1.0"
+  }
+}
