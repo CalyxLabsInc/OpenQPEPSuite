@@ -1,9 +1,6 @@
-# OpenQPEP Native C99 / SIMD Acceleration Library (libopenqpep)
-# Beta Version 0.3.0 — Calyx Labs Inc. (CPOSLS-1.0)
 CC ?= cc
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
-
 CFLAGS := -O3 -std=c99 -fPIC -Wall -Wextra
 
 ifeq ($(PORTABLE),1)

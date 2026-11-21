@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openqpep"
-version = "1.0.0-pc"
+version = "1.0.0rc1"
 description = "OpenQPEP by Calyx Labs Inc. (Production Candidate 1.0.0) — Quantum-Proof Encryption Protocol, Interactive CLI & .qpkrf Reference Implementation"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,3 +23,6 @@ calyx-qpep = "calyx_qpep.cli:main"
 
 [project.optional-dependencies]
 argon2 = ["argon2-cffi>=23.1.0"]
+
+[tool.setuptools.packages.find]
+include = ["calyx_qpep*"]
