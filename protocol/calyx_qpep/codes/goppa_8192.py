@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 Family 2 of Calyx Sovereign-Pentad (CSP-Omega): Binary Goppa Code Syndrome-Decoding KEM (CGM-8192).
 Zero lattice structure, zero polynomial rings. Uses systematic binary parity-check syndrome

@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 CC ?= cc
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)

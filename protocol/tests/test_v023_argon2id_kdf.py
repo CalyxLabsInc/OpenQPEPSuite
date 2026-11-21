@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.4 Memory-Hard QPKD-Argon2id KDF & Hardware Auto-Tuner.
+Unit tests for OpenQPEP Production Candidate 1.1.7 Memory-Hard QPKD-Argon2id KDF & Hardware Auto-Tuner.
 """
 import copy
 import json

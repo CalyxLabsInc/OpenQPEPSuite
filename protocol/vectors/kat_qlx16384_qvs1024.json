@@ -1,14 +1,16 @@
 {
-  "schema": "openqpep-kat-v1",
-  "protocol_version": "OpenQPEP/PC-1.1.4",
+  "schema": "openqpep-kat-v2",
+  "family": "structured_lattice",
+  "protocol_version": "OpenQPEP/PC-1.1.7",
   "universal_version": "1.1.0-pc",
-  "suite_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024",
+  "suite_id": "QLX-16384",
+  "suite_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold \u2014 HIGH-TIER HARDWARE ONLY)",
   "qlx_tier": "QLX-16384",
   "qvs_tier": "QVS-1024",
-  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.4-pc|)",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.7-pc|)",
   "drbg_seed_hex": "404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f",
-  "message_utf8": "OpenQPEP PC 1.1.4 Deterministic Known Answer Test Vector",
-  "message_hex": "4f70656e5150455020504320312e312e342044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "message_utf8": "OpenQPEP PC 1.1.7 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020504320312e312e372044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
   "qlx": {
     "spec_pk_bytes": 24608,
     "spec_sk_bytes": 49248,
@@ -16,11 +18,11 @@
     "actual_pk_bytes": 24608,
     "actual_sk_bytes": 49248,
     "actual_ct_qlx_bytes": 23168,
-    "pk_sha3_512": "653896a0b463966663d23fb99f966ae79c3f6e3227826045f9acb4374b68a500d582395ca2814790dcc9af0803ef9b5282b4c5158e57bb57a28a1d3d6fc2085c",
-    "sk_sha3_512": "4c7de175801473f5e8df99ff2397f46dc1b0d5b3e9bc02ba8fe59ba9d7c6f94920f40c6e080953f1120ac8ffab3fa21787c206cb1731fec83e6eafe8eb2c7916",
-    "ct_qlx_sha3_512": "6c075394b0352656fd9e16517c04c7dca073f8a7d27d27c23730c8576cd55eef7343df9d36aab22b2d19b85431595a16e5a5fe2976c4bb193cae82a2ac732f6e",
-    "shared_secret_hex": "8f7ed670666ff12d3de2da10951931d1f1aba226de051c6b0d122ab44b3ba2e1",
-    "fo_implicit_rejection_hex": "bc1279bccefac085bf0edb4540a3783bc3c321e1b975156974526ac0bb46c456"
+    "pk_sha3_512": "a868dbff8cd24fb7d15f9627d7fb0a0424e5c299dcd859c5dd82b2411fa1db5601473a5d4195c5585f1368b09a967241a57b5fe16f87b092c7a01af395c1cc83",
+    "sk_sha3_512": "6a28bf6a66122b1961df95b7e8f03b91311e4c96f3768698d5260719e97dc78b5a00962fce25dc0af6fd7c4ce26f9ebfe7680d4c76f90c6fb321c34e704e6dc9",
+    "ct_qlx_sha3_512": "74a7cafa61dacac528c86006fa16748ac711806814a75b1796d6c832c3a4df5cc8f626a85339555fea3a7aa8b095e60838d23f09cd3e420a1de20641a29ebdda",
+    "shared_secret_hex": "ca1c4facbe0483b592f988b5e77dc1ab5cdf769378b495b6c5e700d6b36c9e26",
+    "fo_implicit_rejection_hex": "728e99b50672696387da6e97094b639e6029424fe447679d712d316d794abbc0"
   },
   "qvs": {
     "spec_pk_bytes": 12320,
@@ -29,16 +31,16 @@
     "actual_pk_bytes": 12320,
     "actual_sk_bytes": 20096,
     "actual_sig_bytes": 10816,
-    "pk_sha3_512": "3b9d43c89ee7ec5f223fb4b1bf56db7fdd97358bac0afc7730b29fdd16bf04ae006b95a9d222d59803e9d7b76fe31f560dad5ac50c78995933f656f20f319096",
-    "sig_sha3_512": "56d4bfcf47e1cd5e96b88f5131c397c8efc8711de4cf4228bb611757181aa9bda5d15a469f0c5d930681eedde1f8b69a7b96ea2d5ea25b8dbcffdbb7e11a3bfd",
+    "pk_sha3_512": "c68e0f52912e5664688bd33d20d2cf3164f88b813c030e36bc58606664dd6b092951587db0885352e8b995ea8a3dc6ec691e8e66bb4327e6b397214bec242be3",
+    "sig_sha3_512": "2e99af0c6ea9a5fff7d743a659c1ce2cf09ffdd4fac9f1ba16d130f3032e039bd117cb226642141b91d1dccbd389a790bd29d59aebbe2110d279017ab8d80605",
     "verified": true
   },
   "wire_packet": {
-    "key_hash": "34B2C2B0358F0E7BFAF819ACD0C6A0873027D804C68984A2D650FB734F64A2DB",
+    "key_hash": "B02F8FD0DEF9C0E551432BB1147F755217498586F30D8FF85974554E9F58ADFC",
     "wire_magic_hex": "895150450300",
     "wire_frame_bytes": 60902,
-    "wire_frame_sha3_512": "e803ad2ba9e874b394104c794442b531721a82249656984286e56af2e7ebec769cb07eab4ee8942ca0edbae850c3c3bf08b6c865c8665b0e9b9a261120e46a98",
-    "wire_frame_prefix_hex": "8951504503000100aad6c8ee3b9296fa6195fd9f44521bbc7cc4eef815cfb13918ce110818e3de32a12ada6cbe2b4397a6d3e3df7574335c749d626ec81fd7b7",
+    "wire_frame_sha3_512": "0843039db49d8d7c3c825e2319a3406fcf2885667a27dfcb0db3a13218da2718bb9cd399ee14e4d002e0f95f7b787437923e5799fcb88f1f9011af8a2dc1366b",
+    "wire_frame_prefix_hex": "8951504503000100df509aad59f07f2a9810d02c180a2c06aa20f55fd3dad9e2f1637f772e34b56cb32df114e0568027e060c82b88eccd958b39fbc8093077d4",
     "cleartext_identity_headers_present": false
   }
 }

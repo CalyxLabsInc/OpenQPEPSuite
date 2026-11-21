@@ -1,4 +1,4 @@
-# OpenQPEP Suite — Production Candidate 1.1.4 (`v1.1.4-pc`)
+# OpenQPEP Suite — Production Candidate 1.1.7 (`v1.1.7-pc`)
 
 Official unified public repository for the **OpenQPEP Suite** by **Calyx Labs Inc.** (`https://github.com/CalyxLabsInc/OpenQPEPSuite/`), licensed universally under the **Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)**.
 
@@ -11,14 +11,14 @@ Official unified public repository for the **OpenQPEP Suite** by **Calyx Labs In
 | Directory | Component | Version | Description |
 | :--- | :--- | :--- | :--- |
 | [`protocol/`](protocol/) | **OpenQPEP Core Protocol** | `1.0.0-pc` | Python reference engine, C99/AVX2/NEON `libopenqpep` source, WASM SIMD128 bridge, Rust `openqpep-core` crate, Go conformance port, formal Tamarin/ProVerif/Cryptol specs, 5 golden KAT suites, and 63 unit/audit tests |
-| [`apps/calyx-qpep-client/`](apps/calyx-qpep-client/) | **Calyx QPEP Client** | `PC 1.1.4` (`vc221`) | Zero-telemetry post-quantum encryption/signing client for Android (`.apk` + source) and iOS (`.mobileconfig` + PWA) |
-| [`apps/calyx-encrypted-messenger/`](apps/calyx-encrypted-messenger/) | **Calyx Encrypted Messenger (QPEM)** | `PC 1.1.4` (`vc21`) | End-to-end post-quantum encrypted messenger for Android (`.apk` + source) and iOS (`.mobileconfig`) |
-| [`apps/calyx-encrypted-email/`](apps/calyx-encrypted-email/) | **Calyx Encrypted Email** | `PC 1.1.4` (`vc5`) | Post-quantum encrypted email client (`@calyxmail.org`) for Android (`.apk` + source) and iOS (`.mobileconfig`) |
+| [`apps/calyx-qpep-client/`](apps/calyx-qpep-client/) | **Calyx QPEP Client** | `PC 1.1.7` (`vc233`) | Zero-telemetry post-quantum encryption/signing client for Android (`.apk` + source) and iOS (`.mobileconfig` + PWA) |
+| [`apps/calyx-encrypted-messenger/`](apps/calyx-encrypted-messenger/) | **Calyx Encrypted Messenger (QPEM)** | `PC 1.1.7` (`vc23`) | End-to-end post-quantum encrypted messenger for Android (`.apk` + source) and iOS (`.mobileconfig`) |
+| [`apps/calyx-encrypted-email/`](apps/calyx-encrypted-email/) | **Calyx Encrypted Email** | `PC 1.1.7` (`vc7`) | Post-quantum encrypted email client (`@calyxmail.org`) for Android (`.apk` + source) and iOS (`.mobileconfig`) |
 | [`docs/`](docs/) | **Suite Documentation & Theses** | `1.0.0-pc` | Architecture guides, hypothetical beyond-LWE key tier theses, and public compliance documents |
 
 ---
 
-## Cryptographic Baseline (`OpenQPEP/PC-1.1.4`)
+## Cryptographic Baseline (`OpenQPEP/PC-1.1.7`)
 - **Strict Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Compact TLV v3.1 (`\x89QPE\x03\x01`):** Zero legacy `-beta` backwards compatibility.
 - **Mandatory Memory-Hard KDF (`kdf_version: 2`):** RFC 9106 `QPKD-Argon2id + qSponge-512` cascade.
 - **10 Post-Quantum Suites:** `QLX-768`..`QLX-16384` + `QVS-65`..`QVS-1024`, Calyx Sovereign-Pentad `Calyx Sovereign-Pentad (CSP-Omega)`, Calyx Goppa-Monolith `CGM-8192`, and Calyx Rank-Metric Tensor `CRT-RSD512`.
@@ -41,7 +41,7 @@ python3 -m unittest discover -s tests -v
 - **Encrypted Email:** https://mail.calyxlabsinc.org
 - **Contact:** support@calyxlabsinc.org
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

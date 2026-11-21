@@ -1,4 +1,5 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+import os
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 HGC-448 (448-bit Goldilocks X448 Diffie-Hellman & Ed448 Edwards Signatures) Hybrid Combiner.
 """
@@ -10,7 +11,7 @@ from .zeroize import SecretBuffer
 
 
 def x448_keygen() -> Tuple[bytes, bytes]:
-    priv = X448PrivateKey.generate()
+    priv = X448PrivateKey.from_private_bytes(os.urandom(56))
     pub_bytes = priv.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
     priv_bytes = priv.private_bytes(serialization.Encoding.Raw, serialization.PrivateFormat.Raw, serialization.NoEncryption())
     return pub_bytes, priv_bytes

@@ -1,0 +1,26 @@
+{
+  "schema": "openqpep-kat-v2",
+  "family": "beyond_lwe",
+  "protocol_version": "OpenQPEP/PC-1.1.7",
+  "universal_version": "1.1.0-pc",
+  "suite_id": "CRT-RSD512",
+  "suite_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based \u2014 All Devices)",
+  "qlx_tier": "CRT-RSD512",
+  "qvs_tier": "QMQ-512",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.7-pc|)",
+  "drbg_seed_hex": "606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+  "message_utf8": "OpenQPEP PC 1.1.7 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020504320312e312e372044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "beyond_lwe": {
+    "key_hash": "2EE790CCC2EBEDE5F0725F06B04CBCDCA2351AF2DA8296CC6C206BA81FCB3447",
+    "public_material_bytes": 326,
+    "public_material_sha3_512": "aeef10cd0c0c378e9f32fbd685a5e5809c9129af973849eb0dc493f6b30f90b6a485ae21a0b10898feba814943dab0b59dc2a3e202663ac7c1b600d8bf35b08b",
+    "ct_bytes": 720,
+    "ct_sha3_512": "94343dbdac3f5fdb2040cabaafb3928677e9702527462a06f755dc9a21ab668aec1bffb4c27ea60ae5dc38e0b4d9c55c5548236bf05e623e38befa8f93012c1d",
+    "sig_bytes": 153,
+    "sig_sha3_512": "410ee9e49cc552fd56866a9499117f83e913f5e4f256e856cfa4174b517b612b608c08550355900a6fafcd5d4239deaab0c8cd597f53f52b7bc2fbf24ee08dcf",
+    "qpkrf_roundtrip_verified": true,
+    "decrypt_verified": true,
+    "signature_verified": true
+  }
+}

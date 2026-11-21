@@ -1,5 +1,5 @@
 """
-OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Production Candidate 1.1.4.
+OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Production Candidate 1.1.7.
 
 Automatically loads the compiled shared library (libopenqpep.so / .dylib / .dll) via ctypes
 with zero-copy array.array buffer marshaling when present, accelerating:

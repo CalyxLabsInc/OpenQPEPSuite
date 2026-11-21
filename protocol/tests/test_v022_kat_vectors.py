@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.4 Deterministic KATs & Cross-Language Vectors.
+Unit tests for OpenQPEP Production Candidate 1.1.7 Deterministic KATs & Cross-Language Vectors.
 """
 import json
 import unittest
@@ -48,7 +48,7 @@ class TestOpenQPEPv022KATVectors(unittest.TestCase):
     def test_03_bit_exact_kat_verification_all_five_suites(self):
         ok, report = verify_all_kats(self.vectors_dir)
         self.assertTrue(ok, "\n".join(report))
-        self.assertEqual(len(report), 5)
+        self.assertEqual(len(report), 10)
 
 
 if __name__ == "__main__":

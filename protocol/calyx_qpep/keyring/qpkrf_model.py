@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """Canonical QPEPKeyRing model re-export under calyx_qpep.keyring."""
 from ..protocol import QPEPKeyRing, _compute_keyring_integrity_mac
 

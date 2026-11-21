@@ -1,5 +1,5 @@
 """
-OpenQPEP Zero-Metadata ASCII Armor Encoder & Decoder — Production Candidate 1.1.4 (v1.1.4-pc).
+OpenQPEP Zero-Metadata ASCII Armor Encoder & Decoder — Production Candidate 1.1.7 (v1.1.7-pc).
 Wraps Frozen Wire Format v3 (\x89QPE\x03\x00) binary frames with zero cleartext identity headers.
 """
 import base64

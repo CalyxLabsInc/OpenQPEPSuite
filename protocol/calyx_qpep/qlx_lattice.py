@@ -1,5 +1,5 @@
 """
-Backward-compatible re-export facade for OpenQPEP lattice primitives (Production Candidate 1.1.4).
+Backward-compatible re-export facade for OpenQPEP lattice primitives (Production Candidate 1.1.7).
 Direct implementations now live in calyx_qpep.primitives.* and calyx_qpep.lattice.*.
 """
 from .constants import QLX_Q, QLX_N, QLX_ZETA, QLX_TIERS, QVS_Q, QVS_ZETA, QVS_GAMMA1, QVS_GAMMA2, QVS_ALPHA, QVS_TIERS

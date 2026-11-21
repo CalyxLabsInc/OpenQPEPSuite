@@ -10,7 +10,7 @@ android {
         applicationId "com.calyxlabs.qpem"
         minSdk 29
         targetSdk 37
-        versionCode 21
-        versionName "PC 1.1.4"
+        versionCode 23
+        versionName "PC 1.1.7"
     }
 }

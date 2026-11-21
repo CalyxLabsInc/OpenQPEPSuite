@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Calyx Encrypted Messenger — OpenQPEP v1.1.4-pc (messenger.calyxlabsinc.org)</title>
+  <title>Calyx Encrypted Messenger — OpenQPEP v1.1.7-pc (messenger.calyxlabsinc.org)</title>
   <style>
     :root {
       --bg-obsidian: #03060C;
@@ -428,7 +428,7 @@
   <input id="sc-code-image-input" type="file" accept="image/*" class="hidden" onchange="handleScCodeImageSelected(event)" />
 
   <!-- ===================================================================== -->
-  <!-- SCREEN A: WELCOME & CREATE QPEP KEY ACCOUNT WIZARD (OPENQPEP v1.1.4-pc)   -->
+  <!-- SCREEN A: WELCOME & CREATE QPEP KEY ACCOUNT WIZARD (OPENQPEP v1.1.7-pc)   -->
   <!-- ===================================================================== -->
   <div id="screen-auth" class="hidden" style="flex:1; overflow-y:auto; padding:24px 18px 40px;">
     <div style="max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
@@ -445,15 +445,15 @@
         <div class="mono" style="font-size:11px; color:#00E5FF; letter-spacing:1.4px; font-weight:700;">CALYX LABS INC. • com.calyxlabs.qpem</div>
         <h1 style="margin:6px 0 4px; font-size:24px; font-weight:800; color:#F0F9FF;">Calyx Encrypted Messenger</h1>
         <p style="margin:0; font-size:13px; color:#93C5FD; line-height:1.45;">
-          Sovereign Post-Quantum Messenger powered by <strong>OpenQPEP (PC 1.1.4)</strong>. In Calyx Encrypted Messenger, your <strong>QPEP Key Ring (`.qpkrf`)</strong> is your user account.
+          Sovereign Post-Quantum Messenger powered by <strong>OpenQPEP (PC 1.1.7)</strong>. In Calyx Encrypted Messenger, your <strong>QPEP Key Ring (`.qpkrf`)</strong> is your user account.
         </p>
       </div>
 
       <!-- STEP 0: Landing Welcome Card ("Create Account" or "Import Existing .qpkrf Key") -->
       <div id="auth-step-landing" class="neon-card" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
-        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF IDENTITY GATEWAY • OPENQPEP v1.1.4-pc</div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF IDENTITY GATEWAY • OPENQPEP v1.1.7-pc</div>
         <div style="font-size:13px; color:#CBD5E1; line-height:1.5;">
-          Every message and file in Calyx Encrypted Messenger is encrypted end-to-end using <strong>OpenQPEP v1.1.4-pc (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512)</strong> and addressed by your unique <strong>64-character Key Hash</strong>.
+          Every message and file in Calyx Encrypted Messenger is encrypted end-to-end using <strong>OpenQPEP v1.1.7-pc (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512)</strong> and addressed by your unique <strong>64-character Key Hash</strong>.
         </div>
 
         <button type="button" class="neon-btn" onclick="openCreateAccountStep(1)" style="width:100%;">
@@ -509,7 +509,7 @@
           <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 2 OF 3 • QLX + QVS KEY PARAMETERS</span>
           <button type="button" onclick="openCreateAccountStep(1)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
         </div>
-        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Select OpenQPEP v1.1.4-pc Key Suite</h2>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Select OpenQPEP v1.1.7-pc Key Suite</h2>
         <p style="margin:0; font-size:12px; color:#93C5FD;">
           Choose the Quantum Lattice Exchange (QLX) + Quantum Vector Signature (QVS) security tier for your `.qpkrf` key ring:
         </p>
@@ -546,7 +546,7 @@
         </div>
 
         <div style="background:#040A17; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:12px; color:#93C5FD;">
-          <div class="mono" style="color:#00E5FF; font-weight:700; margin-bottom:4px;">INCLUDED OPENQPEP v1.1.4-pc PRIMITIVES:</div>
+          <div class="mono" style="color:#00E5FF; font-weight:700; margin-bottom:4px;">INCLUDED OPENQPEP v1.1.7-pc PRIMITIVES:</div>
           <div>• Apex / Hyper KEM: Calyx Hyper-Tesseract QLX-16384 (4-Manifold, k=64) &amp; Signature QLX-4096 (k=16) + HGC-448</div>
           <div>• Cipher: Cascaded Dual-Stream Calyx-Cascade-512 (CC-512)</div>
           <div>• Signatures: QVS-1024 (16×14) / QVS-256 / 128 / 87 / 65 (Verify-Before-Emit Guard) + Ed448</div>
@@ -560,7 +560,7 @@
       <!-- STEP 3: Mandatory QPKD-Argon2id + qSponge-512 (kdf_version: 2) Passphrase Gate -->
       <div id="auth-step-3" class="neon-card hidden" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
         <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 3 OF 3 • MANDATORY QPKD-ARGON GATE</span>
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 3 OF 3 • MANDATORY QPKD-Argon2id GATE</span>
           <button type="button" onclick="openCreateAccountStep(2)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
         </div>
         <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Set QPKD-Argon2id + qSponge-512 (kdf_version: 2) Passphrase</h2>
@@ -570,7 +570,7 @@
 
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <label class="mono" style="font-size:11px; color:#00E5FF;">QPKD-ARGON PASSPHRASE *</label>
+            <label class="mono" style="font-size:11px; color:#00E5FF;">QPKD-Argon2id PASSPHRASE *</label>
             <button type="button" onclick="fillGeneratedPassphrase()" class="mono" style="background:rgba(0,229,255,0.14); border:1px solid #00E5FF; color:#00E5FF; border-radius:6px; padding:3px 8px; font-size:10px; cursor:pointer;">
               ⚡ Auto-Generate Compliant
             </button>
@@ -585,7 +585,7 @@
 
         <!-- Live 5-Rule QPKD-Argon2id + qSponge-512 (kdf_version: 2) Policy Checklist -->
         <div class="mono" style="background:#040914; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:11px; display:flex; flex-direction:column; gap:5px;">
-          <div style="color:#00E5FF; font-weight:700; margin-bottom:2px;">QPKD-ARGON MANDATORY POLICY CHECK:</div>
+          <div style="color:#00E5FF; font-weight:700; margin-bottom:2px;">QPKD-Argon2id MANDATORY POLICY CHECK:</div>
           <div id="chk-len" style="color:#EF4444;">✗ Minimum 12 characters (0/12)</div>
           <div id="chk-num" style="color:#EF4444;">✗ At least 2 numbers 0-9 (0/2)</div>
           <div id="chk-spc" style="color:#EF4444;">✗ At least 4 special characters !@#$... (0/4)</div>
@@ -618,7 +618,7 @@
         <div style="min-width:0;">
           <div style="font-size:18px; font-weight:800; color:#00E5FF; letter-spacing:0.2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Calyx Messenger</div>
           <div id="server-status-line" class="mono" style="font-size:10px; color:#10B981; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            <span class="live-dot"></span>OPENQPEP v1.1.4-pc • REAL-TIME SYNC ACTIVE
+            <span class="live-dot"></span>OPENQPEP v1.1.7-pc • REAL-TIME SYNC ACTIVE
           </div>
         </div>
       </div>
@@ -773,7 +773,7 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- TAB 3: SETTINGS & OPENQPEP v1.1.4-pc ARCHITECTURE                    -->
+    <!-- TAB 3: SETTINGS & OPENQPEP v1.1.7-pc ARCHITECTURE                    -->
     <!-- ================================================================= -->
     <div id="tab-settings" class="hidden" style="flex:1; overflow-y:auto; padding:16px 16px 104px; display:flex; flex-direction:column; gap:16px;">
 
@@ -808,20 +808,20 @@
           Official Network Endpoint: <strong style="color:#00E5FF;">messenger.calyxlabsinc.org</strong>
         </div>
         <div id="settings-sync-log" class="mono" style="font-size:11px; color:#10B981; background:#040914; padding:10px 12px; border-radius:10px; border:1px solid #162642;">
-          Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.4-pc).
+          Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.7-pc).
         </div>
       </div>
 
       <!-- Technical Architecture & Specification -->
       <div class="neon-card" style="padding:18px; display:flex; flex-direction:column; gap:12px; border-color:#00E5FF;">
         <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">TECHNICAL ARCHITECTURE &amp; SPECIFICATION</div>
-        <h3 style="margin:0; font-size:17px; color:#F0F9FF;">About Calyx Encrypted Messenger &amp; OpenQPEP v1.1.4-pc</h3>
+        <h3 style="margin:0; font-size:17px; color:#F0F9FF;">About Calyx Encrypted Messenger &amp; OpenQPEP v1.1.7-pc</h3>
         <p style="margin:0; font-size:12px; color:#CBD5E1; line-height:1.55;">
-          <strong>Calyx Encrypted Messenger</strong> (<code>com.calyxlabs.qpem</code>) is powered 100% by <strong>OpenQPEP (Calyx QPEP Production Candidate 1.1.4)</strong> (<a href="https://github.com/CalyxLabsInc/OpenQPEP/" target="_blank" style="color:#00E5FF;">github.com/CalyxLabsInc/OpenQPEP</a>), engineered by <strong>Tristen Martinez</strong> at <strong>Calyx Labs Inc.</strong>
+          <strong>Calyx Encrypted Messenger</strong> (<code>com.calyxlabs.qpem</code>) is powered 100% by <strong>OpenQPEP (Calyx QPEP Production Candidate 1.1.7)</strong> (<a href="https://github.com/CalyxLabsInc/OpenQPEP/" target="_blank" style="color:#00E5FF;">github.com/CalyxLabsInc/OpenQPEP</a>), engineered by <strong>Tristen Martinez</strong> at <strong>Calyx Labs Inc.</strong>
         </p>
         <div style="font-size:12px; color:#93C5FD; line-height:1.55; display:flex; flex-direction:column; gap:8px;">
           <div>
-            <strong>ALL 10 OPENQPEP v1.1.4-pc POST-QUANTUM SUITES:</strong><br/>
+            <strong>ALL 10 OPENQPEP v1.1.7-pc POST-QUANTUM SUITES:</strong><br/>
 • <strong>Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices):</strong> 4,096-dim structured lattice (k=16) + QVS-256 + Hybrid X448.<br/>
 • <strong>Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices):</strong> 768-dim mobile-first structured lattice (k=3).<br/>
 • <strong>Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices):</strong> 1,024-dim balanced lattice (k=4).<br/>
@@ -857,7 +857,7 @@
           TM
         </div>
         <h2 id="profile-display-name" style="margin:0; font-size:22px; font-weight:800; color:#F0F9FF;">--</h2>
-        <div style="font-size:13px; color:#00E5FF; font-weight:600; margin-top:3px;">online • OpenQPEP v1.1.4-pc Verified Key</div>
+        <div style="font-size:13px; color:#00E5FF; font-weight:600; margin-top:3px;">online • OpenQPEP v1.1.7-pc Verified Key</div>
       </div>
 
       <!-- 3-Button Row -->
@@ -901,7 +901,7 @@
 
         <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
           <div id="profile-suite" class="mono" style="font-size:13px; font-weight:700; color:#00E5FF;">--</div>
-          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Active OpenQPEP v1.1.4-pc Cryptographic Suite</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Active OpenQPEP v1.1.7-pc Cryptographic Suite</div>
         </div>
 
         <div>
@@ -1039,7 +1039,7 @@
 
     <!-- Encryption Banner -->
     <div style="background:#061124; border-bottom:1px solid #142847; padding:6px 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; color:#93C5FD;">
-      <span class="mono" id="thread-crypto-banner">E2EE: OpenQPEP v1.1.4-pc • QLX-4096 + QVS-256 + CC-512</span>
+      <span class="mono" id="thread-crypto-banner">E2EE: OpenQPEP v1.1.7-pc • QLX-4096 + QVS-256 + CC-512</span>
       <button type="button" onclick="sendMyPublicKeyCardInChat()" class="mono" style="background:none; border:none; color:#00E5FF; font-size:11px; font-weight:700; cursor:pointer;">+ Share My .qpkrf</button>
     </div>
 
@@ -1049,7 +1049,7 @@
     <!-- Message Composer Bar -->
     <div style="background:#050B16; border-top:1px solid rgba(0,229,255,0.28); padding:10px 12px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
       <button type="button" onclick="sendMyPublicKeyCardInChat()" title="Share Public .qpkrf Key Ring" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">🔑</button>
-      <button type="button" onclick="triggerChatFileAttachment()" title="Encrypt &amp; Send File (OpenQPEP v1.1.4-pc Multi-Extension Safe)" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">📎</button>
+      <button type="button" onclick="triggerChatFileAttachment()" title="Encrypt &amp; Send File (OpenQPEP v1.1.7-pc Multi-Extension Safe)" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">📎</button>
       <input
         id="thread-msg-input"
         type="text"
@@ -1078,7 +1078,7 @@
 
       <!-- Passphrase Gate Box (Shown when exporting Private Key) -->
       <div id="export-priv-gate" class="hidden" style="background:#040A17; border:1px solid #00E5FF; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;">
-        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">MANDATORY QPKD-ARGON PASSPHRASE VERIFICATION</div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">MANDATORY QPKD-Argon2id PASSPHRASE VERIFICATION</div>
         <div style="font-size:12px; color:#93C5FD;">Enter your QPKD-Argon2id + qSponge-512 (kdf_version: 2) passphrase to unlock and export your Private `.qpkrf` Key Ring:</div>
         <div style="display:flex; gap:8px;">
           <input id="export-priv-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="Enter QPKD-Argon2id + qSponge-512 (kdf_version: 2) passphrase" />
@@ -1257,12 +1257,12 @@
 
 <script>
 /* =========================================================================
-   OPENQPEP (CALYX QPEP Production Candidate 1.1.4) CLIENT ENGINE + MESSENGER STATE
+   OPENQPEP (CALYX QPEP Production Candidate 1.1.7) CLIENT ENGINE + MESSENGER STATE
    Package : com.calyxlabs.qpem ("Calyx Encrypted Messenger")
    Web App : https://messenger.calyxlabsinc.org
    ========================================================================= */
 
-const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.4)";
+const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.7)";
 const PRODUCTION_SERVER_URL = "https://messenger.calyxlabsinc.org";
 const STORAGE_KEY = "CALYX_QPEM_PRODUCTION_V4";
 const PREV_STORAGE_KEYS = ["CALYX_QPEM_PRODUCTION_V3", "CALYX_QPEM_PRODUCTION_V2", "CALYX_QPEM_STATE_V1"];
@@ -1287,7 +1287,7 @@ const LEGACY_PLACEHOLDER_HASHES = new Set([
 ]);
 const LEGACY_PLACEHOLDER_NAMES = new Set(["CalyxLabsInc", "OpenQPEPBot", "ObsidianRelay"]);
 
-/* OpenQPEP Production Candidate 1.1.4 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
+/* OpenQPEP Production Candidate 1.1.7 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
 const QLX_TIERS = {
     "CIF-SQI-512": {
     id: "CIF-SQI-512",
@@ -1454,7 +1454,7 @@ function formatMessageSuiteBadge(rawTier) {
   return (QLX_TIERS[norm] && QLX_TIERS[norm].suite_badge) || "QLX-4096 + QVS-256 + CC-512";
 }
 
-/* OpenQPEP Production Candidate 1.1.4 Multi-Extension Binary File Preservation Table */
+/* OpenQPEP Production Candidate 1.1.7 Multi-Extension Binary File Preservation Table */
 const SUPPORTED_FILE_EXTENSIONS = {
   ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json",
   ".csv": "text/csv", ".xml": "application/xml", ".yaml": "application/x-yaml",
@@ -1654,7 +1654,7 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
     : "NEVER";
 
   const saltHex = randomHex(32);
-  const wrapKey = qSponge512Hex(saltHex + "|" + passphrase, "QPKD-ARGON-WRAP");
+  const wrapKey = qSponge512Hex(saltHex + "|" + passphrase, "QPKD-Argon2id-WRAP");
   const rhoSeed = randomHex(32);
   const qlxPubVector = qSponge512Hex(rhoSeed + "|" + normTier, "QLX-NTT-PUB-VEC") + qSponge512Hex(rhoSeed + "|T2", "QLX-NTT-PUB-VEC");
   const hgc448Pub = qSponge512Hex(rhoSeed + "|HGC448", "HGC-448-PUB").slice(0, 112);
@@ -1714,7 +1714,7 @@ function verifyPrivatePassphrase(keyring, passphrase) {
   if (!v.valid) return false;
   if (!keyring || !keyring.private_key_locked) return false;
   const { salt_hex, wrapped_secret_hex, secret_mac } = keyring.private_key_locked;
-  const wrapKey = qSponge512Hex(salt_hex + "|" + passphrase, "QPKD-ARGON-WRAP");
+  const wrapKey = qSponge512Hex(salt_hex + "|" + passphrase, "QPKD-Argon2id-WRAP");
   const expectedMac = qSponge512Hex(wrapKey + "|" + wrapped_secret_hex + "|" + keyring.key_hash, "QPKD-WRAP-MAC");
   return expectedMac === secret_mac;
 }
@@ -1833,7 +1833,7 @@ function encryptQpepChatMessage(plaintext, senderKeyring, recipientContact, file
     `${senderTierInfo.qvs_id}-CONJUNCTIVE-SIG`
   );
   if (qvsSigHex !== verifySigHex) {
-    throw new Error("OpenQPEP v1.1.4-pc QVS Verify-Before-Emit Fault-Injection Guard triggered.");
+    throw new Error("OpenQPEP v1.1.7-pc QVS Verify-Before-Emit Fault-Injection Guard triggered.");
   }
 
   /* 3. Encrypt ALL metadata (sender_key_name, timestamp_utc, suite, plaintext, file_envelope) inside CC-512 inner envelope */
@@ -2289,7 +2289,7 @@ async function completeCreateAccount() {
   await syncAccountWithServer(keyring);
 
   enterMainMessenger();
-  showToast(`Created QPEP v1.1.4-pc Account @${keyring.key_name} (${keyring.suite_badge})`);
+  showToast(`Created QPEP v1.1.7-pc Account @${keyring.key_name} (${keyring.suite_badge})`);
 }
 
 function loginExistingAccount(keyHash) {
@@ -2487,7 +2487,7 @@ function renderContactsTab() {
         <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">
           Key Hash: ${c.key_hash}
         </div>
-        <div style="font-size:11px; color:#5B82B0; margin-top:2px;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP v1.1.4-pc Verified")}</div>
+        <div style="font-size:11px; color:#5B82B0; margin-top:2px;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP v1.1.7-pc Verified")}</div>
       </div>
     </div>
   `).join("");
@@ -2891,7 +2891,7 @@ function renderActiveThreadMessages() {
   if (msgs.length === 0) {
     box.innerHTML = `
       <div class="neon-card" style="padding:18px; text-align:center; margin:auto; max-width:340px;">
-        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">END-TO-END OPENQPEP v1.1.4-pc ENCRYPTION</div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">END-TO-END OPENQPEP v1.1.7-pc ENCRYPTION</div>
         <div style="font-size:13px; color:#93C5FD; margin-top:6px; line-height:1.45;">
           Messages in this chat are encapsulated to Key Hash <code class="mono" style="color:#00E5FF;">#${peerHash.slice(0, 12)}...</code> using <strong>${escapeHtml(formatMessageSuiteBadge(acc.qlx_tier))}</strong>.
         </div>
@@ -2908,7 +2908,7 @@ function renderActiveThreadMessages() {
     /* Check marks ONLY under sent messages (m.outgoing === true); NEVER under received messages */
     const checkMarkHtml = m.outgoing ? renderOutgoingCheckMarkHtml(m) : "";
 
-    /* Optional binary-safe encrypted file attachment card (OpenQPEP v1.1.4-pc) */
+    /* Optional binary-safe encrypted file attachment card (OpenQPEP v1.1.7-pc) */
     const fileCardHtml = m.file_attachment ? `
       <div style="margin-top:8px; padding:8px 10px; background:rgba(3,6,12,0.55); border:1px solid rgba(0,229,255,0.38); border-radius:10px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
         <div style="min-width:0;">
@@ -3037,7 +3037,7 @@ function handleChatAttachmentSelected(event) {
       dataB64: uint8ToBase64(uint8)
     };
     sendEncryptedChatMessage(attachmentObj);
-    showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext}) via OpenQPEP v1.1.4-pc!`);
+    showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext}) via OpenQPEP v1.1.7-pc!`);
   };
   reader.readAsArrayBuffer(file);
   event.target.value = "";
@@ -3084,7 +3084,7 @@ function inspectMessagePacket(idx) {
     ? (Number(m.read_status) === 1 ? "READ (Neon Pink ✓✓)" : (Number(m.delivered) === 1 ? "DELIVERED (Blue ✓✓)" : "SENT (Blue ✓)"))
     : "RECEIVED & VERIFIED";
   openGenericModal(
-    "OPENQPEP v1.1.4-pc PACKET & QVS SIGNATURE INSPECTOR",
+    "OPENQPEP v1.1.7-pc PACKET & QVS SIGNATURE INSPECTOR",
     `Encrypted .qpep Wire Packet`,
     `
       <div class="mono" style="font-size:11px; color:#93C5FD; margin-bottom:8px; line-height:1.5;">
@@ -3991,7 +3991,7 @@ async function realTimeSyncTick() {
               qlx_tier: peerTierFromServer,
               suite_name: QLX_TIERS[peerTierFromServer].name,
               suite_badge: formatMessageSuiteBadge(peerTierFromServer),
-              last_seen: "online • OpenQPEP v1.1.4-pc Verified",
+              last_seen: "online • OpenQPEP v1.1.7-pc Verified",
               public_qpkrf: peerQpkrfFromServer
             };
             appState.contacts.unshift(existingContact);
@@ -4091,14 +4091,14 @@ async function realTimeSyncTick() {
     }
 
     if (statusEl) {
-      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.4-pc • REAL-TIME SYNC ACTIVE`;
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.7-pc • REAL-TIME SYNC ACTIVE`;
     }
     if (logEl) {
-      logEl.textContent = "Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.4-pc).";
+      logEl.textContent = "Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.7-pc).";
     }
   } catch (e) {
     if (statusEl) {
-      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.4-pc • messenger.calyxlabsinc.org`;
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.7-pc • messenger.calyxlabsinc.org`;
     }
   } finally {
     isSyncingNow = false;

@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 QPEP-Vault: Zero-knowledge keyed qSponge-512 blind-indexed search over encrypted records.
 """

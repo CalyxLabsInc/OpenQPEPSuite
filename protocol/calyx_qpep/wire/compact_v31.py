@@ -1,5 +1,5 @@
 """
-OpenQPEP v1.1.4-pc — Compact Binary Wire Format v3.1 (\x89QPE\x03\x01).
+OpenQPEP v1.1.7-pc — Compact Binary Wire Format v3.1 (\x89QPE\x03\x01).
 Replaces inner JSON + Base64 field overhead with deterministic length-prefixed TLV records
 inside the whitened binary wire frame, cutting packet overhead by ~28–35%.
 """

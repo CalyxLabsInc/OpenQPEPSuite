@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.4:
+Unit tests for OpenQPEP Production Candidate 1.1.7:
   - O(1)-RAM Streaming Chunked AEAD (StreamingEncryptor / StreamingDecryptor)
   - Chunk-bound nonce truncation & reordering immunity
   - Seekable qSponge-512 Merkle-Tree arbitrary byte-range decryption

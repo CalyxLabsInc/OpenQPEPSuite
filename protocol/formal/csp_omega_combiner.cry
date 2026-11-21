@@ -1,4 +1,4 @@
-// OpenQPEP v1.1.4-pc — Cryptol Reference Specification for Calyx Sovereign-Pentad Sovereign-Pentad Combiner
+// OpenQPEP v1.1.7-pc — Cryptol Reference Specification for Calyx Sovereign-Pentad Sovereign-Pentad Combiner
 module CSPOmegaCombiner where
   combine5 : [256] -> [256] -> [256] -> [256] -> [256] -> [256]
   combine5 ss_lwe ss_goppa ss_isog ss_x448 transcript =

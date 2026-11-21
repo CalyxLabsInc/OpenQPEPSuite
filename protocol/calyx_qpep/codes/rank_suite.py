@@ -1,4 +1,4 @@
-"""OpenQPEP v1.1.4-pc — Standalone Calyx Rank-Metric Tensor (CRT-RSD512) Non-Lattice Suite."""
+"""OpenQPEP v1.1.7-pc — Standalone Calyx Rank-Metric Tensor (CRT-RSD512) Non-Lattice Suite."""
 import base64
 import json
 import os

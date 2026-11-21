@@ -1,5 +1,5 @@
 """
-OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Production Candidate 1.1.4).
+OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Production Candidate 1.1.7).
 Supports offline revocation certificates signed conjunctively by the Master QVS + Ed448
 identity key with standardized reason codes: KEY_COMPROMISED, KEY_SUPERSEDED, KEY_RETIRED.
 """
@@ -22,7 +22,7 @@ REVOCATION_REASONS = ("KEY_COMPROMISED", "KEY_SUPERSEDED", "KEY_RETIRED")
 
 def _revocation_transcript(body: Dict[str, Any]) -> bytes:
     return qsponge_512(
-        b"CALYX-QPEP-REVOCATION-v1.1.4-pc|"
+        b"CALYX-QPEP-REVOCATION-v1.1.7-pc|"
         + json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
     )
 

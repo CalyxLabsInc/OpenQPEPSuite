@@ -1,13 +1,13 @@
 # 03 — `.qpkrf` Key Ring, Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Compact TLV v3.1 (`\x89QPE\x03\x01`)
 
-**Protocol:** `OpenQPEP/PC-1.1.4` (`Production Candidate 1.1.4`)  
+**Protocol:** `OpenQPEP/PC-1.1.7` (`Production Candidate 1.1.7`)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
 
-## 1. Strict Production Candidate 1.1.4 Wire Policy (Zero Beta Compatibility)
+## 1. Strict Production Candidate 1.1.7 Wire Policy (Zero Beta Compatibility)
 
-OpenQPEP `v1.1.4-pc` strictly accepts **only** two binary wire magics across Python, C99, Rust, WASM/JS, and Go:
+OpenQPEP `v1.1.7-pc` strictly accepts **only** two binary wire magics across Python, C99, Rust, WASM/JS, and Go:
 - **`WIRE_MAGIC_V3 = 0x89 0x51 0x50 0x45 0x03 0x00` (`\x89QPE\x03\x00`)** — Canonical Frozen Wire Format v3
 - **`WIRE_MAGIC_V3_1 = 0x89 0x51 0x50 0x45 0x03 0x01` (`\x89QPE\x03\x01`)** — Compact Binary TLV Wire Format v3.1
 
@@ -58,7 +58,7 @@ Every `.qpkrf` key ring carries:
 - **`.qshare` Shamir Recovery Shards:** Verifiable $t$-of-$n$ $\text{GF}(256)$ secret-sharing shards with per-shard `qSponge-512` integrity commitments.
 - **Anonymous Multi-Recipient Slots:** Encrypt payload once with a 512-bit `CC-512` CEK, encapsulate into $N$ mixed-tier slots (including `QLX-768`..`QLX-16384`, `CSP-Omega`, `CGM-8192`, `CRT-RSD512`) using blinded 64-bit slot tags `H_slot` or pure trial-decapsulation, plus power-of-2 dummy slots.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

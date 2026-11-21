@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 8-Layer Complete Number Theoretic Transform & HighBits/LowBits Decomposition over Z_8380417[X]/(X^256+1).
 Automatically dispatches through libopenqpep (C99/AVX2/NEON) when available, with

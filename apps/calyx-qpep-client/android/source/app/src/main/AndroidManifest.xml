@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OpenQPEP v1.1.4-pc (Production Candidate 1.1.4) -->
+<!-- OpenQPEP v1.1.7-pc (Production Candidate 1.1.7) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.calyxlabs.qpepclient"
     android:versionCode="219"
-    android:versionName="PC 1.1.4">
+    android:versionName="PC 1.1.7">
 
     <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37" />
     <uses-permission android:name="android.permission.INTERNET" />

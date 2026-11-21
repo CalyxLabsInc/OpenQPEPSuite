@@ -1,4 +1,4 @@
-// Package openqpep provides the Go Production Candidate 1.1.4 (v1.1.4-pc) conformance port (CPOSLS-1.0).
+// Package openqpep provides the Go Production Candidate 1.1.7 (v1.1.7-pc) conformance port (CPOSLS-1.0).
 package openqpep
 
 import "bytes"

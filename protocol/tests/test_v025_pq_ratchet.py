@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.4 Post-Quantum Double Ratchet (QPEP-Ratchet):
+Unit tests for OpenQPEP Production Candidate 1.1.7 Post-Quantum Double Ratchet (QPEP-Ratchet):
   - Bidirectional Forward Secrecy & per-message CC-512 ratcheting
   - Out-of-order delivery via bounded skipped-key cache (MAX_SKIP = 256)
   - Periodic hybrid QLX + HGC-448 PCS re-encapsulation across epochs

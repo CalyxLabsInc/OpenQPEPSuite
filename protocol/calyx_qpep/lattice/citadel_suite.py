@@ -1,7 +1,7 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)
-OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc) — Calyx Labs Inc. (CPOSLS-1.0).
+OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc) — Calyx Labs Inc. (CPOSLS-1.0).
 
 Fuses Zero-Ring Unstructured Plain-LWE (CULC-2048) with NP-Complete Binary Goppa Codes (CGM-8192),
 Stateless qSponge-512 Hypertree signatures (QHS-512), and CC-512 over Frozen Wire Format v3.

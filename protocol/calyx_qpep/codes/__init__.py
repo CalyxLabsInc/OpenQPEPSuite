@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """OpenQPEP Code-Based Cryptography Plugins (Binary Goppa CGM-8192 & Rank-Metric RSD512)."""
 from .goppa_8192 import BinaryGoppaKEM
 from .rank_rsd512 import GF2_127_POLY, gf2_127_mul

@@ -1,17 +1,17 @@
 """
-Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Production Candidate 1.1.4).
+Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Production Candidate 1.1.7).
 
 Simultaneously fuses FIVE mathematically disjoint post-quantum families in parallel threads:
   Family 1 — Unstructured Plain-LWE (CULC-2048): zero ring symmetry, worst-case general lattice
-             (native C99/AVX2 accelerated inner loops in v1.1.4-pc via libopenqpep)
+             (native C99/AVX2 accelerated inner loops in v1.1.7-pc via libopenqpep)
   Family 2 — Binary Goppa Codes (CGM-8192): NP-complete Hamming-metric syndrome decoding
   Family 3 — Higher-Dimensional Abelian Isogenies (CIF-SQI-512): supersingular quaternion geometry
   Family 4 — Multivariate Quadratic Signatures (QMQ-512): NP-complete MQ over GF(256)
   Family 5 — Stateless Hash-Based Hypertree (QHS-512): zero-trapdoor Keccak-f[1600] one-wayness
 
-Production Candidate 1.1.4 Updates:
+Production Candidate 1.1.7 Updates:
   - Frozen Wire Format v3 (\\x89QPE\\x03\\x00, packet_type=0x06 PACKET_TYPE_PENTAD) with full
-    read compatibility for legacy v1.1.4-pc–v1.1.4-pc Sovereign-Pentad packets.
+    read compatibility for legacy v1.1.7-pc–v1.1.7-pc Sovereign-Pentad packets.
   - Native C99/AVX2 acceleration for Family 1 Unstructured Plain-LWE row-streamed operations.
   - Mandatory >= 12 GB RAM flagship hardware guardrail (Samsung Galaxy Z Fold 8 / high-spec PCs).
 """
@@ -71,7 +71,7 @@ class CalyxSovereignPentad:
     def keygen(*, allow_low_ram_override: bool = False) -> Tuple[Dict[str, str], Dict[str, str]]:
         """Generates all 5 disjoint cryptographic key pairs concurrently across threads."""
         check_flagship_hardware_guardrail(allow_override=allow_low_ram_override)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=(1 if os.environ.get('OPENQPEP_DETERMINISTIC_KAT') == '1' else 5)) as ex:
             f_lwe = ex.submit(PlainLWEEngine.keygen)
             f_goppa = ex.submit(BinaryGoppaKEM.keygen)
             f_isog = ex.submit(SupersingularIsogenyEngine.keygen)
@@ -116,7 +116,7 @@ class CalyxSovereignPentad:
     def encrypt(plaintext: bytes, recipient_pub: Dict[str, str]) -> str:
         """Concurrently encapsulates across Plain-LWE + Binary Goppa + 2D Isogeny + X448, fused into CC-512."""
         b64d = base64.b64decode
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=(1 if os.environ.get('OPENQPEP_DETERMINISTIC_KAT') == '1' else 4)) as ex:
             f_lwe = ex.submit(PlainLWEEngine.encaps, b64d(recipient_pub["plain_lwe_pk_b64"]))
             f_gop = ex.submit(BinaryGoppaKEM.encaps, b64d(recipient_pub["goppa_pk_b64"]))
             f_iso = ex.submit(SupersingularIsogenyEngine.encaps, b64d(recipient_pub["isogeny_pk_b64"]))
@@ -167,7 +167,7 @@ class CalyxSovereignPentad:
         ct_iso = b64d(pkt["ct_isogeny_b64"])
         epk_x448 = b64d(pkt["epk_x448_b64"])
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=(1 if os.environ.get('OPENQPEP_DETERMINISTIC_KAT') == '1' else 4)) as ex:
             f_lwe = ex.submit(PlainLWEEngine.decaps, b64d(recipient_priv["plain_lwe_sk_b64"]), ct_lwe)
             f_gop = ex.submit(BinaryGoppaKEM.decaps, b64d(recipient_priv["goppa_sk_b64"]), ct_gop)
             f_iso = ex.submit(SupersingularIsogenyEngine.decaps, b64d(recipient_priv["isogeny_sk_b64"]), ct_iso)
@@ -188,7 +188,7 @@ class CalyxSovereignPentad:
     def sign(message: bytes, signer_pub: Dict[str, str], signer_priv: Dict[str, str]) -> str:
         """Produces conjunctive triple-family signature sigma_Omega = (sigma_QHS-512, sigma_QMQ-512, sigma_SQI-512)."""
         b64d = base64.b64decode
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=(1 if os.environ.get('OPENQPEP_DETERMINISTIC_KAT') == '1' else 3)) as ex:
             f_qhs = ex.submit(QHS512HypertreeEngine.sign, b64d(signer_priv["qhs_sk_b64"]), message)
             f_qmq = ex.submit(MultivariateQuadraticEngine.sign, b64d(signer_priv["qmq_sk_b64"]), message)
             f_sqi = ex.submit(

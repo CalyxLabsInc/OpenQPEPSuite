@@ -1,6 +1,6 @@
-# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.1.4-pc`)
+# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.1.7-pc`)
 
-**Protocol:** `OpenQPEP/PC-1.1.4` (`Production Candidate 1.1.4`)  
+**Protocol:** `OpenQPEP/PC-1.1.7` (`Production Candidate 1.1.7`)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
@@ -40,7 +40,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 3. Mandatory `kdf_version: 2` (`QPKD-Argon2id + qSponge-512`) & `CC-512`
 
 - **Passphrase Policy Witness (64 Bytes):** Hardcoded non-bypassable policy (`>= 12` chars, `>= 2` digits, `>= 4` specials, `>= 2` uppercase, `>= 4` lowercase) hashed into a 64-byte witness absorbed directly into key derivation.
-- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 2`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3`, `p = 4`, 256-bit salt). Legacy beta `kdf_version: 1` key rings are **strictly rejected** in `v1.1.4-pc`.
+- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 2`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3`, `p = 4`, 256-bit salt). Legacy beta `kdf_version: 1` key rings are **strictly rejected** in `v1.1.7-pc`.
 - **Calyx-Cascade-512 (`CC-512`):** Dual-stream AEAD cascading `AES-256-GCM` inside `ChaCha20-Poly1305` with independent keys and nonces derived from `qSponge-512`.
 
 ---
@@ -48,7 +48,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 4. Native C99 / SIMD Acceleration (`libopenqpep`)
 Hot inner loops (`NTT_3329`, `NTT_8380417`, `CBD_1`/`CBD_2`, Plain-LWE, `GF(256)`/`XOR` Pentad kernels) compile with `-O3 -std=c99 -mavx2` (x86_64) or `-march=armv8-a` (ARM64) via `make -C calyx_qpep/native/csrc` and load automatically via zero-copy `array.array` `ctypes`, delivering 6×–17× end-to-end speedups with 100% bit-exact KAT parity against the pure-Python reference engine.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

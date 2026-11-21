@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Interactive Blue-Text English-Command CLI (Production Candidate 1.1.4)
+OpenQPEP Interactive Blue-Text English-Command CLI (Production Candidate 1.1.7)
 Project: OpenQPEP by Calyx Labs Inc. (Creator: Tristen Martinez)
 Repository: https://github.com/CalyxLabsInc/OpenQPEP/
 Directory: https://qpepkeys.calyxlabsinc.org
@@ -24,6 +24,7 @@ Supports both:
 """
 import os
 import sys
+from .constants import ALL_TEN_SUITES
 import json
 import getpass
 import argparse
@@ -159,6 +160,9 @@ def print_banner(store: OpenQPEPKeyStore) -> None:
     bprint("  • Verify Signature                -> Verify an Attached Signature & extract message")
     bprint("  • Publish Key <KeyName>           -> Publish public key to qpepkeys.calyxlabsinc.org")
     bprint("  • Search Directory <Query>        -> Search qpepkeys.calyxlabsinc.org by name/email/hash")
+    bprint("  • Switch Suite                    -> Select active suite (1-10) with hardware-tier badges")
+    bprint("  • Benchmark All 10                -> Run live benchmark across all 10 canonical suites")
+    bprint("  • Inspect Packet [FilePath]       -> Inspect Wire v3/v3.1 magic, armor headers & size")
     bprint("  • Help                            -> Show this command guide again")
     bprint("  • Exit                            -> Close the OpenQPEP CLI")
     bprint("--------------------------------------------------------------------------------")
@@ -226,31 +230,36 @@ def _publish_entry_to_directory(entry: Dict[str, Any]) -> bool:
 
 
 def cmd_create_key(store: OpenQPEPKeyStore) -> None:
-    bprint("\n--- OpenQPEP Guided Key Generation ---")
+    bprint("\n--- OpenQPEP Guided Key Generation (v1.1.7-pc) ---")
     bprint("Specify Key Type:")
-    bprint("  1. Calyx Signature: QLX-4096 + QVS-256 (Default Recommended — 4096-Dim Quantum-Proof + HGC-448 + CC-512)")
-    bprint("  2. Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold Tesseract — HIGH-TIER HARDWARE ONLY)")
-    bprint("  3. QLX-2048 + QVS-128 Ultra-Grid (2048-Dim Hyper-Lattice + HGC-448 + CC-512)")
-    bprint("  4. QLX-1024 + QVS-87 Sovereign Hybrid (1024-Dim Lattice + HGC-448 + CC-512)")
-    bprint("  5. QLX-768 + QVS-65 Velocity (768-Dim High-Speed Lattice + HGC-448 + CC-512)")
-    t_choice = binput("Enter option number (1-5, default 1):") or "1"
+    bprint("  1. Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)")
+    bprint("  2. Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)")
+    bprint("  3. Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)")
+    bprint("  4. Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)")
+    bprint("  5. Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)")
+    bprint("  6. Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)")
+    bprint("  7. Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)")
+    bprint("  8. Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)")
+    bprint("  9. Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)")
+    bprint(" 10. Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)")
+    t_choice = binput("Enter option number (1-10, default 1):") or "1"
     tier_map = {
         "1": "QLX-4096",
-        "2": "QLX-16384",
-        "3": "QLX-2048",
-        "4": "QLX-1024",
-        "5": "QLX-768",
-        "qlx-16384": "QLX-16384",
-        "hyper-tesseract": "QLX-16384",
-        "qlx-4096": "QLX-4096",
-        "qlx-2048": "QLX-2048",
-        "qlx-1024": "QLX-1024",
-        "qlx-768": "QLX-768",
+        "2": "QLX-768",
+        "3": "QLX-1024",
+        "4": "QLX-2048",
+        "5": "CIF-SQI-512",
+        "6": "CRT-RSD512",
+        "7": "QLX-16384",
+        "8": "CGM-8192",
+        "9": "CULC-2048",
+        "10": "CSP-Omega",
     }
-    qlx_tier = tier_map.get(t_choice.lower(), "QLX-4096")
-    if qlx_tier == "QLX-16384":
-        bprint("  [!] HARDWARE NOTICE: Calyx Hyper-Tesseract (QLX-16384 + QVS-1024) is intended ONLY for high-tier")
-        bprint("      flagship devices (e.g. Galaxy Z Fold 8 / high-RAM PCs). Low-tier devices may freeze or OOM.")
+    qlx_tier = tier_map.get(t_choice.strip(), "QLX-4096")
+    high_tier_suites = {"QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega"}
+    if qlx_tier in high_tier_suites:
+        bprint(f"  [!] HARDWARE NOTICE: {qlx_tier} is classified as HIGH-TIER HARDWARE ONLY (>= 12 GB RAM).")
+        bprint("      Low-RAM devices (<= 6 GB) may experience slow keygen, thermal throttling, or OOM crashes.")
 
     name = ""
     while not name:
@@ -305,10 +314,10 @@ def cmd_key_details(store: OpenQPEPKeyStore, arg: str) -> None:
     bprint(f"OpenQPEP Key Details — {entry['name']} <{entry['email']}>")
     bprint("================================================================================")
     bprint(f"  Protocol Version: {UNIVERSAL_VERSION_LABEL} ({PROJECT_NAME})")
-    bprint(f"  Key Status:       Healthy (QPKD-Argon + CC-512 Protected)")
+    bprint(f"  Key Status:       Healthy (RFC 9106 QPKD-Argon2id + qSponge-512 [kdf_version: 2] + CC-512 Protected)")
     bprint(f"  Key Suite:        {entry['qlx_tier']} + {entry['qvs_tier']} + HGC-448")
     bprint(f"  Created At:       {entry['created_at']}")
-    bprint(f"  Private Key:      {'Present (Locked with QPKD-Argon + CC-512)' if entry.get('has_private') else 'Not Present (Public Key Only)'}")
+    bprint(f"  Private Key:      {'Present (Locked with RFC 9106 QPKD-Argon2id + qSponge-512 [kdf_version: 2] + CC-512)' if entry.get('has_private') else 'Not Present (Public Key Only)'}")
     bprint(f"  Key Hash:         {grouped_hash}")
     bprint("\n--- QPKRF Public Key Block ---")
     bprint(entry["pub_armor"].strip())
@@ -549,6 +558,80 @@ def cmd_search_directory(query: str) -> None:
 
 
 
+
+ACTIVE_CLI_SUITE = "QLX-4096"
+
+
+def _hw_badge(suite_id: str) -> str:
+    meta = ALL_TEN_SUITES.get(suite_id, {})
+    if meta.get("high_tier_only"):
+        return f"{YELLOW}[HIGH-TIER >= 12 GB RAM]{RESET}"
+    return f"{GREEN}[ALL DEVICES]{RESET}"
+
+
+def cmd_switch_suite() -> str:
+    global ACTIVE_CLI_SUITE
+    suite_order = [
+        "QLX-4096", "QLX-768", "QLX-1024", "QLX-2048", "CIF-SQI-512",
+        "CRT-RSD512", "QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega",
+    ]
+    bprint(f"\n--- Switch Active OpenQPEP Suite (Current: {ACTIVE_CLI_SUITE}) ---")
+    for idx, sid in enumerate(suite_order, 1):
+        meta = ALL_TEN_SUITES[sid]
+        print(f"  {CYAN}{idx:2d}.{RESET} {meta['display_name']}  {_hw_badge(sid)}")
+    choice = binput("Enter option number (1-10, default 1):") or "1"
+    if choice.strip().isdigit() and 1 <= int(choice.strip()) <= 10:
+        ACTIVE_CLI_SUITE = suite_order[int(choice.strip()) - 1]
+    print(f"{GREEN}Active CLI Suite set to:{RESET} {ALL_TEN_SUITES[ACTIVE_CLI_SUITE]['display_name']} {_hw_badge(ACTIVE_CLI_SUITE)}")
+    return ACTIVE_CLI_SUITE
+
+
+def cmd_benchmark_all_10() -> None:
+    bprint("\n--- OpenQPEP Live Benchmark: All 10 Canonical Suites ---")
+    from benchmarks.bench_suites import run_benchmarks, format_markdown_table
+    rows = run_benchmarks(include_heavy=True)
+    for r in rows:
+        badge = f"{YELLOW}[HIGH-TIER >= 12 GB RAM]{RESET}" if "HIGH-TIER" in r["hardware_tier"] else f"{GREEN}[ALL DEVICES]{RESET}"
+        print(f"  {r['suite']} {badge} | kg={r['keygen_ms']:.1f}ms enc={r['encaps_ms']:.1f}ms dec={r['decaps_ms']:.1f}ms")
+    bprint("\n" + format_markdown_table(rows))
+
+
+def cmd_inspect_packet(raw_or_path: str = "") -> None:
+    import base64
+    bprint("\n--- OpenQPEP Packet & Wire Format Inspector (v1.1.7-pc) ---")
+    data_str = raw_or_path.strip()
+    if data_str and Path(data_str).is_file():
+        data_str = Path(data_str).read_text(encoding="utf-8", errors="ignore")
+    elif not data_str:
+        bprint("Paste armored OpenQPEP packet or .qpkrf block (end with empty line):")
+        lines = []
+        while True:
+            ln = input()
+            if not ln.strip():
+                break
+            lines.append(ln)
+        data_str = "\n".join(lines)
+    if not data_str.strip():
+        print(f"{YELLOW}No packet data provided.{RESET}")
+        return
+    headers = [l.strip() for l in data_str.splitlines() if l.strip().startswith("-----BEGIN ")]
+    body_lines = [l.strip() for l in data_str.splitlines() if l.strip() and not l.startswith("-----") and ":" not in l and not l.startswith("=")]
+    raw_bytes = b""
+    try:
+        raw_bytes = base64.b64decode("".join(body_lines))
+    except Exception:
+        pass
+    magic = raw_bytes[:6]
+    wire_label = (
+        f"{GREEN}Frozen Wire Format v3 (\\x89QPE\\x03\\x00){RESET}" if magic == b"\x89QPE\x03\x00"
+        else f"{GREEN}Compact TLV v3.1 (\\x89QPE\\x03\\x01){RESET}" if magic == b"\x89QPE\x03\x01"
+        else f"{CYAN}Armored OpenQPEP / Beyond-LWE Envelope{RESET}"
+    )
+    print(f"  Armor Header: {headers[0] if headers else '(Raw Binary)'}")
+    print(f"  Wire Format:  {wire_label}")
+    print(f"  Decoded Size: {len(raw_bytes):,} bytes | Magic Hex: {magic.hex().upper() if magic else 'N/A'}")
+
+
 def cmd_verify_vectors(vectors_dir: str = "") -> int:
     from .vectors.kat_verifier import verify_all_kats
     target = Path(vectors_dir) if vectors_dir else (Path(__file__).resolve().parent.parent / "vectors")
@@ -621,6 +704,13 @@ def interactive_shell(keystore_path: Path = DEFAULT_KEYSTORE_PATH) -> int:
             entry = store.find_key(arg) if arg else _select_key_interactive(store, "Select Key to Publish")
             if entry:
                 _publish_entry_to_directory(entry)
+        elif low in ("switch suite", "select suite", "suites"):
+            cmd_switch_suite()
+        elif low in ("benchmark all 10", "benchmark", "bench"):
+            cmd_benchmark_all_10()
+        elif low.startswith("inspect packet"):
+            arg = raw_cmd[len("inspect packet") :].strip()
+            cmd_inspect_packet(arg)
         elif low.startswith("search directory"):
             arg = raw_cmd[len("search directory") :].strip()
             cmd_search_directory(arg)
@@ -645,7 +735,7 @@ def main(argv=None) -> int:
     parser.add_argument("-i", "--interactive", action="store_true", help="Launch interactive blue-themed English command shell")
     sub = parser.add_subparsers(dest="cmd")
 
-    p_chk = sub.add_parser("check-passphrase", help="Validate a passphrase against OpenQPEP QPKD-Argon policy")
+    p_chk = sub.add_parser("check-passphrase", help="Validate a passphrase against OpenQPEP QPKD-Argon2id policy")
     p_chk.add_argument("--passphrase", required=True)
 
     p_vv = sub.add_parser("verify-vectors", help="Verify OpenQPEP deterministic Known Answer Test (KAT) vectors")
@@ -654,7 +744,7 @@ def main(argv=None) -> int:
     p_kg.add_argument("--name", required=True)
     p_kg.add_argument("--email", required=True)
     p_kg.add_argument("--passphrase", required=True)
-    p_kg.add_argument("--tier", default="QLX-4096", choices=["QLX-768", "QLX-1024", "QLX-2048", "QLX-4096", "QLX-16384"])
+    p_kg.add_argument("--tier", default="QLX-4096", choices=["QLX-4096", "QLX-768", "QLX-1024", "QLX-2048", "CIF-SQI-512", "CRT-RSD512", "QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega"])
     p_kg.add_argument("--pub-out", required=True)
     p_kg.add_argument("--priv-out", required=True)
 

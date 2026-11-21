@@ -1,13 +1,13 @@
-# OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.4 (`v1.1.4-pc`)
+# OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.7 (`v1.1.7-pc`)
 
-**Protocol Version:** `OpenQPEP/PC-1.1.4` (`v1.1.4-pc`, branch `pc`)  
+**Protocol Version:** `OpenQPEP/PC-1.1.7` (`v1.1.7-pc`, branch `pc`)  
 **Publisher:** Calyx Labs Inc. (Cleveland, Ohio) — `support@calyxlabsinc.org`  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)  
 **Unified Suite Monorepo:** https://github.com/CalyxLabsInc/OpenQPEPSuite/
 
 OpenQPEP (Open Quantum-Proof Encryption Protocol) is a post-quantum hybrid cryptographic protocol and multi-language reference engine engineered to replace legacy OpenPGP with modern, constant-time, memory-hard, and beyond-LWE post-quantum cryptography.
 
-> **Breaking Production Candidate 1.1.4 Baseline:** All legacy `-beta` backwards compatibility has been completely removed. OpenQPEP `v1.1.4-pc` strictly enforces **Frozen Wire Format v3 (`\x89QPE\x03\x00`)**, **Compact Binary TLV Wire Format v3.1 (`\x89QPE\x03\x01`)**, and **Mandatory `kdf_version: 2` (`RFC 9106 QPKD-Argon2id + qSponge-512`)**. Legacy beta wire magics (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`), raw unframed JSON fallbacks, and `kdf_version: 1` key rings are strictly rejected.
+> **Breaking Production Candidate 1.1.7 Baseline:** All legacy `-beta` backwards compatibility has been completely removed. OpenQPEP `v1.1.7-pc` strictly enforces **Frozen Wire Format v3 (`\x89QPE\x03\x00`)**, **Compact Binary TLV Wire Format v3.1 (`\x89QPE\x03\x01`)**, and **Mandatory `kdf_version: 2` (`RFC 9106 QPKD-Argon2id + qSponge-512`)**. Legacy beta wire magics (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`), raw unframed JSON fallbacks, and `kdf_version: 1` key rings are strictly rejected.
 
 ---
 
@@ -28,7 +28,7 @@ OpenQPEP (Open Quantum-Proof Encryption Protocol) is a post-quantum hybrid crypt
 
 ---
 
-## 2. Core Security & Protocol Architecture (`v1.1.4-pc`)
+## 2. Core Security & Protocol Architecture (`v1.1.7-pc`)
 
 - **Strict Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Compact TLV v3.1 (`\x89QPE\x03\x01`):** Stream-whitened binary framing with 256-bit `qSponge-512` MACs, standardized bucket payload padding (`4 KiB` / `16 KiB` / `64 KiB`), and zero cleartext `Sender-Key-Hash`, `Recipient-Key-Hash`, or `Signer-Key-Hash` armor headers.
 - **Mandatory Memory-Hard KDF (`kdf_version: 2`):** RFC 9106 **QPKD-Argon2id + qSponge-512** cascade (`m=65536 KiB` standard / `m=262144 KiB` high-tier, `t=3`, `p=4`) mathematically bound to the 64-byte hardcoded passphrase policy witness (`>= 12` chars, `>= 2` digits, `>= 4` specials, `>= 2` upper, `>= 4` lower).
@@ -53,7 +53,7 @@ OpenQPEP (Open Quantum-Proof Encryption Protocol) is a post-quantum hybrid crypt
 - **C99 / AVX2 / NEON (`calyx_qpep/native/csrc/`):** Portable C99 accelerators for `NTT_3329`, `NTT_8380417`, `CBD_1`/`CBD_2`, Plain-LWE, and Sovereign-Pentad kernels (`libopenqpep.so`) loaded via zero-copy `array.array` `ctypes` with automatic pure-Python fallback.
 - **WASM SIMD128 (`calyx_qpep/native/wasm/`):** Browser/WebView WASM build & `wasm_bridge.mjs`.
 - **Rust (`rust/openqpep-core/`) & Go (`go/openqpep/`):** Memory-safe `#![forbid(unsafe_code)]` Rust crate (PyO3/UniFFI) and Go Wire v3/v3.1 conformance port.
-- **Formal & Audit Suite (`formal/`, `calyx_qpep/audit/`, `vectors/`):** Tamarin/ProVerif/Cryptol symbolic models, SPDX SBOM generator, wire fuzzer, active attack simulator, DudeCT Welch's $t$-test timing audit, **5 bit-exact `v1.1.4-pc` golden KAT suites**, and **63/63 passing tests**.
+- **Formal & Audit Suite (`formal/`, `calyx_qpep/audit/`, `vectors/`):** Tamarin/ProVerif/Cryptol symbolic models, SPDX SBOM generator, wire fuzzer, active attack simulator, DudeCT Welch's $t$-test timing audit, **5 bit-exact `v1.1.7-pc` golden KAT suites**, and **63/63 passing tests**.
 
 ```bash
 make -C calyx_qpep/native/csrc
@@ -70,21 +70,21 @@ python3 -m unittest discover -s tests -v
 2. [`docs/02_OpenQPEP_vs_OpenPGP_Security_Comparison.md`](docs/02_OpenQPEP_vs_OpenPGP_Security_Comparison.md) — Architectural security comparison against legacy OpenPGP.
 3. [`docs/03_QPKRF_Key_Ring_and_Binary_Wire_Format.md`](docs/03_QPKRF_Key_Ring_and_Binary_Wire_Format.md) — `.qpkrf` (`kdf_version: 2`), Frozen Wire Format v3 (`\x89QPE\x03\x00`), Compact TLV v3.1 (`\x89QPE\x03\x01`), `.qrev`, and `.qshare`.
 4. [`docs/04_Interactive_CLI_Android_Client_and_Directory_Guide.md`](docs/04_Interactive_CLI_Android_Client_and_Directory_Guide.md) — CLI, Calyx QPEP Client, Calyx Encrypted Messenger, Calyx Encrypted Email, and Key Directory guide.
-5. [`WIRE_FORMAT_V3_SPEC.md`](WIRE_FORMAT_V3_SPEC.md) & [`specs/OPENQPEP_v1.1.4-pc_PRODUCTION_CANDIDATE_SPEC.md`](specs/OPENQPEP_v1.1.4-pc_PRODUCTION_CANDIDATE_SPEC.md) — Frozen Production Candidate 1.1.4 wire and API specifications.
+5. [`WIRE_FORMAT_V3_SPEC.md`](WIRE_FORMAT_V3_SPEC.md) & [`specs/OPENQPEP_v1.1.7-pc_PRODUCTION_CANDIDATE_SPEC.md`](specs/OPENQPEP_v1.1.7-pc_PRODUCTION_CANDIDATE_SPEC.md) — Frozen Production Candidate 1.1.7 wire and API specifications.
 
-<!-- OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc) -->
+<!-- OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc) -->
 
-## Live 10-Suite Benchmarks (`v1.1.4-pc`)
+## Live 10-Suite Benchmarks (`v1.1.7-pc`)
 
-| OpenQPEP Suite (`v1.1.4-pc`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |
+| OpenQPEP Suite (`v1.1.7-pc`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |
 | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices) | All Devices | 45.03 | 21.13 | 23.21 | 33.57 | 5.74 | 17.48 |
-| Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices) | All Devices | 8.61 | 1.35 | 1.94 | 3.30 | 1.06 | 17.48 |
-| Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices) | All Devices | 12.01 | 1.98 | 2.75 | 4.17 | 1.68 | 17.48 |
-| Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices) | All Devices | 21.99 | 6.49 | 7.38 | 12.11 | 3.72 | 17.48 |
-| Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 137.21 | 88.05 | 95.85 | 53.85 | 20.25 | 22.99 |
-| Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices) | All Devices | 28.18 | 7.03 | 3.33 | 25.94 | 1.09 | 22.99 |
-| Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices) | All Devices | 4.69 | 0.28 | 0.22 | 5.65 | 5.71 | 22.99 |
-| Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 25.36 | 0.47 | 0.42 | 25.60 | 0.86 | 22.99 |
-| Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 26.60 | 4.13 | 4.62 | 23.77 | 0.87 | 22.99 |
-| Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 30.47 | 11.26 | 8.14 | 35.00 | 11.75 | 22.99 |
+| Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices) | All Devices | 41.63 | 19.06 | 21.73 | 37.72 | 5.23 | 17.74 |
+| Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices) | All Devices | 7.87 | 1.22 | 1.79 | 2.34 | 0.98 | 17.74 |
+| Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices) | All Devices | 11.04 | 1.83 | 2.48 | 3.71 | 1.56 | 17.74 |
+| Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices) | All Devices | 20.02 | 5.49 | 6.72 | 7.32 | 3.16 | 17.74 |
+| Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 124.49 | 80.05 | 86.12 | 47.78 | 18.34 | 22.02 |
+| Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices) | All Devices | 25.23 | 6.38 | 3.06 | 23.44 | 1.03 | 22.02 |
+| Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices) | All Devices | 4.33 | 0.19 | 0.16 | 5.17 | 5.30 | 22.02 |
+| Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 22.48 | 0.28 | 0.28 | 23.26 | 0.73 | 22.02 |
+| Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 26.04 | 3.94 | 4.14 | 23.43 | 0.91 | 22.02 |
+| Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY) | HIGH-TIER HARDWARE ONLY (>= 12 GB RAM) | 27.63 | 9.89 | 7.60 | 32.25 | 11.97 | 22.02 |

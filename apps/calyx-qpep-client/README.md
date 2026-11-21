@@ -1,4 +1,4 @@
-# Calyx QPEP Client for Android (`Production Candidate 1.1.4`)
+# Calyx QPEP Client for Android (`Production Candidate 1.1.7`)
 
 **Official Android Application for [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)**  
 **Creator & Lead Architect:** **Tristen Martinez**, Founder & Lead Architect at **Calyx Labs Inc.** (`support@calyxlabsinc.org`)  
@@ -6,28 +6,28 @@
 **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)  
 **Package Name:** `com.calyxlabs.qpepclient`  
 **Supported Android Versions:** Android 10 (`API 29`) through Android 17 (`API 37`, compliant with [Android Target SDK Requirements](https://targetsdk.com/))  
-**Universal Version:** `Production Candidate 1.1.4` (`1.0.0-pc`)  
+**Universal Version:** `Production Candidate 1.1.7` (`1.0.0-pc`)  
 **License:** **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**  
 
 ---
 
 ## 1. Overview
 
-**Calyx QPEP Client** (`Production Candidate 1.1.4`) is the official Android client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
+**Calyx QPEP Client** (`Production Candidate 1.1.7`) is the official Android client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
 
 Unlike legacy PGP mobile clients that rely on quantum-vulnerable RSA/ECC keys, optional passphrases, collision-prone 64-bit Key IDs, and detached signatures, **Calyx QPEP Client** executes full on-device hybrid post-quantum lattice cryptography, mandatory passphrase-locked key rings (`.qpkrf`), dual-stream authenticated encryption (`CC-512`), and self-contained attached signatures.
 
 ---
 
-## 2. Direct APK Installation (`CalyxQPEPClient-PC-v1.1.4.apk`)
+## 2. Direct APK Installation (`CalyxQPEPClient-PC-v1.1.7.apk`)
 
-1. Download **`CalyxQPEPClient-PC-v1.1.4.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
+1. Download **`CalyxQPEPClient-PC-v1.1.7.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
 2. Open the downloaded `.apk` file in your Android **Files** app and confirm installation.
 3. On first launch (or whenever your keyring has `0` keys), **Calyx QPEP Client** automatically opens the **Setup Wizard** so you can generate your first personal `.qpkrf` key pair or import an existing `.qpkrf` key ring.
 
 ---
 
-## 3. Core Features of Calyx QPEP Client (`Production Candidate 1.1.4`)
+## 3. Core Features of Calyx QPEP Client (`Production Candidate 1.1.7`)
 
 ### 3.1 On-Device Post-Quantum Key Generation & Hardware Keyring
 - **Three Selectable `QLX` + `QVS` Cryptographic Suites**:
@@ -40,10 +40,10 @@ Unlike legacy PGP mobile clients that rely on quantum-vulnerable RSA/ECC keys, o
 ### 3.2 Interactive Key Details Screen & Passphrase-Locked Private Key Vault
 Tapping any key card in **Manage My Keys** or **Manage Receiver Keys** opens the dedicated **Key Details** screen featuring:
 - **Hero Action Banner & Live QR Code**: Displays the key owner's identity, `QLX + QVS` suite badge, a scannable **QPKRF QR Code**, quick **Encrypt File** and **Encrypt Text** shortcuts, a one-tap **Publish / Sync to Directory** button (`↻`), and a **Delete Key** button (`🗑️`).
-- **Key Health & Hardware Keyring Status**: Confirms active `QPKD-Argon` + `CC-512` protection and `.qpkrf` `integrity_mac` verification.
+- **Key Health & Hardware Keyring Status**: Confirms active `QPKD-Argon2id` + `CC-512` protection and `.qpkrf` `integrity_mac` verification.
 - **512-Bit `Key Hash` (Tap to Copy)**: Displays the 64-character hexadecimal `qSponge-512` **Key Hash** formatted in 4-character groups; tapping copies the **Key Hash** and displays an instant confirmation toast.
 - **QPKRF Public Key Block**: View, copy, or save the public `.qpkrf` key ring directly to your device via the native Android **Files** app (`Intent.ACTION_CREATE_DOCUMENT`) with no passphrase required.
-- **QPKRF Private Key Block (`QPKD-Argon + CC-512` Vault)**: Remains cryptographically locked at rest (`🔒 Locked — Passphrase entry required on every access`). Viewing, copying, or saving your private `.qpkrf` key ring requires entering and verifying your mandatory 12+ character passphrase.
+- **QPKRF Private Key Block (`QPKD-Argon2id + CC-512` Vault)**: Remains cryptographically locked at rest (`🔒 Locked — Passphrase entry required on every access`). Viewing, copying, or saving your private `.qpkrf` key ring requires entering and verifying your mandatory 12+ character passphrase.
 
 ### 3.3 Dual-Key Notepad & File Encryption (`CC-512` Cascade)
 - **Encrypt Notepad & Encrypt Files**: Select both your **Encrypting Key (My Personal Key)** (unlocked with your passphrase to authenticate the payload) and the **Recipient's Key (`.qpkrf`)**.
@@ -62,7 +62,7 @@ Tapping any key card in **Manage My Keys** or **Manage Receiver Keys** opens the
 
 ---
 
-## 4. Mandatory `QPKD-Argon` Passphrase Policy
+## 4. Mandatory `QPKD-Argon2id` Passphrase Policy
 
 **Calyx QPEP Client** enforces the protocol-level **OpenQPEP** passphrase policy on every private key operation:
 - **Minimum Length**: `12` characters or more
@@ -80,7 +80,7 @@ Tapping any key card in **Manage My Keys** or **Manage Receiver Keys** opens the
 - **OpenQPEP Protocol & CLI Repository**: [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
 - **Public Key Directory**: [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

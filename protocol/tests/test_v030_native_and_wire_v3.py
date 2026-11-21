@@ -1,5 +1,5 @@
 """
-OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc) Verification Tests:
+OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc) Verification Tests:
   - Native C99 / AVX2 Acceleration (libopenqpep) bit-for-bit parity with pure-Python reference
   - Strict Wire Format v3 (\x89QPE\x03\x00) emission & STRICT REJECTION of all legacy -beta wire magics
   - Calyx Sovereign-Pentad (CSP-Omega) Wire Format v3 + Plain-LWE native acceleration
@@ -82,8 +82,8 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
 
     def test_03_wire_format_v3_and_strict_beta_magic_rejection(self):
         self.assertEqual(UNIVERSAL_VERSION, "1.1.0-pc")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.1.4")
-        payload = b"OpenQPEP Production Candidate 1.1.4 strict wire payload"
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.1.7")
+        payload = b"OpenQPEP Production Candidate 1.1.7 strict wire payload"
         label = "CALYX QPEP MESSAGE"
 
         f_v3 = pack_wire_frame(payload, label)
@@ -91,7 +91,7 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
         out_v3, _ = unpack_wire_frame(f_v3, label)
         self.assertEqual(out_v3, payload)
 
-        # All legacy beta wire magics MUST be strictly rejected in PC 1.1.4
+        # All legacy beta wire magics MUST be strictly rejected in PC 1.1.7
         for legacy_magic in (b"\x89QPE\x01\x01", b"\x89QPE\x01\x09", b"\x89QPE\x02\x00"):
             forged = legacy_magic + os.urandom(64)
             with self.assertRaises(QPEPWireFormatError):
@@ -107,7 +107,7 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
 
         set_native_enabled(True)
         pub, priv = CalyxSovereignPentad.keygen(allow_low_ram_override=True)
-        msg = b"Sovereign-Pentad PC 1.1.4 strict v3 directive"
+        msg = b"Sovereign-Pentad PC 1.1.7 strict v3 directive"
         armored_v3 = CalyxSovereignPentad.encrypt(msg, pub)
         sep = armored_v3.find("\n\n")
         end = armored_v3.rfind("\n=")

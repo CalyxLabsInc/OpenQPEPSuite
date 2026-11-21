@@ -12,7 +12,7 @@ Built in the signature **Neon Blue & Obsidian Black** colorway of the **[Calyx Q
 
 ## 1. Core Design Philosophy: QPEP Keys Are User Accounts
 
-Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.4`) cryptographic identities:
+Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.7`) cryptographic identities:
 
 1. **Create Account = Generate `.qpkrf` Key Ring**:
    - Clicking **Create Account** prompts for your **Key Name** (which operates as your `@Username`), **Email Address** (bound to your QPEP UID), optional profile bio, and selectable **QLX + QVS Security Tier** (`QLX-768`, `QLX-1024 Sovereign Hybrid`, or `QLX-2048 Ultra-Grid`).
@@ -22,20 +22,20 @@ Unlike conventional messengers that tie your identity to a SIM card, phone numbe
    - Users search and message peers directly by their **64-character Key Hash** (or `@KeyName`) with continuous real-time inbox and directory synchronization across **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)**.
 3. **Full Public & Private `.qpkrf` Key Export & Portability**:
    - Logged-in users can export their **Public Key Ring (`-----BEGIN CALYX QPKRF PUBLIC KEY RING-----`)** to share out-of-band or import into **[Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client)**.
-   - Users can also export their **Private Key Ring (`-----BEGIN CALYX QPKRF PRIVATE KEY RING-----`)** after passing the mandatory **`QPKD-Argon`** passphrase verification gate, allowing seamless account migration between Android devices and the **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)** web client.
+   - Users can also export their **Private Key Ring (`-----BEGIN CALYX QPKRF PRIVATE KEY RING-----`)** after passing the mandatory **`QPKD-Argon2id`** passphrase verification gate, allowing seamless account migration between Android devices and the **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)** web client.
 
 ## 2. How End-to-End Encryption Works in Calyx QPEP Messenger
 
 Every account action and chat message in **Calyx Encrypted Messenger** is enforced across the five interlocking layers of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)**:
 
-1. **Layer 1 — Mandatory `QPKD-Argon` Passphrase Gate**:
+1. **Layer 1 — Mandatory `QPKD-Argon2id` Passphrase Gate**:
    - Unencrypted private keys and weak passphrases are rejected at the protocol layer. Before any account key pair is generated, unlocked, imported, or exported as a private `.qpkrf` file, the client enforces the **Calyx QPEP Passphrase Policy**:
      - **Minimum Length:** `12` characters or more (`len >= 12`)
      - **Numbers (`0–9`):** At least `2`
      - **Special Characters (`!@#$%^&*()-_=+...`):** At least `4`
      - **Uppercase Letters (`A–Z`):** At least `2`
      - **Lowercase Letters (`a–z`):** At least `4`
-   - **`QPKD-Argon`** (**Quantum-Proof Key Derivation — Memory-Hard Matrix Lock**) stretches the passphrase with a 256-bit random salt through a 24-round `Keccak-f[1600]` **`qSponge-512`** key-wrapping schedule.
+   - **`QPKD-Argon2id`** (**Quantum-Proof Key Derivation — Memory-Hard Matrix Lock**) stretches the passphrase with a 256-bit random salt through a 24-round `Keccak-f[1600]` **`qSponge-512`** key-wrapping schedule.
 2. **Layer 2 — Hybrid Quantum Lattice Key Encapsulation (`QLX` + `HGC-448`)**:
    - Each outgoing message encapsulates a fresh session secret across both a 7-layer Number Theoretic Transform (NTT) **Quantum Lattice Exchange (`QLX`)** polynomial ring $R_{3329} = \mathbb{Z}_{3329}[X]/(X^{256}+1)$ ($\zeta = 17$) and an ephemeral **448-bit Hyper-Goldilocks Curve (`HGC-448`)** trapdoor, combined via **`qSponge-512`**:
      $$SS_{\text{QPEP}} = \text{qSponge-512}(\text{"CALYX-QPEP-KEM-v1"} \parallel SS_{\text{QLX}} \parallel SS_{\text{HGC-448}} \parallel CT_{\text{QLX}} \parallel EPK_{\text{HGC-448}} \parallel PK_{\text{QLX}} \parallel PK_{\text{HGC-448}})$$
@@ -61,7 +61,7 @@ When creating an account in **Calyx Encrypted Messenger**, users can select from
 | Security & Architecture Dimension | Legacy Messengers (Phone / SIM Based) | Legacy PGP Clients (`.asc` / `.gpg`) | Calyx Encrypted Messenger (`com.calyxlabs.qpem`) |
 | :--- | :--- | :--- | :--- |
 | **Account Identity** | Tied to carrier SIM card / phone number | Manual key rings separate from chat transport | **Self-Certified `.qpkrf` Key Ring = User Account (`64-Char Key Hash`)** |
-| **Passphrase Enforcement** | None or optional 4-digit PIN | Permits empty (`""`) or weak passphrases | **Strictly Mandatory `QPKD-Argon` Gate** (`12+` chars: `>=2` digits, `>=4` specials, `>=2` upper, `>=4` lower) |
+| **Passphrase Enforcement** | None or optional 4-digit PIN | Permits empty (`""`) or weak passphrases | **Strictly Mandatory `QPKD-Argon2id` Gate** (`12+` chars: `>=2` digits, `>=4` specials, `>=2` upper, `>=4` lower) |
 | **Post-Quantum Key Agreement** | Classical X25519 or single-layer PQ add-on | Legacy RSA / ECC vulnerable to Shor's algorithm | **100% Atomic `QLX-768/1024/2048 + HGC-448` Hybrid KEM** |
 | **Symmetric Payload Cipher** | Single-cipher AES-GCM or ChaCha20 | Single-layer CFB / AEAD | **Cascaded Dual-Stream `Calyx-Cascade-512 (CC-512)`** |
 | **Cross-Platform Key Portability** | Device-locked or cloud-escrowed | Manual file copy only | **One-Tap `.qpkrf` Public/Private Export + Android & Browser Web Client (`messenger.calyxlabsinc.org`)** |
@@ -73,7 +73,7 @@ When creating an account in **Calyx Encrypted Messenger**, users can select from
   - `CalyxEncryptedMessenger.aab` — Google Play Console Android App Bundle.
   - `android_project_source/` — Complete Android application source code (`AndroidManifest.xml`, `MainActivity.java`, `build.gradle`, and Neon Blue/Black UI assets).
 * **`Backend Files/messenger_server/`**:
-  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.4`).
+  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.7`).
   - `server.py` — Multi-threaded Python 3 + SQLite WAL real-time relay, 64-character Key Hash directory server, and browser web client host (default port `8446`, routed to `https://messenger.calyxlabsinc.org`).
   - `static/index.html` — Full browser web application mirroring the Android client so users can create or import `.qpkrf` accounts on the web.
   - `cli.py` & `test_messenger.py` — Command-line client and automated `unittest` verification suite.
@@ -110,7 +110,7 @@ cd "Backend Files/messenger_server"
 Licensed under the **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**.  
 Copyright © 2026 **[Calyx Labs Inc.](https://calyxlabsinc.github.io/)** — Created, Designed & Engineered by **Tristen Martinez** (`support@calyxlabsinc.org` | `calyxlabsinc@gmail.com`).
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

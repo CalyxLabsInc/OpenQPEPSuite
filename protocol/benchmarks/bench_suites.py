@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Automated 10-Suite Benchmark Harness (Production Candidate 1.1.4 / v1.1.4-pc).
+OpenQPEP Automated 10-Suite Benchmark Harness (Production Candidate 1.1.7 / v1.1.7-pc).
 Measures keygen, encaps/encrypt, decaps/decrypt, sign, verify, and peak RSS RAM across all 10 canonical suites:
   1. Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)
   2. Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)
@@ -50,7 +50,7 @@ def _peak_rss_mib() -> float:
 def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     witness = b"B" * 64
-    msg = b"OpenQPEP PC 1.1.4 Benchmark Message"
+    msg = b"OpenQPEP PC 1.1.7 Benchmark Message"
 
     # 1-5. Structured Lattice Suites (QLX + QVS)
     target_qlx = QLX_SUITES if include_heavy else QLX_SUITES[:4]
@@ -77,7 +77,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
         ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
 
         rows.append({
-            "release": "v1.1.4-pc",
+            "release": "v1.1.7-pc",
             "suite": label,
             "hardware_tier": hw_tier,
             "keygen_ms": kg_ms,
@@ -106,7 +106,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     assert ok
     ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.1.4-pc",
+        "release": "v1.1.7-pc",
         "suite": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)",
         "hardware_tier": "All Devices",
         "keygen_ms": kg_ms,
@@ -135,7 +135,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     assert MultivariateQuadraticEngine.verify(mq_pk, msg, mq_sig)
     ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.1.4-pc",
+        "release": "v1.1.7-pc",
         "suite": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)",
         "hardware_tier": "All Devices",
         "keygen_ms": kg_ms,
@@ -165,7 +165,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
         assert QHS512HypertreeEngine.verify(qhs_pk, msg, qhs_sig)
         ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
         rows.append({
-            "release": "v1.1.4-pc",
+            "release": "v1.1.7-pc",
             "suite": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)",
             "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
             "keygen_ms": kg_ms,
@@ -194,7 +194,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
         assert ok
         ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
         rows.append({
-            "release": "v1.1.4-pc",
+            "release": "v1.1.7-pc",
             "suite": "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)",
             "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
             "keygen_ms": kg_ms,
@@ -223,7 +223,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
         assert ok
         ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
         rows.append({
-            "release": "v1.1.4-pc",
+            "release": "v1.1.7-pc",
             "suite": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)",
             "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
             "keygen_ms": kg_ms,
@@ -239,7 +239,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
 
 def format_markdown_table(rows: List[Dict[str, Any]]) -> str:
     lines = [
-        "| OpenQPEP Suite (`v1.1.4-pc`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |",
+        "| OpenQPEP Suite (`v1.1.7-pc`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |",
         "| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for r in rows:

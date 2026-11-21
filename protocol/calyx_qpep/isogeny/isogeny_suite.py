@@ -1,7 +1,7 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)
-OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc) — Calyx Labs Inc. (CPOSLS-1.0).
+OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc) — Calyx Labs Inc. (CPOSLS-1.0).
 
 Combines 2D Supersingular Abelian Isogeny KEM (CIF-SQI-512) with Stateless Hash-Based Hypertree
 signatures (QHS-512) and Calyx-Cascade-512 (CC-512) over Frozen Wire Format v3 (\x89QPE\x03\x00).

@@ -1,5 +1,5 @@
 """
-QLX Module-LWE & 4-Manifold Coupled Hyper-Tesseract KEM Engine (Production Candidate 1.1.4).
+QLX Module-LWE & 4-Manifold Coupled Hyper-Tesseract KEM Engine (Production Candidate 1.1.7).
 Hardened with branchless ct_cmov Fujisaki-Okamoto implicit rejection and SecretBuffer scrubbing.
 """
 import os
@@ -97,7 +97,7 @@ class QLXEngine:
     @staticmethod
     def keygen(tier: str = "QLX-4096", policy_witness: bytes = b"") -> Tuple[bytes, bytes]:
         if len(policy_witness) != 64:
-            raise ValueError("QLX key generation requires a 64-byte QPKD-Argon passphrase policy witness.")
+            raise ValueError("QLX key generation requires a 64-byte QPKD-Argon2id passphrase policy witness.")
         spec = QLX_TIERS.get(tier, QLX_TIERS["QLX-4096"])
         k = spec["k"]
         manifolds = spec.get("manifolds", 1)

@@ -590,7 +590,7 @@
       </div>
       <div class="drawer-brand-text">
         <h2>Calyx QPEP Client</h2>
-        <p>Calyx Labs Inc. &bull; Production Candidate 1.1.4</p>
+        <p>Calyx Labs Inc. &bull; Production Candidate 1.1.7</p>
       </div>
     </div>
     <button class="icon-btn" onclick="toggleDrawer(false)">
@@ -674,7 +674,7 @@
   </div>
 
   <div class="drawer-footer">
-    <span>Production Candidate 1.1.4</span>
+    <span>Production Candidate 1.1.7</span>
     <button class="drawer-footer-link" onclick="navigateTo('setup')">Setup Wizard</button>
   </div>
 </aside>
@@ -755,7 +755,7 @@
           </svg>
         </div>
         <div>
-          <div class="setup-eyebrow">CALYX LABS INC. &bull; Production Candidate 1.1.4</div>
+          <div class="setup-eyebrow">CALYX LABS INC. &bull; Production Candidate 1.1.7</div>
           <div class="setup-heading">Calyx QPEP Client Setup</div>
         </div>
       </div>
@@ -1031,7 +1031,7 @@
       <div class="kd-body-grid">
         <div class="kd-info-col">
           <div class="kd-owner-title" id="kd-name">Key Owner</div>
-          <div class="kd-suite-sub" id="kd-subtitle">My Key Pair &bull; QLX-1024 + QVS-87 (Calyx QPEP Production Candidate 1.1.4)</div>
+          <div class="kd-suite-sub" id="kd-subtitle">My Key Pair &bull; QLX-1024 + QVS-87 (Calyx QPEP Production Candidate 1.1.7)</div>
           <div class="kd-quick-links">
             <button class="kd-quick-btn" onclick="jumpToEncryptFromDetail('files')">&#128193; Encrypt File</button>
             <button class="kd-quick-btn" onclick="jumpToEncryptFromDetail('notepad')">&#128172; Encrypt Text</button>
@@ -1067,7 +1067,7 @@
       <div class="card-title" style="margin-bottom:10px;">Identities &amp; Key Hash</div>
       <div style="font-weight:700;font-size:0.98rem;color:var(--text-primary);" id="kd-email">user@calyxlabsinc.org</div>
       <div style="font-size:0.84rem;color:var(--text-secondary);margin-bottom:12px;" id="kd-identity-name">User</div>
-      <div style="font-size:0.74rem;font-weight:700;color:var(--text-muted);letter-spacing:0.06em;">CALYX QPEP Production Candidate 1.1.4 / QPKRF KEY HASH (TAP TO COPY)</div>
+      <div style="font-size:0.74rem;font-weight:700;color:var(--text-muted);letter-spacing:0.06em;">CALYX QPEP Production Candidate 1.1.7 / QPKRF KEY HASH (TAP TO COPY)</div>
       <div class="kd-hash-formatted" id="kd-hash-box" onclick="copyCurrentDetailKeyHash()"></div>
     </div>
 
@@ -1111,7 +1111,7 @@
   <section class="page-view" id="page-news">
     <div class="surface-card">
       <div class="setup-eyebrow">CALYX LABS INC. &bull; OFFICIAL RELEASE DISPATCH</div>
-      <div class="card-title" style="margin:4px 0 10px;font-size:1.2rem;">Calyx QPEP Client Production Candidate 1.1.4 &amp; OpenQPEP Ecosystem Launch</div>
+      <div class="card-title" style="margin:4px 0 10px;font-size:1.2rem;">Calyx QPEP Client Production Candidate 1.1.7 &amp; OpenQPEP Ecosystem Launch</div>
       <p class="card-desc">
         <strong>Calyx Labs Inc.</strong> (founded and architected by <strong>Tristen Martinez</strong>) announces the general availability of <strong>Calyx QPEP Client</strong> for Android 10 through Android 17, the open-source <strong>OpenQPEP</strong> protocol reference repository at <code>https://github.com/CalyxLabsInc/OpenQPEP/</code>, and the global <strong>Calyx Labs QPEP Public Key Directory</strong> at <code>https://qpepkeys.calyxlabsinc.org</code>.
       </p>
@@ -1568,7 +1568,7 @@ function setRulePill(id, text, ok) {
 }
 
 /* ============================================================================
- * CALYX QPEP REAL POST-QUANTUM CRYPTOGRAPHIC ENGINE (Production Candidate 1.1.4)
+ * CALYX QPEP REAL POST-QUANTUM CRYPTOGRAPHIC ENGINE (Production Candidate 1.1.7)
  * 1. 24-Round Keccak-f[1600] Sponge (qSponge-512 & qSponge-XOF)
  * 2. Module-LWE (QLX-768 / QLX-1024 / QLX-2048) over Z_3329[X]/(X^256 + 1)
  *    with 7-layer Cooley-Tukey / Gentleman-Sande NTT (zeta = 17) & FO CCA2
@@ -2635,11 +2635,11 @@ function derivePolicyWitness64(passphrase) {
 
 function qpkdArgonDerive(passphrase, salt32) {
   const witness = derivePolicyWitness64(passphrase);
-  let state = qsponge512Bytes(u8Concat(_utf8Enc.encode("CALYX-QPKD-ARGON-INIT|"), salt32, witness, _utf8Enc.encode(passphrase)));
+  let state = qsponge512Bytes(u8Concat(_utf8Enc.encode("CALYX-QPKD-Argon2id-INIT|"), salt32, witness, _utf8Enc.encode(passphrase)));
   for (let i = 0; i < 64; i++) {
     state = qsponge512Bytes(u8Concat(state, salt32, witness, new Uint8Array([i & 0xFF])));
   }
-  const okm = qspongeVarBytes(u8Concat(_utf8Enc.encode("CALYX-QPKD-ARGON-OKM|"), state, salt32, witness), 96);
+  const okm = qspongeVarBytes(u8Concat(_utf8Enc.encode("CALYX-QPKD-Argon2id-OKM|"), state, salt32, witness), 96);
   return {
     kS1: okm.subarray(0, 32),
     kS2: okm.subarray(32, 64),
@@ -2648,7 +2648,7 @@ function qpkdArgonDerive(passphrase, salt32) {
 }
 
 /* ---------------- 5. Binary Wire Framing (\x89QPE\x01\x01 + qSponge-XOF Whitening) ---------------- */
-const WIRE_MAGIC = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x03, 0x00]); // Frozen Wire Format v3 (PC 1.1.4)
+const WIRE_MAGIC = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x03, 0x00]); // Frozen Wire Format v3 (PC 1.1.7)
 
 function armorWrap(label, suiteName, keyHash, obj) {
   const payloadBytes = _utf8Enc.encode(JSON.stringify(obj));
@@ -2663,7 +2663,7 @@ function armorWrap(label, suiteName, keyHash, obj) {
   const b64Raw = u8ToB64(wireFrame);
   const lines = b64Raw.match(/.{1,64}/g).join('\n');
   const crcDigest = u8ToB64(qspongeVarBytes(u8Concat(_utf8Enc.encode("CALYX-ARMOR-CRC-v1|"), wireFrame), 6));
-  return `-----BEGIN ${label}-----\nVersion: OpenQPEP/PC-1.1.4 (Calyx Labs Inc.)\nSuite: ${suiteName}\nKey-Hash: ${keyHash}\n\n${lines}\n=${crcDigest}\n-----END ${label}-----`;
+  return `-----BEGIN ${label}-----\nVersion: OpenQPEP/PC-1.1.7 (Calyx Labs Inc.)\nSuite: ${suiteName}\nKey-Hash: ${keyHash}\n\n${lines}\n=${crcDigest}\n-----END ${label}-----`;
 }
 
 function armorUnwrap(text) {
@@ -2983,7 +2983,7 @@ function openKeyDetails(listType, idx) {
   document.getElementById('kd-back-label').textContent = (listType === 'personal') ? 'Manage My Keys' : 'Manage Receiver Keys';
   document.getElementById('kd-back-btn').onclick = () => navigateTo((listType === 'personal') ? 'manage-my-keys' : 'manage-receiver-keys');
   document.getElementById('kd-name').textContent = item.name;
-  document.getElementById('kd-subtitle').textContent = `${listType === 'personal' ? 'My Key Pair' : 'Receiver Public Key'} \u2022 ${item.suite} (Calyx QPEP Production Candidate 1.1.4)`;
+  document.getElementById('kd-subtitle').textContent = `${listType === 'personal' ? 'My Key Pair' : 'Receiver Public Key'} \u2022 ${item.suite} (Calyx QPEP Production Candidate 1.1.7)`;
   const dateStr = (item.created || '').substring(0, 10) || '2026-11-15';
   document.getElementById('kd-added-meta').textContent = `Added ${dateStr} \u2022 Key Hash ${item.keyHash.substring(0, 16)}`;
   document.getElementById('kd-email').textContent = item.email;
@@ -3079,7 +3079,7 @@ async function unlockDetailPrivateKey(action) {
   }
 }
 
-/* ================= NATIVE ANDROID FILES APP OPEN & SAVE BRIDGE (v1.1.4-pc BINARY & 165+ EXTENSIONS) ================= */
+/* ================= NATIVE ANDROID FILES APP OPEN & SAVE BRIDGE (v1.1.7-pc BINARY & 165+ EXTENSIONS) ================= */
 let activePickerInputId = null;
 let pickedFileBytesBuffer = null;
 let pickedFileName = '';
@@ -3131,7 +3131,7 @@ const SUPPORTED_FILE_EXTENSIONS = {
 };
 
 function tryRecoverDoubleUtf8Binary(u8) {
-  // If a binary file (like a .jpg starting with FF D8 FF -> C3 BF C3 98 C3 BF) was double-UTF8 encoded in v1.1.4-pc,
+  // If a binary file (like a .jpg starting with FF D8 FF -> C3 BF C3 98 C3 BF) was double-UTF8 encoded in v1.1.7-pc,
   // detect and losslessly restore the exact original 0x00..0xFF binary bytes!
   if (u8.length >= 6 && u8[0] === 0xC3 && u8[1] === 0xBF && u8[2] === 0xC3 && u8[3] === 0x98 && u8[4] === 0xC3 && u8[5] === 0xBF) {
     try {
@@ -3687,7 +3687,7 @@ function decryptPayloadPacketFullJS(armoredText, decKey, pass) {
     throw new Error("Plaintext qSponge-512 integrity check failed.");
   }
 
-  // Detect exact file extension & magic bytes (and auto-recover if file was double-UTF8 encoded in v1.1.4-pc)
+  // Detect exact file extension & magic bytes (and auto-recover if file was double-UTF8 encoded in v1.1.7-pc)
   const detected = detectFileFormatAndName(rawPtBytes, innerEnvelope.filename || '');
   return {
     ptBytes: detected.bytes,
@@ -3810,7 +3810,7 @@ async function runFileProcess(encrypt) {
 
       if (res.isBinary) {
         document.getElementById('dec-file-out').value = [
-          '=== OPENQPEP v1.1.4-pc BINARY FILE DECRYPTED & VERIFIED ===',
+          '=== OPENQPEP v1.1.7-pc BINARY FILE DECRYPTED & VERIFIED ===',
           'Recovered Filename : ' + res.filename,
           'Detected Extension : ' + res.ext + ' (' + res.mime + ')',
           'Binary Size        : ' + res.ptBytes.length.toLocaleString() + ' bytes',

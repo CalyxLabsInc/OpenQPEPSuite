@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 Family 3 of Calyx Sovereign-Pentad (CSP-Omega): Higher-Dimensional Supersingular Isogeny
 & Quaternion EndRing Module (CIF-SQI-512) over a 512-bit prime field F_{p^2}.

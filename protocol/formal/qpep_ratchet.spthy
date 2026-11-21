@@ -1,4 +1,4 @@
-/* OpenQPEP v1.1.4-pc — Tamarin Symbolic Model Skeleton for QPEP-Ratchet FS & PCS */
+/* OpenQPEP v1.1.7-pc — Tamarin Symbolic Model Skeleton for QPEP-Ratchet FS & PCS */
 theory QPEP_Ratchet_v050
 begin
 builtins: hashing, symmetric-encryption

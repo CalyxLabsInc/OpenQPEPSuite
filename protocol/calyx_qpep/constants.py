@@ -1,6 +1,6 @@
 """
 OpenQPEP Protocol Constants, Lattice Suite Parameters, and Frozen Wire Format v3 Identifiers
-(Production Candidate 1.1.4 / v1.1.4-pc).
+(Production Candidate 1.1.7 / v1.1.7-pc).
 Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
 """
 from typing import Dict
@@ -8,16 +8,16 @@ from typing import Dict
 PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
 APP_NAME = "Calyx QPEP Client"
 UNIVERSAL_VERSION = "1.1.0-pc"
-UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.4"
-PROTOCOL_VERSION = "OpenQPEP/PC-1.1.4"
+UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.7"
+PROTOCOL_VERSION = "OpenQPEP/PC-1.1.7"
 RELEASE_CHANNEL = "PC"
-API_STABILITY = "v1.1.4-pc-frozen"
+API_STABILITY = "v1.1.7-pc-frozen"
 LICENSE_SPDX = "CPOSLS-1.0"
 DEFAULT_SUITE = "Signature QLX-4096 + QVS-256"
 QPKRF_EXTENSION = ".qpkrf"
 CHUNK_SIZE = 65536
 
-# Strict Production Candidate 1.1.4 Wire Magics (All legacy -beta wire magics removed)
+# Strict Production Candidate 1.1.7 Wire Magics (All legacy -beta wire magics removed)
 WIRE_MAGIC_V3 = b"\x89QPE\x03\x00"
 WIRE_MAGIC_V3_1 = b"\x89QPE\x03\x01"
 WIRE_MAGIC = WIRE_MAGIC_V3
@@ -154,7 +154,7 @@ QVS_TIERS = {
     },
 }
 
-# Canonical 10-Suite Unified Registry (Production Candidate 1.1.4 / v1.1.4-pc)
+# Canonical 10-Suite Unified Registry (Production Candidate 1.1.7 / v1.1.7-pc)
 # Strict uniform format: "Calyx <Key-Name>: <KEM-XXXX> + <SIG-XXXX> (<Key Tier Short Description>)"
 ALL_TEN_SUITES = {
     "QLX-4096": {

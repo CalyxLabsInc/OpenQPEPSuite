@@ -1,10 +1,10 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
-Calyx QPEP Hardcoded Cryptographic Passphrase Gate (QPKD-Argon).
+Calyx QPEP Hardcoded Cryptographic Passphrase Gate (QPKD-Argon2id).
 
 In Calyx QPEP, passphrases are NOT merely an optional UI check: the structural character-class
 witness of the passphrase (length >= 12, digits >= 2, specials >= 4, uppercase >= 2, lowercase >= 4)
-is mathematically absorbed into the QPKD-Argon key-derivation sponge. Without a compliant passphrase,
+is mathematically absorbed into the QPKD-Argon2id key-derivation sponge. Without a compliant passphrase,
 the mathematical witness vector is zeroed and no QLX or QVS key material can be derived or unlocked.
 """
 import hashlib

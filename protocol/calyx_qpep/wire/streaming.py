@@ -1,5 +1,5 @@
 """
-OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Production Candidate 1.1.4).
+OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Production Candidate 1.1.7).
 
 Features:
   - Constant ~256 KiB RAM streaming for arbitrary-sized files (100 MB - 100 GB+) in 64 KiB CC-512 frames.
@@ -36,7 +36,7 @@ def derive_chunk_nonce24(base_nonce: bytes, chunk_idx: int, is_final: bool) -> b
 
 
 def _chunk_aad(base_nonce: bytes, chunk_idx: int, is_final: bool) -> bytes:
-    return b"CALYX-STREAM-AAD-v1.1.4-pc|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0)
+    return b"CALYX-STREAM-AAD-v1.1.7-pc|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0)
 
 
 def build_chunk_merkle_tree(leaf_hashes: List[bytes]) -> Tuple[bytes, List[List[bytes]]]:

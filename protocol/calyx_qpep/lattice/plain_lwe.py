@@ -3,7 +3,7 @@ Family 1 of Calyx Sovereign-Pentad (CSP-Omega): Pure Unstructured Plain-LWE (CUL
 Zero cyclotomic polynomial ring, zero NTT, zero Galois symmetry.
 Row-streams unstructured matrix A in Z_{65536}^{n x n} from qSponge-XOF with Fujisaki-Okamoto
 IND-CCA2 re-encryption verification and branchless ct_cmov implicit rejection.
-Production Candidate 1.1.4: Automatically accelerates row-accumulated matrix-vector inner loops
+Production Candidate 1.1.7: Automatically accelerates row-accumulated matrix-vector inner loops
 via libopenqpep C99/AVX2/NEON when compiled, with bit-exact pure-Python fallback.
 """
 import os

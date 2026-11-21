@@ -1,5 +1,5 @@
 """
-OpenQPEP v1.1.4-pc — Plausible-Deniability Dual-Volume Container.
+OpenQPEP v1.1.7-pc — Plausible-Deniability Dual-Volume Container.
 Embeds a hidden inner CC-512 volume inside uniform random bucket padding of an outer decoy volume.
 """
 import os

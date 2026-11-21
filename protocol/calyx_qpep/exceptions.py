@@ -1,5 +1,5 @@
 """
-OpenQPEP Typed Cryptographic Exception Hierarchy (Production Candidate 1.1.4).
+OpenQPEP Typed Cryptographic Exception Hierarchy (Production Candidate 1.1.7).
 All custom exceptions inherit from OpenQPEPError(ValueError) to maintain
 100% backward compatibility with existing callers catching ValueError.
 """
@@ -10,7 +10,7 @@ class OpenQPEPError(ValueError):
 
 
 class QPEPPassphrasePolicyError(OpenQPEPError):
-    """Raised when a passphrase fails the mandatory QPKD-Argon complexity policy."""
+    """Raised when a passphrase fails the mandatory QPKD-Argon2id complexity policy."""
 
 
 class QPEPMacVerificationError(OpenQPEPError):

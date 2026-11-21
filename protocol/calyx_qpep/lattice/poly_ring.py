@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 Polynomial Ring Sampling (NTT Rejection, CBD_1, CBD_2, Ball Challenge) & Bit-Packing Codecs.
 Automatically accelerates CBD_1 / CBD_2 sampling via libopenqpep (C99/AVX2/NEON) when available.

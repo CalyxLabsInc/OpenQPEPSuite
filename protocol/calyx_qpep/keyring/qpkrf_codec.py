@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """Canonical .qpkrf export/import codec facade under calyx_qpep.keyring."""
 from ..protocol import OpenQPEPProtocol, QPEPKeyRing
 

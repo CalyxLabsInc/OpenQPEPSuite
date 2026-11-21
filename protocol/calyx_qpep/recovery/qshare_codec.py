@@ -1,5 +1,5 @@
 """
-OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Production Candidate 1.1.4).
+OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Production Candidate 1.1.7).
 Wraps GF(256) Shamir shares in whitened \x89QPE armor authenticated with per-shard
 qSponge-512 commitment MACs and a master secret commitment digest to detect any
 corrupted, mismatched, or tampered recovery shard.
@@ -22,7 +22,7 @@ QSHARE_ARMOR_LABEL = "CALYX QPEP RECOVERY SHARD"
 
 def _compute_share_commitment(group_id: str, share_index: int, share_bytes: bytes, secret_commit: str) -> str:
     return qsponge_512(
-        b"CALYX-QSHARE-COMMIT-v1.1.4-pc|"
+        b"CALYX-QSHARE-COMMIT-v1.1.7-pc|"
         + group_id.encode("ascii")
         + bytes([share_index])
         + share_bytes

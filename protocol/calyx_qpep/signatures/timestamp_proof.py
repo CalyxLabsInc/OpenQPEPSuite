@@ -1,5 +1,5 @@
 """
-OpenQPEP Cryptographic Timestamp Bindings (Production Candidate 1.1.4).
+OpenQPEP Cryptographic Timestamp Bindings (Production Candidate 1.1.7).
 Binds a signed payload's qSponge-512 digest to a UTC timestamp, a public hash-chain anchor,
 and/or a Timestamp Authority (TSA) conjunctive QVS + Ed448 attestation—proving a document
 existed prior to a specific UTC instant even after operational signing keys rotate or expire.
@@ -29,7 +29,7 @@ def _compute_anchor_commitment(
     anchor_block_height: int,
     anchor_prev_hash_hex: str,
 ) -> str:
-    body = f"CALYX-QPEP-TSA-ANCHOR-v1.1.4-pc|{anchor_chain_id}|{anchor_block_height}|{anchor_prev_hash_hex}|{payload_digest_hex}|{utc_timestamp}"
+    body = f"CALYX-QPEP-TSA-ANCHOR-v1.1.7-pc|{anchor_chain_id}|{anchor_block_height}|{anchor_prev_hash_hex}|{payload_digest_hex}|{utc_timestamp}"
     return qsponge_512(body.encode("utf-8")).hex()
 
 

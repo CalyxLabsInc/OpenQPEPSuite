@@ -1,4 +1,4 @@
-"""OpenQPEP Modular Lattice Algebra, QLX KEM, & QVS Signature Engines (Production Candidate 1.1.4)."""
+"""OpenQPEP Modular Lattice Algebra, QLX KEM, & QVS Signature Engines (Production Candidate 1.1.7)."""
 from .ntt_3329 import ntt_3329, inv_ntt_3329, ntt_base_mul_3329, poly_add_3329, poly_sub_3329
 from .ntt_8380417 import ntt_qvs, inv_ntt_qvs, center_qvs, decompose_qvs
 from .poly_ring import (

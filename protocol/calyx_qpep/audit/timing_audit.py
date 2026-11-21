@@ -1,5 +1,5 @@
 """
-OpenQPEP Statistical Side-Channel Timing Audit (Production Candidate 1.1.4).
+OpenQPEP Statistical Side-Channel Timing Audit (Production Candidate 1.1.7).
 Implements DudeCT-style Welch's t-test comparing execution-time distributions of valid vs.
 invalid constant-time primitives (`ct_cmov`, `ct_eq`) and `QLXEngine.decaps` (valid vs.
 tampered ciphertext FO implicit rejection) with zero external dependencies.

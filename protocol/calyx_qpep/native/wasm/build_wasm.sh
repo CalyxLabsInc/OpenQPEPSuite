@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OpenQPEP v1.1.4-pc — Compile libopenqpep C99 kernels to standalone WebAssembly SIMD128
+# OpenQPEP v1.1.7-pc — Compile libopenqpep C99 kernels to standalone WebAssembly SIMD128
 set -euo pipefail
 emcc -O3 -msimd128 -std=c99 \
   -s STANDALONE_WASM=1 --no-entry \

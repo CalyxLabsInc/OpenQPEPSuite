@@ -1,11 +1,11 @@
 # Calyx Encrypted Email — System Architecture & OpenQPEP-over-MIME Specification
 
 - **Application Name:** Calyx Encrypted Email (`com.calyxlabs.mail`)
-- **Version:** Production Candidate 1.1.4 (Unified OpenQPEP Suite Sync)
+- **Version:** Production Candidate 1.1.7 (Unified OpenQPEP Suite Sync)
 - **Publisher:** Tristen Martinez (Founder & Lead Architect) — Calyx Labs Inc.
 - **Email Domain:** `@calyxmail.org`
 - **Web App Endpoint:** `https://mail.calyxlabsinc.org`
-- **Cryptographic Engine:** OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.4)
+- **Cryptographic Engine:** OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.7)
 
 ---
 
@@ -13,7 +13,7 @@
 
 | Route | Recipients | Encryption / Security Mode | Wire Format |
 | :--- | :--- | :--- | :--- |
-| **Internal (`@calyxmail.org` → `@calyxmail.org`)** | Registered Calyx Mail users | **OpenQPEP v1.1.4-pc End-to-End Encrypted** (`QLX-4096 + QVS-256 + CC-512` default; supports `QLX-16384`, `QLX-2048`, `QLX-1024`, `QLX-768`) | Client-side whitened binary wire packet (`\x89QPE\x02\x00`) encapsulating Subject, Body, and Attachments inside `CC-512`, wrapped in RFC 5322 MIME (`application/vnd.calyx.openqpep+armor` + detached `application/vnd.calyx.openqpep-sig+armor`). Zero plaintext stored on server. |
+| **Internal (`@calyxmail.org` → `@calyxmail.org`)** | Registered Calyx Mail users | **OpenQPEP v1.1.7-pc End-to-End Encrypted** (`QLX-4096 + QVS-256 + CC-512` default; supports `QLX-16384`, `QLX-2048`, `QLX-1024`, `QLX-768`) | Client-side whitened binary wire packet (`\x89QPE\x02\x00`) encapsulating Subject, Body, and Attachments inside `CC-512`, wrapped in RFC 5322 MIME (`application/vnd.calyx.openqpep+armor` + detached `application/vnd.calyx.openqpep-sig+armor`). Zero plaintext stored on server. |
 | **External Outbound (`@calyxmail.org` → Gmail, Yahoo, etc.)** | Any 3rd-party email provider | **Standard RFC 5322 + Opportunistic STARTTLS + DKIM RSA-SHA256 + SPF + DMARC** | Standard `text/plain` / `multipart/mixed` RFC 5322 email signed with `calyx2026._domainkey.calyxmail.org` and delivered via MX DNS resolution (or optional SMTP relay). |
 | **External Inbound (Gmail, Yahoo, etc. → `@calyxmail.org`)** | Registered Calyx Mail users | **Standard RFC 5321 SMTP MX (Port 25 + STARTTLS)** | Parsed into structured inbox message + binary-safe attachments and stored in the user's SQLite WAL mailbox. |
 
@@ -31,11 +31,11 @@
 ---
 
 ## 3. Zero-Knowledge OpenQPEP E2EE Guarantees (Internal Mail)
-1. **Private Key Isolation:** Private `.qpkrf` key rings are generated locally on-device under the mandatory `QPKD-Argon` passphrase gate (`>=12` chars, `>=2` digits, `>=4` special chars, `>=2` uppercase, `>=4` lowercase) and are **never transmitted** to `calyxmail.org`.
+1. **Private Key Isolation:** Private `.qpkrf` key rings are generated locally on-device under the mandatory `QPKD-Argon2id` passphrase gate (`>=12` chars, `>=2` digits, `>=4` special chars, `>=2` uppercase, `>=4` lowercase) and are **never transmitted** to `calyxmail.org`.
 2. **Encrypted Metadata & Payload:** For internal `@calyxmail.org` emails, the subject line, message body, and attachments are serialized into an inner JSON envelope and sealed inside `CC-512` before leaving the client. The server only sees the placeholder subject `(OpenQPEP Encrypted Email)` and the whitened binary `.qpep` armor.
 3. **Sender Self-Copy:** The client encrypts a separate copy to the sender's own public key (`sender_self_packet`) so the `Sent` folder also remains end-to-end encrypted at rest.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.7-pc`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 

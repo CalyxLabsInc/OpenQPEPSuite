@@ -1,14 +1,22 @@
 """
-OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.4 (v1.1.4-pc)
+OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.7 (v1.1.7-pc)
 Canonical Post-Quantum Hybrid Protocol Reference Engine.
 Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
 
 Wire Format: Strict Frozen Wire Format v3 (\x89QPE\x03\x00) & Compact TLV v3.1 (\x89QPE\x03\x01).
 KDF Envelope: Strict kdf_version: 2 (RFC 9106 QPKD-Argon2id + qSponge-512).
-Legacy -beta backwards compatibility has been completely removed for Production Candidate 1.1.4.
+Legacy -beta backwards compatibility has been completely removed for Production Candidate 1.1.7.
 """
 import os
 import json
+from .beyond_lwe_bridge import (
+    BEYOND_LWE_SUITES,
+    decrypt_beyond_lwe,
+    encrypt_beyond_lwe,
+    generate_beyond_lwe_material,
+    sign_beyond_lwe,
+    verify_beyond_lwe,
+)
 import zlib
 import base64
 import hashlib
@@ -42,8 +50,8 @@ from .qlx_lattice import QLXEngine, QVSEngine, QLX_TIERS, QVS_TIERS, qsponge_var
 PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
 APP_NAME = "Calyx QPEP Client"
 UNIVERSAL_VERSION = "1.1.0-pc"
-UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.4"
-PROTOCOL_VERSION = "OpenQPEP/PC-1.1.4"
+UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.7"
+PROTOCOL_VERSION = "OpenQPEP/PC-1.1.7"
 DEFAULT_SUITE = "Signature QLX-4096 + QVS-256"
 QPKRF_EXTENSION = ".qpkrf"
 
@@ -374,7 +382,7 @@ def _armor_unwrap(armored_text: str, expected_label: Optional[str] = None) -> Tu
 
     raw_frame = _b64d("".join(b64_chunks))
     if not raw_frame.startswith(WIRE_MAGIC):
-        raise ValueError("Unsupported or legacy beta wire format. OpenQPEP Production Candidate 1.1.4 requires Wire Format v3 (\\x89QPE\\x03\\x00).")
+        raise ValueError("Unsupported or legacy beta wire format. OpenQPEP Production Candidate 1.1.7 requires Wire Format v3 (\\x89QPE\\x03\\x00).")
     if checksum_line:
         expected_crc = _b64e(qsponge_var(b"CALYX-ARMOR-CRC-v1|" + raw_frame, 6))
         if not hmac.compare_digest(checksum_line, expected_crc):
@@ -416,7 +424,7 @@ class QPEPKeyRing:
 
 class CalyxQPEPProtocol:
     """
-    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.4).
+    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.7).
     """
 
     @staticmethod
@@ -428,9 +436,16 @@ class CalyxQPEPProtocol:
         comment: str = "OpenQPEP by Calyx Labs Inc.",
     ) -> QPEPKeyRing:
         policy_witness = enforce_passphrase_policy(passphrase)
+        requested_suite = qlx_tier
+        is_beyond_lwe = requested_suite in BEYOND_LWE_SUITES
         if qlx_tier not in QLX_TIERS:
             qlx_tier = "QLX-4096"
         qvs_tier = QLX_TIERS[qlx_tier]["qvs_tier"]
+        blwe_pub, blwe_priv = (
+            generate_beyond_lwe_material(requested_suite, allow_low_ram_override=True)
+            if is_beyond_lwe
+            else (None, None)
+        )
 
         hgc_sk = x448.X448PrivateKey.generate()
         hgc_pk = hgc_sk.public_key()
@@ -477,6 +492,7 @@ class CalyxQPEPProtocol:
         self_sig_blob = sig_part1 + sig_part2
 
         public_bundle = {
+            "suite_id": requested_suite if is_beyond_lwe else qlx_tier,
             "qlx_tier": qlx_tier,
             "qvs_tier": qvs_tier,
             "hgc_448_public_b64": _b64e(hgc_pk_bytes),
@@ -485,6 +501,8 @@ class CalyxQPEPProtocol:
             "qvs_public_b64": _b64e(qvs_pk),
             "self_signature_b64": _b64e(self_sig_blob),
         }
+        if is_beyond_lwe and blwe_pub is not None:
+            public_bundle["beyond_lwe_public"] = blwe_pub
 
         kdf_salt = os.urandom(32)
         k_s1, k_s2, k_mac, kdf_v2_params = derive_qpkrf_keys_v2(passphrase, kdf_salt, qlx_tier=qlx_tier)
@@ -492,15 +510,15 @@ class CalyxQPEPProtocol:
         mask_stream = qsponge_var(b"CALYX-QPEP-SK-MASK|" + k_mac + key_hash.encode("ascii"), len(qlx_sk))
         masked_qlx_sk = bytes(a ^ b for a, b in zip(qlx_sk, mask_stream))
 
-        private_raw = json.dumps(
-            {
-                "hgc_448_private_b64": _b64e(hgc_sk_bytes),
-                "qlx_masked_private_b64": _b64e(masked_qlx_sk),
-                "hgc_sig_private_b64": _b64e(hgc_sig_sk_bytes),
-                "qvs_private_b64": _b64e(qvs_sk),
-            },
-            separators=(",", ":"),
-        ).encode("utf-8")
+        priv_payload_obj = {
+            "hgc_448_private_b64": _b64e(hgc_sk_bytes),
+            "qlx_masked_private_b64": _b64e(masked_qlx_sk),
+            "hgc_sig_private_b64": _b64e(hgc_sig_sk_bytes),
+            "qvs_private_b64": _b64e(qvs_sk),
+        }
+        if is_beyond_lwe and blwe_priv is not None:
+            priv_payload_obj["beyond_lwe_private"] = blwe_priv
+        private_raw = json.dumps(priv_payload_obj, separators=(",", ":")).encode("utf-8")
 
         aad = f"CALYX-QPEP-PRIVRING|{key_hash}".encode("utf-8")
         n1, n2, ct_priv = _cc512_encrypt(private_raw, k_s1, k_s2, aad)
@@ -588,7 +606,7 @@ class CalyxQPEPProtocol:
         kdf_version = int(priv_enc.get("kdf_version") or kdf_params.get("kdf_version") or 0)
         if kdf_version < 2:
             raise ValueError(
-                "Legacy beta kdf_version < 2 key rings are rejected in OpenQPEP Production Candidate 1.1.4 (kdf_version >= 2 required)."
+                "Legacy beta kdf_version < 2 key rings are rejected in OpenQPEP Production Candidate 1.1.7 (kdf_version >= 2 required)."
             )
         k_s1, k_s2, k_mac, _ = derive_qpkrf_keys_v2(passphrase, kdf_salt, kdf_params=kdf_params)
         aad = f"CALYX-QPEP-PRIVRING|{keyring.key_hash}".encode("utf-8")
@@ -610,12 +628,15 @@ class CalyxQPEPProtocol:
         mask_stream = qsponge_var(b"CALYX-QPEP-SK-MASK|" + k_mac + keyring.key_hash.encode("ascii"), len(masked_qlx_sk))
         qlx_sk = bytes(a ^ b for a, b in zip(masked_qlx_sk, mask_stream))
 
-        return {
+        out_keys: Dict[str, Any] = {
             "hgc_448_private": _b64d(parsed["hgc_448_private_b64"]),
             "qlx_private": qlx_sk,
             "hgc_sig_private": _b64d(parsed["hgc_sig_private_b64"]),
             "qvs_private": _b64d(parsed["qvs_private_b64"]),
         }
+        if "beyond_lwe_private" in parsed:
+            out_keys["beyond_lwe_private"] = parsed["beyond_lwe_private"]
+        return out_keys
 
     @staticmethod
     def export_qpkrf(
@@ -627,7 +648,7 @@ class CalyxQPEPProtocol:
         """
         Exports a Public or Private .qpkrf Key Ring File.
         - Exporting a Public Key Ring does NOT require a passphrase.
-        - Exporting a Private Key Ring strictly requires and verifies the owner's QPKD-Argon passphrase.
+        - Exporting a Private Key Ring strictly requires and verifies the owner's QPKD-Argon2id passphrase.
         """
         if include_private:
             if not passphrase:
@@ -682,7 +703,7 @@ class CalyxQPEPProtocol:
         """
         Imports a .qpkrf Key Ring File.
         - Importing a Public Key Ring (receiver key) does NOT require a passphrase.
-        - Importing a Private Key Ring strictly requires and verifies the owner's QPKD-Argon passphrase.
+        - Importing a Private Key Ring strictly requires and verifies the owner's QPKD-Argon2id passphrase.
         """
         if isinstance(armored_or_path, Path) or (
             isinstance(armored_or_path, str)
@@ -727,7 +748,7 @@ class CalyxQPEPProtocol:
 
         if keyring.has_private_key:
             if not passphrase:
-                raise QPEPPassphrasePolicyError("Importing a private .qpkrf key ring requires its mandatory QPKD-Argon passphrase.")
+                raise QPEPPassphrasePolicyError("Importing a private .qpkrf key ring requires its mandatory QPKD-Argon2id passphrase.")
             CalyxQPEPProtocol.unlock_private_keys(keyring, passphrase)
 
         return keyring
@@ -1172,5 +1193,64 @@ class CalyxQPEPProtocol:
     def decrypt_multi_recipient(armored_packet: str, recipient_keyring: QPEPKeyRing, passphrase: str):
         from .wire.multi_recipient import decrypt_multi_recipient as _dec_mr
         return _dec_mr(armored_packet, recipient_keyring, passphrase)
+
+
+    @staticmethod
+    def get_keyring_suite_id(keyring: QPEPKeyRing) -> str:
+        return str(keyring.public_bundle.get("suite_id") or keyring.public_bundle.get("qlx_tier") or "QLX-4096")
+
+    @staticmethod
+    def encrypt_beyond_lwe_packet(
+        plaintext: bytes,
+        recipient_keyring: QPEPKeyRing,
+    ) -> str:
+        """Encrypts bytes directly using the recipient .qpkrf key ring's native Beyond-LWE suite."""
+        suite_id = OpenQPEPProtocol.get_keyring_suite_id(recipient_keyring)
+        blwe_pub = recipient_keyring.public_bundle.get("beyond_lwe_public")
+        if suite_id not in BEYOND_LWE_SUITES or not blwe_pub:
+            raise ValueError(f"Key ring {recipient_keyring.key_hash[:12]} is not a Beyond-LWE suite ({suite_id}).")
+        return encrypt_beyond_lwe(suite_id, plaintext, blwe_pub)
+
+    @staticmethod
+    def decrypt_beyond_lwe_packet(
+        armored_packet: str,
+        recipient_keyring: QPEPKeyRing,
+        passphrase: str,
+    ) -> bytes:
+        """Unlocks the recipient .qpkrf private key ring via Argon2id+qSponge-512 and decrypts Beyond-LWE packet."""
+        suite_id = OpenQPEPProtocol.get_keyring_suite_id(recipient_keyring)
+        priv = OpenQPEPProtocol.unlock_private_keys(recipient_keyring, passphrase)
+        blwe_priv = priv.get("beyond_lwe_private")
+        if suite_id not in BEYOND_LWE_SUITES or not blwe_priv:
+            raise ValueError(f"Key ring {recipient_keyring.key_hash[:12]} lacks Beyond-LWE private key material.")
+        return decrypt_beyond_lwe(suite_id, armored_packet, blwe_priv)
+
+    @staticmethod
+    def sign_beyond_lwe_bytes(
+        data: bytes,
+        signer_private_keyring: QPEPKeyRing,
+        passphrase: str,
+    ) -> str:
+        """Signs bytes directly using the signer .qpkrf key ring's native Beyond-LWE signature engine."""
+        suite_id = OpenQPEPProtocol.get_keyring_suite_id(signer_private_keyring)
+        blwe_pub = signer_private_keyring.public_bundle.get("beyond_lwe_public")
+        priv = OpenQPEPProtocol.unlock_private_keys(signer_private_keyring, passphrase)
+        blwe_priv = priv.get("beyond_lwe_private")
+        if suite_id not in BEYOND_LWE_SUITES or not blwe_pub or not blwe_priv:
+            raise ValueError(f"Key ring {signer_private_keyring.key_hash[:12]} lacks Beyond-LWE signing material.")
+        return sign_beyond_lwe(suite_id, data, blwe_pub, blwe_priv)
+
+    @staticmethod
+    def verify_beyond_lwe_signature(
+        armored_sig: str,
+        signer_public_keyring: QPEPKeyRing,
+    ) -> Tuple[bool, bytes]:
+        """Verifies a native Beyond-LWE signature against the signer's .qpkrf public key ring."""
+        suite_id = OpenQPEPProtocol.get_keyring_suite_id(signer_public_keyring)
+        blwe_pub = signer_public_keyring.public_bundle.get("beyond_lwe_public")
+        if suite_id not in BEYOND_LWE_SUITES or not blwe_pub:
+            return False, b""
+        return verify_beyond_lwe(suite_id, armored_sig, blwe_pub)
+
 
 OpenQPEPProtocol = CalyxQPEPProtocol

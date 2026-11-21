@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 QVS-Ring: 1-of-N Post-Quantum Deniable & Optionally Linkable Ring Signatures.
 Proves a message was authorized by one member of a public-key ring without revealing who signed.

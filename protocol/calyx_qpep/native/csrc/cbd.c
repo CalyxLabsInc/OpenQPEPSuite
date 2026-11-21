@@ -1,7 +1,7 @@
 /*
  * OpenQPEP Native C99 Centered Binomial Distribution (CBD_1 / CBD_2) Samplers,
  * Calyx Sovereign-Pentad Sovereign-Pentad Plain-LWE Matrix-Vector Accelerators, and ABI Probe.
- * Production Candidate 1.1.4 — Calyx Labs Inc. (CPOSLS-1.0)
+ * Production Candidate 1.1.7 — Calyx Labs Inc. (CPOSLS-1.0)
  */
 #include <stdint.h>
 #include <stddef.h>

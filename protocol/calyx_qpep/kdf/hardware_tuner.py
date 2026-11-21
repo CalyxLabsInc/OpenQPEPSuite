@@ -1,5 +1,5 @@
 """
-OpenQPEP Hardware Auto-Tuner for QPKD-Argon2id Key Derivation (Production Candidate 1.1.4).
+OpenQPEP Hardware Auto-Tuner for QPKD-Argon2id Key Derivation (Production Candidate 1.1.7).
 Calibrates memory-hard parameters (m_kib, t_cost, p_lanes) for standard devices
 (64 MiB, t=3, p=4), Calyx Hyper-Tesseract flagship hardware (256 MiB, t=4, p=4),
 or low-RAM constrained environments (32 MiB, t=3, p=2).
@@ -53,7 +53,7 @@ def detect_system_ram_mib() -> int:
 
 def select_kdf_profile(qlx_tier: str = "QLX-4096", override_ram_mib: int = 0) -> KDFHardwareProfile:
     """
-    Auto-tunes Argon2id parameters per OpenQPEP PC 1.1.4 specification:
+    Auto-tunes Argon2id parameters per OpenQPEP PC 1.1.7 specification:
       - Calyx Hyper-Tesseract (QLX-16384): m = 262,144 KiB (256 MiB), t = 4, p = 4 (when RAM >= 4 GiB)
       - Standard devices (QLX-768 .. QLX-4096): m = 65,536 KiB (64 MiB), t = 3, p = 4
       - Low-RAM constrained devices (< 2 GiB RAM): m = 32,768 KiB (32 MiB), t = 3, p = 2

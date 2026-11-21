@@ -1,5 +1,5 @@
 """
-QVS Lattice Fiat-Shamir with Aborts Signature Engine over Z_8380417[X]/(X^256+1) (Production Candidate 1.1.4).
+QVS Lattice Fiat-Shamir with Aborts Signature Engine over Z_8380417[X]/(X^256+1) (Production Candidate 1.1.7).
 Hardened with Verify-Before-Emit Fault-Guard (QPEPFaultGuardError) and SecretBuffer scrubbing.
 """
 import os
@@ -28,7 +28,7 @@ class QVSEngine:
     @staticmethod
     def keygen(tier: str = "QVS-87", policy_witness: bytes = b"") -> Tuple[bytes, bytes]:
         if len(policy_witness) != 64:
-            raise ValueError("QVS key generation requires a 64-byte QPKD-Argon passphrase policy witness.")
+            raise ValueError("QVS key generation requires a 64-byte QPKD-Argon2id passphrase policy witness.")
         spec = QVS_TIERS.get(tier, QVS_TIERS["QVS-87"])
         k, l = spec["k"], spec["l"]
 

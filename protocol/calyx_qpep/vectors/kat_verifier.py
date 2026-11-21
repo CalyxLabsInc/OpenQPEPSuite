@@ -1,8 +1,7 @@
 """
-OpenQPEP Known Answer Test (KAT) Verifier (Production Candidate 1.1.4).
-Re-runs deterministic KAT derivation from golden JSON files in vectors/*.json and
-verifies 100% bit-for-bit equality on key lengths, ct_qlx lengths, shared secrets,
-FO implicit rejections, QVS signatures, and whitened \x89QPE wire frames.
+OpenQPEP Known Answer Test (KAT) Verifier (Production Candidate Version 1.1.7 / v1.1.7-pc).
+Re-runs deterministic KAT derivation across ALL 10 canonical suites (5 structured-lattice + 5 Beyond-LWE)
+from golden JSON files in vectors/*.json and verifies 100% bit-for-bit equality.
 """
 import json
 from pathlib import Path
@@ -14,8 +13,11 @@ from .kat_generator import SUITE_KAT_SPECS, generate_suite_kat
 def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
     """Verifies a single golden JSON KAT file against the live OpenQPEP engine."""
     expected: Dict[str, Any] = json.loads(Path(kat_path).read_text(encoding="utf-8"))
+    family = expected.get("family", "structured_lattice")
     spec = {
         "filename": Path(kat_path).name,
+        "family": family,
+        "suite_id": expected.get("suite_id", expected["qlx_tier"]),
         "suite_name": expected["suite_name"],
         "qlx_tier": expected["qlx_tier"],
         "qvs_tier": expected["qvs_tier"],
@@ -23,12 +25,20 @@ def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
     }
     actual = generate_suite_kat(spec)
 
-    # Compare every cryptographic field bit-for-bit (ignoring wire_packet key_hash timestamp drift if any)
+    if family == "beyond_lwe":
+        for fld in ("public_material_bytes", "public_material_sha3_512", "ct_bytes", "ct_sha3_512", "sig_bytes", "sig_sha3_512", "qpkrf_roundtrip_verified", "decrypt_verified", "signature_verified"):
+            if actual["beyond_lwe"][fld] != expected["beyond_lwe"][fld]:
+                return False, f"Mismatch in beyond_lwe.{fld} for {spec['suite_id']}"
+        return (
+            True,
+            f"[PASS] {spec['suite_id']:14s} (Beyond-LWE) | ct={actual['beyond_lwe']['ct_bytes']:6d} B "
+            f"| sig={actual['beyond_lwe']['sig_bytes']:6d} B | pub={actual['beyond_lwe']['public_material_sha3_512'][:16]}...",
+        )
+
     for section in ("qlx", "qvs"):
         if actual[section] != expected[section]:
             return False, f"Mismatch in {section} for {spec['suite_name']}"
 
-    # Verify wire packet invariants (exact magic, zero cleartext identity headers, exact spec ct size)
     if actual["wire_packet"]["wire_magic_hex"] != expected["wire_packet"]["wire_magic_hex"]:
         return False, f"Wire magic mismatch for {spec['suite_name']}"
     if expected["wire_packet"]["cleartext_identity_headers_present"]:
@@ -36,13 +46,13 @@ def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
 
     return (
         True,
-        f"[PASS] {spec['suite_name']:44s} | ct_qlx={actual['qlx']['actual_ct_qlx_bytes']:5d} B "
-        f"| qvs_sig={actual['qvs']['actual_sig_bytes']:5d} B | ss={actual['qlx']['shared_secret_hex'][:16]}...",
+        f"[PASS] {spec['suite_id']:14s} (Lattice)    | ct={actual['qlx']['actual_ct_qlx_bytes']:6d} B "
+        f"| sig={actual['qvs']['actual_sig_bytes']:6d} B | ss={actual['qlx']['shared_secret_hex'][:16]}...",
     )
 
 
 def verify_all_kats(vectors_dir: Path) -> Tuple[bool, List[str]]:
-    """Verifies all golden KAT JSON files in vectors_dir."""
+    """Verifies all 10 golden KAT JSON files in vectors_dir."""
     vectors_dir = Path(vectors_dir)
     if not vectors_dir.exists():
         return False, [f"[FAIL] Vectors directory not found: {vectors_dir}"]

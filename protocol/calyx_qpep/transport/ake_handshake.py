@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+# OpenQPEP Production Candidate 1.1.7 (v1.1.7-pc)
 """
 QPEP-AKE: 1-RTT PQ-Noise-XX Mutually Authenticated, Identity-Hiding Handshake
 combining ephemeral + static QLX + X448 into full-duplex CC-512 transport channels

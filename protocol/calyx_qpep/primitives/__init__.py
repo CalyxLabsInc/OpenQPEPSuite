@@ -1,4 +1,4 @@
-"""OpenQPEP Low-Level Cryptographic Primitives (Production Candidate 1.1.4)."""
+"""OpenQPEP Low-Level Cryptographic Primitives (Production Candidate 1.1.7)."""
 from .qsponge import qsponge_512, qsponge_var
 from .consttime import ct_eq, ct_cmov, ct_select_int, barrett_reduce_3329, montgomery_reduce_3329, barrett_reduce_qvs
 from .zeroize import zeroize_bytes, SecretBuffer
