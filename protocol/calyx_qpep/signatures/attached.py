@@ -1,5 +1,5 @@
 """
-OpenQPEP Self-Contained Attached Signatures & Canonical Payload Digest Helpers (Production Candidate 1.0.0).
+OpenQPEP Self-Contained Attached Signatures & Canonical Payload Digest Helpers (Production Candidate 1.1.0).
 """
 from typing import Sequence, Tuple
 
@@ -9,7 +9,7 @@ from ..protocol import OpenQPEPProtocol, QPEPKeyRing
 
 def canonical_payload_digest(payload: bytes) -> bytes:
     """Computes the canonical domain-separated 512-bit qSponge-512 digest of a payload."""
-    return qsponge_512(b"CALYX-QPEP-CANONICAL-PAYLOAD-v1.0.0-pc|" + payload)
+    return qsponge_512(b"CALYX-QPEP-CANONICAL-PAYLOAD-v1.1.0-pc|" + payload)
 
 
 def sign_attached_text(message: str, signer_keyring: QPEPKeyRing, passphrase: str) -> str:

@@ -1,7 +1,7 @@
 # OpenQPEP for Beginners (`NewbieDetails.md`)
 **A Plain-English Guide to How OpenQPEP Works, How Every Key Tier Encrypts, Decrypts & Signs, and Why OpenQPEP Is Stronger Than Post-Quantum PGP (`ML-KEM-1024` v6, `ML-DSA-87` v6 & `LibrePGP` v5)**
 
-* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.0.0`)
+* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`)
 * **Creator & Lead Architect:** Tristen Martinez, Founder of [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
 * **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) (Android 10 through Android 17)
 * **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
@@ -100,7 +100,7 @@ When you open a `.qpep` packet in [OpenQPEP](https://github.com/CalyxLabsInc/Ope
 
 ## 4. All Four OpenQPEP Key Tiers Explained Simply (And How They Compare to Post-Quantum PGP v6)
 
-Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) offers only two lattice encryption sizes (`ML-KEM-768` at 768 dimensions and `ML-KEM-1024` at 1,024 dimensions), [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.0.0`) gives you **four selectable key tiers** scaling all the way up to **4,096 lattice dimensions**:
+Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) offers only two lattice encryption sizes (`ML-KEM-768` at 768 dimensions and `ML-KEM-1024` at 1,024 dimensions), [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`) gives you **four selectable key tiers** scaling all the way up to **4,096 lattice dimensions**:
 
 | OpenQPEP Key Tier | Encryption Lattice (`QLX`) | Signature Lattice (`QVS`) | Nearest Post-Quantum PGP v6 Equivalent ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) | Public Key Size (`QLX` + `QVS`) | Ciphertext / Signature Size | Best Used For |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -133,7 +133,7 @@ Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/))
 
 ## 5. Head-to-Head Comparison: OpenQPEP vs. Post-Quantum PGP Protocols (`RFC 9980` v6 & `LibrePGP` v5)
 
-Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.0.0`)** is architecturally stronger than **[IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) (`ML-KEM-1024+X448` v6 / `ML-DSA-87+Ed448` v6)**, **[NIST/Brainpool Composite OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-nist-bp-comp/)**, and **[LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)**:
+Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`)** is architecturally stronger than **[IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) (`ML-KEM-1024+X448` v6 / `ML-DSA-87+Ed448` v6)**, **[NIST/Brainpool Composite OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-nist-bp-comp/)**, and **[LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)**:
 
 | Security Dimension / 2026 Threat Vector | Post-Quantum PGP Protocols ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) `ML-KEM-1024` v6, `ML-DSA-87` v6 & [LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)) | [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Signature QLX-4096 + QVS-256` Flagship Tier) |
 | :--- | :--- | :--- |

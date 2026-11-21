@@ -11,7 +11,7 @@ android {
         applicationId = "com.calyxlabs.qpepclient"
         minSdk = 29
         targetSdk = 37
-        versionCode = 219
-        versionName = "PC 1.0.0"
+        versionCode = 220
+        versionName = "PC 1.1.0"
     }
 }

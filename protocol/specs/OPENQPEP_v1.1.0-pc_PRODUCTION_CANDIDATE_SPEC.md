@@ -1,11 +1,11 @@
-# OpenQPEP Production Candidate 1.0.0 (`v1.0.0-pc`) — Frozen Specification
+# OpenQPEP Production Candidate 1.1.0 (`v1.1.0-pc`) — Frozen Specification
 
 **Release Channel:** `PC` (Production Candidate)  
-**Version:** `1.0.0-pc` (`OpenQPEP/PC-1.0.0`)  
+**Version:** `1.1.0-pc` (`OpenQPEP/PC-1.1.0`)  
 **Publisher:** Calyx Labs Inc. (`support@calyxlabsinc.org`)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
-## Breaking Production Candidate 1.0.0 Security Baseline
+## Breaking Production Candidate 1.1.0 Security Baseline
 - **Zero Legacy Beta Compatibility:** All pre-PC `-beta` wire magics (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`), raw unframed JSON armor fallbacks, and legacy `kdf_version: 1` (Scrypt-only) `.qpkrf` key rings are **strictly rejected**.
 - **Strict Frozen Wire Format v3 & Compact TLV v3.1:** Every packet emits and verifies `\x89QPE\x03\x00` (canonical) or `\x89QPE\x03\x01` (compact TLV).
 - **Mandatory Memory-Hard KDF (`kdf_version: 2`):** Every encrypted `.qpkrf` private key ring uses RFC 9106 `QPKD-Argon2id + qSponge-512` with hardware-calibrated memory parameters.

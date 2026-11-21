@@ -1,6 +1,6 @@
-# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.0.0-pc`)
+# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.1.0-pc`)
 
-**Protocol:** `OpenQPEP/PC-1.0.0` (`Production Candidate 1.0.0`)  
+**Protocol:** `OpenQPEP/PC-1.1.0` (`Production Candidate 1.1.0`)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
@@ -40,7 +40,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 3. Mandatory `kdf_version: 2` (`QPKD-Argon2id + qSponge-512`) & `CC-512`
 
 - **Passphrase Policy Witness (64 Bytes):** Hardcoded non-bypassable policy (`>= 12` chars, `>= 2` digits, `>= 4` specials, `>= 2` uppercase, `>= 4` lowercase) hashed into a 64-byte witness absorbed directly into key derivation.
-- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 2`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3`, `p = 4`, 256-bit salt). Legacy beta `kdf_version: 1` key rings are **strictly rejected** in `v1.0.0-pc`.
+- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 2`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3`, `p = 4`, 256-bit salt). Legacy beta `kdf_version: 1` key rings are **strictly rejected** in `v1.1.0-pc`.
 - **Calyx-Cascade-512 (`CC-512`):** Dual-stream AEAD cascading `AES-256-GCM` inside `ChaCha20-Poly1305` with independent keys and nonces derived from `qSponge-512`.
 
 ---

@@ -13,6 +13,6 @@ def rust_backend_info() -> Dict[str, Any]:
     return {
         "rust_pyo3_loaded": RUST_AVAILABLE,
         "crate": "openqpep-core",
-        "version": "1.0.0-pc",
+        "version": "1.1.0-pc",
         "fallback": "libopenqpep-c99 / pure-python",
     }

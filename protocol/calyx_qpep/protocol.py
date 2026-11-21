@@ -1,11 +1,11 @@
 """
-OpenQPEP by Calyx Labs Inc. — Production Candidate 1.0.0 (v1.0.0-pc)
+OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.0 (v1.1.0-pc)
 Canonical Post-Quantum Hybrid Protocol Reference Engine.
 Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
 
 Wire Format: Strict Frozen Wire Format v3 (\x89QPE\x03\x00) & Compact TLV v3.1 (\x89QPE\x03\x01).
 KDF Envelope: Strict kdf_version: 2 (RFC 9106 QPKD-Argon2id + qSponge-512).
-Legacy -beta backwards compatibility has been completely removed for Production Candidate 1.0.0.
+Legacy -beta backwards compatibility has been completely removed for Production Candidate 1.1.0.
 """
 import os
 import json
@@ -41,9 +41,9 @@ from .qlx_lattice import QLXEngine, QVSEngine, QLX_TIERS, QVS_TIERS, qsponge_var
 
 PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
 APP_NAME = "Calyx QPEP Client"
-UNIVERSAL_VERSION = "1.0.0-pc"
-UNIVERSAL_VERSION_LABEL = "Production Candidate 1.0.0"
-PROTOCOL_VERSION = "OpenQPEP/PC-1.0.0"
+UNIVERSAL_VERSION = "1.1.0-pc"
+UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.0"
+PROTOCOL_VERSION = "OpenQPEP/PC-1.1.0"
 DEFAULT_SUITE = "Signature QLX-4096 + QVS-256"
 QPKRF_EXTENSION = ".qpkrf"
 
@@ -374,7 +374,7 @@ def _armor_unwrap(armored_text: str, expected_label: Optional[str] = None) -> Tu
 
     raw_frame = _b64d("".join(b64_chunks))
     if not raw_frame.startswith(WIRE_MAGIC):
-        raise ValueError("Unsupported or legacy beta wire format. OpenQPEP Production Candidate 1.0.0 requires Wire Format v3 (\\x89QPE\\x03\\x00).")
+        raise ValueError("Unsupported or legacy beta wire format. OpenQPEP Production Candidate 1.1.0 requires Wire Format v3 (\\x89QPE\\x03\\x00).")
     if checksum_line:
         expected_crc = _b64e(qsponge_var(b"CALYX-ARMOR-CRC-v1|" + raw_frame, 6))
         if not hmac.compare_digest(checksum_line, expected_crc):
@@ -416,7 +416,7 @@ class QPEPKeyRing:
 
 class CalyxQPEPProtocol:
     """
-    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Production Candidate 1.0.0).
+    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.0).
     """
 
     @staticmethod
@@ -588,7 +588,7 @@ class CalyxQPEPProtocol:
         kdf_version = int(priv_enc.get("kdf_version") or kdf_params.get("kdf_version") or 0)
         if kdf_version < 2:
             raise ValueError(
-                "Legacy beta kdf_version < 2 key rings are rejected in OpenQPEP Production Candidate 1.0.0 (kdf_version >= 2 required)."
+                "Legacy beta kdf_version < 2 key rings are rejected in OpenQPEP Production Candidate 1.1.0 (kdf_version >= 2 required)."
             )
         k_s1, k_s2, k_mac, _ = derive_qpkrf_keys_v2(passphrase, kdf_salt, kdf_params=kdf_params)
         aad = f"CALYX-QPEP-PRIVRING|{keyring.key_hash}".encode("utf-8")

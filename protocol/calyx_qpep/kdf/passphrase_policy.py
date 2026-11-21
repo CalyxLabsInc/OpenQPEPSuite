@@ -1,3 +1,4 @@
+# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
 """
 Calyx QPEP Hardcoded Cryptographic Passphrase Gate (QPKD-Argon).
 

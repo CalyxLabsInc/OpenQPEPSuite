@@ -1,5 +1,5 @@
 """
-Active Secret Memory Scrubbing (Production Candidate 1.0.0).
+Active Secret Memory Scrubbing (Production Candidate 1.1.0).
 Stores unpacked secret lattice vectors, private keys, and CC-512 session keys in mutable
 bytearray buffers and explicitly zeroes RAM via ctypes.memset upon exit.
 """

@@ -1,13 +1,13 @@
 # 03 — `.qpkrf` Key Ring, Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Compact TLV v3.1 (`\x89QPE\x03\x01`)
 
-**Protocol:** `OpenQPEP/PC-1.0.0` (`Production Candidate 1.0.0`)  
+**Protocol:** `OpenQPEP/PC-1.1.0` (`Production Candidate 1.1.0`)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
 
-## 1. Strict Production Candidate 1.0.0 Wire Policy (Zero Beta Compatibility)
+## 1. Strict Production Candidate 1.1.0 Wire Policy (Zero Beta Compatibility)
 
-OpenQPEP `v1.0.0-pc` strictly accepts **only** two binary wire magics across Python, C99, Rust, WASM/JS, and Go:
+OpenQPEP `v1.1.0-pc` strictly accepts **only** two binary wire magics across Python, C99, Rust, WASM/JS, and Go:
 - **`WIRE_MAGIC_V3 = 0x89 0x51 0x50 0x45 0x03 0x00` (`\x89QPE\x03\x00`)** — Canonical Frozen Wire Format v3
 - **`WIRE_MAGIC_V3_1 = 0x89 0x51 0x50 0x45 0x03 0x01` (`\x89QPE\x03\x01`)** — Compact Binary TLV Wire Format v3.1
 

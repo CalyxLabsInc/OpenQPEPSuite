@@ -16,7 +16,7 @@ class QSpongeDRBG:
     Keccak-f[1600] qSponge-XOF (SHAKE-256). Strictly isolated to KAT test mode.
     """
 
-    DOMAIN_TAG = b"CALYX-OPENQPEP-KAT-DRBG-v1.0.0-pc|"
+    DOMAIN_TAG = b"CALYX-OPENQPEP-KAT-DRBG-v1.1.0-pc|"
 
     def __init__(self, seed: bytes):
         if not isinstance(seed, (bytes, bytearray)) or len(seed) < 16:

@@ -1,5 +1,5 @@
 """
-OpenQPEP Wire-Format Mutation Fuzzer (Production Candidate 1.0.0).
+OpenQPEP Wire-Format Mutation Fuzzer (Production Candidate 1.1.0).
 Hammers decrypt_packet, import_qpkrf, and verify_text_signature with mutated, truncated,
 bit-flipped, oversized, and malformed binary/armored inputs (default 10,000 iterations) to
 guarantee zero unhandled crashes and 100% MAC/FO rejection.

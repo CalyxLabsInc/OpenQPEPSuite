@@ -2,7 +2,7 @@
 
 * **Document Type:** Cryptographic Research Thesis & Flagship Implementation Blueprint (`OpenQPEP Beyond-LWE / Flagship-Implementable Concept`)
 * **Author & Chief Cryptography Architect:** Tristen Martinez, Founder & Lead Architect at [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
-* **Current Suite Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.0.0`, `CPOSLS-1.0`) — Current Apex Production Tier: **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**
+* **Current Suite Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`, `CPOSLS-1.0`) — Current Apex Production Tier: **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**
 * **Target Reference Hardware:** High-RAM Flagship Smartphones (**Samsung Galaxy Z Fold 8** / 12–16 GB LPDDR5X RAM, ARMv9 multi-core SoC with NEON/SVE2, native NDK/C99 or WebAssembly SIMD) & High-Spec Desktop/Workstation PCs
 * **Live Ecosystem:** [https://calyxlabsinc.org/](https://calyxlabsinc.org/) | [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org) | [https://messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)
 
@@ -132,9 +132,9 @@ Even if an attacker finds an algebraic symmetry break against **every** structur
 
 ---
 
-## 4. OpenQPEP Protocol Integration Path (`v1.0.0-pc+` / Generation II-B)
+## 4. OpenQPEP Protocol Integration Path (`v1.1.0-pc+` / Generation II-B)
 
-Because OpenQPEP `Production Candidate 1.0.0` now uses a modular cryptographic kernel (`calyx_qpep/primitives/`, `calyx_qpep/lattice/`, `calyx_qpep/wire/`, `calyx_qpep/kdf/`, `calyx_qpep/keyring/`), integrating any of Tiers 6–10 requires **zero breaking changes** to `.qpkrf` key rings, `Key Hash` addressing, `QPEP-Ratchet`, or `Calyx-Cascade-512`:
+Because OpenQPEP `Production Candidate 1.1.0` now uses a modular cryptographic kernel (`calyx_qpep/primitives/`, `calyx_qpep/lattice/`, `calyx_qpep/wire/`, `calyx_qpep/kdf/`, `calyx_qpep/keyring/`), integrating any of Tiers 6–10 requires **zero breaking changes** to `.qpkrf` key rings, `Key Hash` addressing, `QPEP-Ratchet`, or `Calyx-Cascade-512`:
 1. **Modular Plugin Directories:** Add `calyx_qpep/codes/` (`goppa_8192.py`, `rank_rsd512.py`), `calyx_qpep/isogeny/` (`sqi_2d_512.py`), `calyx_qpep/multivariate/` (`qmq_512.py`), and `calyx_qpep/hashsig/` (`qhs_512_hypertree.py`).
 2. **Native ARMv9 / x86_64 Acceleration (`libopenqpep`):** Compile hot inner loops (`PMULL`, `VMLAL`, 64-bit Montgomery limbs, and vectorized Keccak-f[1600]) via C99/Rust NDK (`Android JNI`) and WebAssembly SIMD (`iOS/Web`).
 3. **Mandatory Hardware Guardrails:** Enforce the same automatic RAM/hardware capability check already built into `calyx_qpep/kdf/hardware_tuner.py` and the Calyx QPEP Client High-Tier Hardware Notice, gating Tiers 6–10 to devices with `>= 12 GB RAM` and native SIMD support while keeping **`Calyx Signature` (`QLX-4096 + QVS-256`)** as the fast universal default for all devices.

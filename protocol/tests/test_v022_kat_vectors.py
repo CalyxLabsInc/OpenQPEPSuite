@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.0.0 Deterministic KATs & Cross-Language Vectors.
+Unit tests for OpenQPEP Production Candidate 1.1.0 Deterministic KATs & Cross-Language Vectors.
 """
 import json
 import unittest

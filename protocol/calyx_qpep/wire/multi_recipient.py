@@ -1,5 +1,5 @@
 """
-OpenQPEP Anonymous Mixed-Tier Multi-Recipient Broadcast Encryption (Production Candidate 1.0.0).
+OpenQPEP Anonymous Mixed-Tier Multi-Recipient Broadcast Encryption (Production Candidate 1.1.0).
 
 Features:
   1. Single-Pass CEK Encryption: Encrypts payload once with a fresh 512-bit CC-512 Content
@@ -85,7 +85,7 @@ def encrypt_multi_recipient(
             body_plain = pad_to_bucket(payload, bucket_size=bucket_size)
         else:
             body_plain = payload
-        payload_aad = b"CALYX-QPEP-MULTI-PAYLOAD-v1.0.0-pc|" + slot_nonce
+        payload_aad = b"CALYX-QPEP-MULTI-PAYLOAD-v1.1.0-pc|" + slot_nonce
         payload_ct = cc512_encrypt(cek64, payload_nonce24, body_plain, payload_aad)
 
         # 2. Encapsulate CEK independently for each recipient (supports mixed tiers!)
@@ -206,7 +206,7 @@ def decrypt_multi_recipient(
     with SecretBuffer(recovered_cek) as cek_buf:
         payload_nonce24 = base64.b64decode(envelope["payload_nonce24_b64"])
         payload_ct = base64.b64decode(envelope["payload_ciphertext_b64"])
-        payload_aad = b"CALYX-QPEP-MULTI-PAYLOAD-v1.0.0-pc|" + slot_nonce
+        payload_aad = b"CALYX-QPEP-MULTI-PAYLOAD-v1.1.0-pc|" + slot_nonce
         body_plain = cc512_decrypt(cek_buf.as_bytes(), payload_nonce24, payload_ct, payload_aad)
 
     plaintext = unpad_from_bucket(body_plain) if envelope.get("bucket_padded") else body_plain

@@ -1,5 +1,5 @@
 """
-Calyx-Cascade-512 (CC-512) Dual-Stream Authenticated Payload Cipher (Production Candidate 1.0.0).
+Calyx-Cascade-512 (CC-512) Dual-Stream Authenticated Payload Cipher (Production Candidate 1.1.0).
 Cascades 14-round NIST AES-256-GCM inside 20-round RFC 8439 ChaCha20-Poly1305 with active
 SecretBuffer memory scrubbing of derived 64-byte session keys.
 """

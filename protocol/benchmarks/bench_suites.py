@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Automated 6-Suite Benchmark Harness (Production Candidate 1.0.0).
+OpenQPEP Automated 6-Suite Benchmark Harness (Production Candidate 1.1.0).
 Measures keygen, encaps/encrypt, decaps/decrypt, sign, verify, and peak RSS RAM across all 6 suites:
   1. QLX-768 + QVS-65 (Velocity)
   2. QLX-1024 + QVS-87 (Sovereign Hybrid)
@@ -40,7 +40,7 @@ def _peak_rss_mib() -> float:
 def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     witness = b"B" * 64
-    msg = b"OpenQPEP PC 1.0.0 Benchmark Message"
+    msg = b"OpenQPEP PC 1.1.0 Benchmark Message"
 
     target_suites = SUITES if include_heavy else SUITES[:2]
     for label, qlx_t, qvs_t in target_suites:

@@ -1,6 +1,6 @@
 # OpenQPEP Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Stable API Freeze Specification
 
-**Version:** Production Candidate 1.0.0 (`OpenQPEP/PC-1.0.0`)  
+**Version:** Production Candidate 1.1.0 (`OpenQPEP/PC-1.1.0`)  
 **Publisher:** Calyx Labs Inc. (Cleveland, Ohio)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
@@ -21,10 +21,10 @@ All OpenQPEP packets—single-recipient, multi-recipient broadcast, streaming AE
 
 ### Legacy Read Compatibility (Guaranteed)
 `unpack_wire_frame` and `OpenQPEPProtocol` retain 100% read compatibility for all historical OpenQPEP wire magics:
-- `\x89QPE\x01\x01` (v0.1.x – v1.0.0-pc)
-- `\x89QPE\x01\x09` (v1.0.0-pc)
-- `\x89QPE\x02\x00` (v1.0.0-pc)
-- `\x89QPE\x03\x00` (v1.0.0-pc Frozen Default)
+- `\x89QPE\x01\x01` (v0.1.x – v1.1.0-pc)
+- `\x89QPE\x01\x09` (v1.1.0-pc)
+- `\x89QPE\x02\x00` (v1.1.0-pc)
+- `\x89QPE\x03\x00` (v1.1.0-pc Frozen Default)
 
 ---
 

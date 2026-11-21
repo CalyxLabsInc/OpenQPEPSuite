@@ -1,5 +1,5 @@
 """
-Branchless Constant-Time Cryptographic Primitives (Production Candidate 1.0.0).
+Branchless Constant-Time Cryptographic Primitives (Production Candidate 1.1.0).
 Provides constant-time byte equality, branchless byte-array conditional move (ct_cmov)
 for Fujisaki-Okamoto implicit-rejection multiplexing, and Barrett/Montgomery reduction helpers.
 """

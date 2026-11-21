@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- OpenQPEP v1.1.0-pc (Production Candidate 1.1.0) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.calyxlabs.mail"
     android:versionCode="3"
-    android:versionName="PC 1.0.0">
+    android:versionName="PC 1.1.0">
 
     <uses-sdk
         android:minSdkVersion="29"

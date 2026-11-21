@@ -1,3 +1,4 @@
+# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
 """
 qSponge-512 (SHA3-512) and qSponge-XOF (SHAKE-256) 24-round Keccak-f[1600] primitives.
 """

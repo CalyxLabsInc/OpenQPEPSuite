@@ -1,23 +1,23 @@
 """
 OpenQPEP Protocol Constants, Lattice Suite Parameters, and Frozen Wire Format v3 Identifiers
-(Production Candidate 1.0.0 / v1.0.0-pc).
+(Production Candidate 1.1.0 / v1.1.0-pc).
 Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
 """
 from typing import Dict
 
 PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
 APP_NAME = "Calyx QPEP Client"
-UNIVERSAL_VERSION = "1.0.0-pc"
-UNIVERSAL_VERSION_LABEL = "Production Candidate 1.0.0"
-PROTOCOL_VERSION = "OpenQPEP/PC-1.0.0"
+UNIVERSAL_VERSION = "1.1.0-pc"
+UNIVERSAL_VERSION_LABEL = "Production Candidate 1.1.0"
+PROTOCOL_VERSION = "OpenQPEP/PC-1.1.0"
 RELEASE_CHANNEL = "PC"
-API_STABILITY = "v1.0.0-pc-frozen"
+API_STABILITY = "v1.1.0-pc-frozen"
 LICENSE_SPDX = "CPOSLS-1.0"
 DEFAULT_SUITE = "Signature QLX-4096 + QVS-256"
 QPKRF_EXTENSION = ".qpkrf"
 CHUNK_SIZE = 65536
 
-# Strict Production Candidate 1.0.0 Wire Magics (All legacy -beta wire magics removed)
+# Strict Production Candidate 1.1.0 Wire Magics (All legacy -beta wire magics removed)
 WIRE_MAGIC_V3 = b"\x89QPE\x03\x00"
 WIRE_MAGIC_V3_1 = b"\x89QPE\x03\x01"
 WIRE_MAGIC = WIRE_MAGIC_V3
@@ -151,5 +151,50 @@ QVS_TIERS = {
         "pk_bytes": 32 + 16 * 256 * 3,
         "sk_bytes": 128 + (14 + 16) * 256 + 16 * 256 * 3,
         "sig_bytes": 64 + 14 * 256 * 3,
+    },
+}
+
+# Canonical 10-Suite Unified Registry (Production Candidate 1.1.0 / v1.1.0-pc)
+# Strict uniform format: "Calyx <Key-Name>: <KEM-XXXX> + <SIG-XXXX> (<Key Tier Short Description>)"
+ALL_TEN_SUITES = {
+    "QLX-4096": {
+        "display_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)",
+        "high_tier_only": False,
+    },
+    "QLX-768": {
+        "display_name": "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)",
+        "high_tier_only": False,
+    },
+    "QLX-1024": {
+        "display_name": "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)",
+        "high_tier_only": False,
+    },
+    "QLX-2048": {
+        "display_name": "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)",
+        "high_tier_only": False,
+    },
+    "QLX-16384": {
+        "display_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)",
+        "high_tier_only": True,
+    },
+    "CGM-8192": {
+        "display_name": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)",
+        "high_tier_only": True,
+    },
+    "CIF-SQI-512": {
+        "display_name": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)",
+        "high_tier_only": False,
+    },
+    "CRT-RSD512": {
+        "display_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)",
+        "high_tier_only": False,
+    },
+    "CULC-2048": {
+        "display_name": "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)",
+        "high_tier_only": True,
+    },
+    "CSP-Omega": {
+        "display_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)",
+        "high_tier_only": True,
     },
 }

@@ -1,4 +1,4 @@
-"""OpenQPEP v1.0.0-pc — Standalone Tier 12: Calyx Rank-Metric Tensor (RMT-512) Non-Lattice Suite."""
+"""OpenQPEP v1.1.0-pc — Standalone Tier 12: Calyx Rank-Metric Tensor (RMT-512) Non-Lattice Suite."""
 import base64
 import json
 import os

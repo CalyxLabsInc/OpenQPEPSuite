@@ -1,5 +1,5 @@
 """
-OpenQPEP Frozen Binary Wire Format v3 (\x89QPE\x03\x00) — Production Candidate 1.0.0 (v1.0.0-pc).
+OpenQPEP Frozen Binary Wire Format v3 (\x89QPE\x03\x00) — Production Candidate 1.1.0 (v1.1.0-pc).
 All legacy beta wire formats (\x89QPE\x01\x01, \x89QPE\x01\x09, \x89QPE\x02\x00) are strictly rejected.
 """
 import os
@@ -87,7 +87,7 @@ def unpack_wire_frame(raw_frame: bytes, begin_label: str) -> Tuple[bytes, bytes]
     """
     if not raw_frame.startswith(WIRE_MAGIC_V3):
         raise QPEPWireFormatError(
-            "Unsupported or legacy beta wire magic. OpenQPEP Production Candidate 1.0.0 requires Wire Format v3 (\x89QPE\x03\x00)."
+            "Unsupported or legacy beta wire magic. OpenQPEP Production Candidate 1.1.0 requires Wire Format v3 (\x89QPE\x03\x00)."
         )
     if len(raw_frame) < 8 + 16 + 32:
         raise QPEPWireFormatError("Truncated OpenQPEP Wire Format v3 frame.")

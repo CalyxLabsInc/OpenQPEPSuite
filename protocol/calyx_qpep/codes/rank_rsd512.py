@@ -1,5 +1,5 @@
 """
-Rank-Metric Syndrome Decoding (CRT-RSD512) Engine over GF(2^127) (v1.0.0-pc+).
+Rank-Metric Syndrome Decoding (CRT-RSD512) Engine over GF(2^127) (v1.1.0-pc+).
 Provides carryless polynomial arithmetic over GF(2^127) and FO-hardened Rank-Metric KEM
 for Tier 12 Calyx Rank-Metric Tensor (RMT-512).
 """

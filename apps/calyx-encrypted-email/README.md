@@ -1,19 +1,19 @@
 # Calyx Encrypted Email
 
-**Post-Quantum Encrypted Email powered by OpenQPEP (Production Candidate 1.0.0) — by Calyx Labs Inc.**
+**Post-Quantum Encrypted Email powered by OpenQPEP (Production Candidate 1.1.0) — by Calyx Labs Inc.**
 
-Calyx Encrypted Email (`com.calyxlabs.mail`) gives users sovereign `@calyxmail.org` email addresses with automatic **OpenQPEP Production Candidate 1.0.0** end-to-end encryption between `@calyxmail.org` users and full standard email compatibility with 3rd-party providers such as Gmail, Yahoo, and Outlook.
+Calyx Encrypted Email (`com.calyxlabs.mail`) gives users sovereign `@calyxmail.org` email addresses with automatic **OpenQPEP Production Candidate 1.1.0** end-to-end encryption between `@calyxmail.org` users and full standard email compatibility with 3rd-party providers such as Gmail, Yahoo, and Outlook.
 
 - **Web App:** `https://mail.calyxlabsinc.org`
 - **Email Domain:** `@calyxmail.org`
-- **Encryption Protocol:** OpenQPEP by Calyx Labs Inc. (Production Candidate 1.0.0) — `https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/`
+- **Encryption Protocol:** OpenQPEP by Calyx Labs Inc. (Production Candidate 1.1.0) — `https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/`
 - **Publisher:** Calyx Labs Inc. (Tristen Martinez, Founder & Lead Architect)
 
 ## Downloads
 
 | Platform | Package | Details |
 | :--- | :--- | :--- |
-| **Android** | `CalyxEncryptedEmail.apk` | Direct-install APK (`com.calyxlabs.mail`, PC 1.0.0, Android 10–17), signed with the Calyx Labs Inc. Universal Release Key (v1 + v2). |
+| **Android** | `CalyxEncryptedEmail.apk` | Direct-install APK (`com.calyxlabs.mail`, PC 1.1.0, Android 10–17), signed with the Calyx Labs Inc. Universal Release Key (v1 + v2). |
 | **iOS** | `CalyxEncryptedEmail.mobileconfig` | Signed Apple Configuration Profile (DER PKCS#7/CMS by Calyx Labs Inc.) installing a full-screen Home Screen app pointing to `https://mail.calyxlabsinc.org`. |
 | **Web** | `https://mail.calyxlabsinc.org` | Works directly in any modern desktop or mobile browser with zero installation required. |
 
@@ -34,9 +34,9 @@ Calyx Encrypted Email (`com.calyxlabs.mail`) gives users sovereign `@calyxmail.o
 ## Key Features
 
 - **Automatic Dual-Mode Transport:**
-  - **`@calyxmail.org` → `@calyxmail.org`:** Encrypted client-side using **OpenQPEP Production Candidate 1.0.0** before transmission. Subject lines, message bodies, and attachments are sealed inside whitened binary `.qpep` packets (`\x89QPE\x02\x00`) with detached QVS signatures. Private `.qpkrf` key rings never leave your device.
+  - **`@calyxmail.org` → `@calyxmail.org`:** Encrypted client-side using **OpenQPEP Production Candidate 1.1.0** before transmission. Subject lines, message bodies, and attachments are sealed inside whitened binary `.qpep` packets (`\x89QPE\x02\x00`) with detached QVS signatures. Private `.qpkrf` key rings never leave your device.
   - **`@calyxmail.org` → 3rd-Party Providers (Gmail, Yahoo, Outlook, etc.):** Sent as standard RFC 5322 email with TLS and 2048-bit RSA DKIM signing (`calyxmail.org`) for universal deliverability.
-- **Five OpenQPEP v1.0.0-pc Post-Quantum Key Suites:**
+- **Five OpenQPEP v1.1.0-pc Post-Quantum Key Suites:**
   - **Signature `QLX-4096 + QVS-256`** (Default Apex)
   - **Calyx Hyper-Tesseract `QLX-16384 + QVS-1024`** (High-Tier Hardware: 12 GB+ RAM devices / PCs)
   - **`QLX-2048 + QVS-128`** Ultra-Grid

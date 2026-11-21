@@ -6,7 +6,8 @@
     "decaps_ms": 1.81,
     "sign_ms": 2.48,
     "verify_ms": 1.13,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   },
   {
     "suite": "QLX-1024 + QVS-87 (Sovereign)",
@@ -15,7 +16,8 @@
     "decaps_ms": 2.65,
     "sign_ms": 4.75,
     "verify_ms": 1.56,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   },
   {
     "suite": "QLX-2048 + QVS-128 (Ultra-Grid)",
@@ -24,7 +26,8 @@
     "decaps_ms": 6.97,
     "sign_ms": 8.37,
     "verify_ms": 3.15,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   },
   {
     "suite": "Calyx Signature (QLX-4096 + QVS-256)",
@@ -33,7 +36,8 @@
     "decaps_ms": 21.79,
     "sign_ms": 12.04,
     "verify_ms": 5.24,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   },
   {
     "suite": "Calyx Hyper-Tesseract (QLX-16384 + QVS-1024)",
@@ -42,7 +46,8 @@
     "decaps_ms": 86.82,
     "sign_ms": 275.0,
     "verify_ms": 18.13,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   },
   {
     "suite": "Calyx Sovereign-Pentad (CSP-Omega, 5-Family)",
@@ -51,6 +56,7 @@
     "decaps_ms": 8.76,
     "sign_ms": 34.85,
     "verify_ms": 11.91,
-    "peak_rss_mib": 97.84
+    "peak_rss_mib": 97.84,
+    "release": "v1.1.0-pc"
   }
 ]

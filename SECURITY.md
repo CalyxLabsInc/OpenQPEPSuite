@@ -1,7 +1,7 @@
-# Security Policy — OpenQPEP Suite (`v1.0.0-pc`)
+# Security Policy — OpenQPEP Suite (`v1.1.0-pc`)
 
 ## Supported Versions
-Only **Production Candidate 1.0.0 (`v1.0.0-pc`)** on branch `pc` is supported. All legacy `-beta` wire formats (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`) and `kdf_version: 1` key rings are strictly rejected.
+Only **Production Candidate 1.1.0 (`v1.1.0-pc`)** on branch `pc` is supported. All legacy `-beta` wire formats (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`) and `kdf_version: 1` key rings are strictly rejected.
 
 ## Self-Verification & Audit Tools
 Run the built-in deterministic KAT verifier and adversarial security audit suite directly from `protocol/`:

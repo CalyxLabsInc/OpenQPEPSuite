@@ -1,3 +1,4 @@
+# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
 """
 Family 4 of Calyx Sovereign-Pentad (CSP-Omega): Multivariate Quadratic (QMQ-512)
 Oil-and-Vinegar Signature Engine over GF(256).

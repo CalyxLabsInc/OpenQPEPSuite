@@ -12,7 +12,7 @@ Built in the signature **Neon Blue & Obsidian Black** colorway of the **[Calyx Q
 
 ## 1. Core Design Philosophy: QPEP Keys Are User Accounts
 
-Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.0.0`) cryptographic identities:
+Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.0`) cryptographic identities:
 
 1. **Create Account = Generate `.qpkrf` Key Ring**:
    - Clicking **Create Account** prompts for your **Key Name** (which operates as your `@Username`), **Email Address** (bound to your QPEP UID), optional profile bio, and selectable **QLX + QVS Security Tier** (`QLX-768`, `QLX-1024 Sovereign Hybrid`, or `QLX-2048 Ultra-Grid`).
@@ -73,7 +73,7 @@ When creating an account in **Calyx Encrypted Messenger**, users can select from
   - `CalyxEncryptedMessenger.aab` — Google Play Console Android App Bundle.
   - `android_project_source/` — Complete Android application source code (`AndroidManifest.xml`, `MainActivity.java`, `build.gradle`, and Neon Blue/Black UI assets).
 * **`Backend Files/messenger_server/`**:
-  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.0.0`).
+  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Production Candidate 1.1.0`).
   - `server.py` — Multi-threaded Python 3 + SQLite WAL real-time relay, 64-character Key Hash directory server, and browser web client host (default port `8446`, routed to `https://messenger.calyxlabsinc.org`).
   - `static/index.html` — Full browser web application mirroring the Android client so users can create or import `.qpkrf` accounts on the web.
   - `cli.py` & `test_messenger.py` — Command-line client and automated `unittest` verification suite.

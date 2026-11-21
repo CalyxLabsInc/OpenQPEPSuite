@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Interactive Blue-Text English-Command CLI (Production Candidate 1.0.0)
+OpenQPEP Interactive Blue-Text English-Command CLI (Production Candidate 1.1.0)
 Project: OpenQPEP by Calyx Labs Inc. (Creator: Tristen Martinez)
 Repository: https://github.com/CalyxLabsInc/OpenQPEP/
 Directory: https://qpepkeys.calyxlabsinc.org

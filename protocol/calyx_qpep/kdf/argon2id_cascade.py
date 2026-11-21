@@ -1,11 +1,11 @@
 """
-RFC 9106 Argon2id + qSponge-512 Memory-Hard Key Derivation Cascade (Production Candidate 1.0.0).
+RFC 9106 Argon2id + qSponge-512 Memory-Hard Key Derivation Cascade (Production Candidate 1.1.0).
 Supports:
   - Native RFC 9106 Argon2id via `argon2-cffi` or `cryptography>=44` when installed
   - Memory-hard C-accelerated Scrypt (64 MiB / 256 MiB) + Blake2b + qSponge-512 fallback
     on minimal environments without C Argon2 bindings
   - Pure-Python RFC 9106 Argon2id reference helper (`rfc9106_argon2id_pure`) for spec verification
-  - Strict Production Candidate 1.0.0 KDF Envelope (`kdf_version: 2` mandatory; legacy beta `kdf_version: 1` removed).
+  - Strict Production Candidate 1.1.0 KDF Envelope (`kdf_version: 2` mandatory; legacy beta `kdf_version: 1` removed).
 """
 import hashlib
 import struct
@@ -109,7 +109,7 @@ def derive_qpkrf_keys_v2(
     kdf_params: Optional[Dict[str, Any]] = None,
 ) -> Tuple[bytes, bytes, bytes, Dict[str, Any]]:
     """
-    OpenQPEP PC 1.0.0 Memory-Hard QPKD-Argon2id + qSponge-512 Cascade (kdf_version: 2).
+    OpenQPEP PC 1.1.0 Memory-Hard QPKD-Argon2id + qSponge-512 Cascade (kdf_version: 2).
     Derives (k_aes_256, k_chacha_256, k_mac_256, kdf_params_dict) with SecretBuffer RAM scrubbing.
     """
     policy_witness = enforce_passphrase_policy(passphrase)

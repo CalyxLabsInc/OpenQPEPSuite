@@ -1,4 +1,4 @@
-# Calyx QPEP Client for Android (`Production Candidate 1.0.0`)
+# Calyx QPEP Client for Android (`Production Candidate 1.1.0`)
 
 **Official Android Application for [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)**  
 **Creator & Lead Architect:** **Tristen Martinez**, Founder & Lead Architect at **Calyx Labs Inc.** (`support@calyxlabsinc.org`)  
@@ -6,28 +6,28 @@
 **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)  
 **Package Name:** `com.calyxlabs.qpepclient`  
 **Supported Android Versions:** Android 10 (`API 29`) through Android 17 (`API 37`, compliant with [Android Target SDK Requirements](https://targetsdk.com/))  
-**Universal Version:** `Production Candidate 1.0.0` (`1.0.0-pc`)  
+**Universal Version:** `Production Candidate 1.1.0` (`1.0.0-pc`)  
 **License:** **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**  
 
 ---
 
 ## 1. Overview
 
-**Calyx QPEP Client** (`Production Candidate 1.0.0`) is the official Android client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
+**Calyx QPEP Client** (`Production Candidate 1.1.0`) is the official Android client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
 
 Unlike legacy PGP mobile clients that rely on quantum-vulnerable RSA/ECC keys, optional passphrases, collision-prone 64-bit Key IDs, and detached signatures, **Calyx QPEP Client** executes full on-device hybrid post-quantum lattice cryptography, mandatory passphrase-locked key rings (`.qpkrf`), dual-stream authenticated encryption (`CC-512`), and self-contained attached signatures.
 
 ---
 
-## 2. Direct APK Installation (`CalyxQPEPClient-PC-v1.0.0.apk`)
+## 2. Direct APK Installation (`CalyxQPEPClient-PC-v1.1.0.apk`)
 
-1. Download **`CalyxQPEPClient-PC-v1.0.0.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
+1. Download **`CalyxQPEPClient-PC-v1.1.0.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
 2. Open the downloaded `.apk` file in your Android **Files** app and confirm installation.
 3. On first launch (or whenever your keyring has `0` keys), **Calyx QPEP Client** automatically opens the **Setup Wizard** so you can generate your first personal `.qpkrf` key pair or import an existing `.qpkrf` key ring.
 
 ---
 
-## 3. Core Features of Calyx QPEP Client (`Production Candidate 1.0.0`)
+## 3. Core Features of Calyx QPEP Client (`Production Candidate 1.1.0`)
 
 ### 3.1 On-Device Post-Quantum Key Generation & Hardware Keyring
 - **Three Selectable `QLX` + `QVS` Cryptographic Suites**:

@@ -1,6 +1,6 @@
 [package]
 name = "openqpep-core"
-version = "1.0.0-pc"
+version = "1.1.0-pc"
 edition = "2021"
 license = "LicenseRef-CPOSLS-1.0"
 description = "Memory-safe Rust core for OpenQPEP (NTT_3329, NTT_8380417, Wire Format v3/v3.1, PyO3/UniFFI)"

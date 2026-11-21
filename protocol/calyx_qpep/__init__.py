@@ -1,5 +1,5 @@
 """
-OpenQPEP by Calyx Labs Inc. — Production Candidate 1.0.0 (Modular Cryptographic Kernel)
+OpenQPEP by Calyx Labs Inc. — Production Candidate 1.1.0 (Modular Cryptographic Kernel)
 Clean backward-compatible facade over calyx_qpep.primitives.*, calyx_qpep.lattice.*, and protocol.
 """
 from .constants import (

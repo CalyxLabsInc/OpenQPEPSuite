@@ -1,5 +1,5 @@
 """
-OpenQPEP v1.0.0-pc -> v1.0.0-pc Comprehensive Verification Suite (Arc I + Arc II Production Candidate).
+OpenQPEP v1.1.0-pc -> v1.1.0-pc Comprehensive Verification Suite (Arc I + Arc II Production Candidate).
 """
 import os
 import subprocess
@@ -53,7 +53,7 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertTrue((REPO_ROOT / "rust/openqpep-core/Cargo.toml").is_file())
         self.assertTrue((REPO_ROOT / "rust/openqpep-core/src/ntt.rs").is_file())
         info = rust_backend_info()
-        self.assertEqual(info["version"], "1.0.0-pc")
+        self.assertEqual(info["version"], "1.1.0-pc")
 
     def test_03_v033_qpep_mls_group_epoch_add_remove_eviction(self):
         alice = QPEPGroupMember.create("alice")
@@ -140,14 +140,14 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertEqual(fields[2], b"compact-payload")
 
     def test_10_v041_to_v050_arc2_full_stack(self):
-        # v1.0.0-pc TKEM 2-of-3 + proactive refresh
+        # v1.1.0-pc TKEM 2-of-3 + proactive refresh
         pk, shares = ThresholdKEM.keygen_distributed(2, 3)
         refreshed = ThresholdKEM.proactive_refresh(shares, 2, 3)
         from calyx_qpep.recovery.sss_gf256 import reconstruct_secret
         pkt = ThresholdKEM.encrypt_to_group(b"treasury key", pk, reconstruct_secret(shares[:2]))
         self.assertEqual(ThresholdKEM.threshold_decrypt(pkt, pk, [refreshed[0], refreshed[2]]), b"treasury key")
 
-        # v1.0.0-pc Sphinx-PQ 3-hop onion + replay protection
+        # v1.1.0-pc Sphinx-PQ 3-hop onion + replay protection
         nodes = [MixNode.create(f"mix-{i}") for i in range(3)]
         onion = SphinxPQRouter.build_onion(nodes, "alice@calyxmail.org", b"anonymous onion email")
         cur = onion
@@ -163,7 +163,7 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         with self.assertRaises(ValueError):
             SphinxPQRouter.peel_layer(nodes[0], onion)
 
-        # v1.0.0-pc Air-gapped QR fountain (drop frame 1 and recover from parity frames)
+        # v1.1.0-pc Air-gapped QR fountain (drop frame 1 and recover from parity frames)
         blob = os.urandom(900)
         enc = QRFountainEncoder(blob, block_size=256)
         dec = QRFountainDecoder()
@@ -174,16 +174,16 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
                 break
         self.assertEqual(recovered, blob)
 
-        # v1.0.0-pc Plausible-deniability dual volume
+        # v1.1.0-pc Plausible-deniability dual volume
         cont = DeniableVault.seal(b"decoy shopping list", "outer-pass", b"true whistleblower keys", "hidden-pass")
         self.assertEqual(DeniableVault.open(cont, "outer-pass"), ("outer", b"decoy shopping list"))
         self.assertEqual(DeniableVault.open(cont, "hidden-pass"), ("hidden", b"true whistleblower keys"))
 
-        # v1.0.0-pc Time-lock capsule
+        # v1.1.0-pc Time-lock capsule
         cap = TimeLockCapsule.seal(b"embargoed disclosure", steps=50)
         self.assertEqual(TimeLockCapsule.unlock(cap), b"embargoed disclosure")
 
-        # v1.0.0-pc Lattice ZK proof
+        # v1.1.0-pc Lattice ZK proof
         a_hat = ntt_3329([(i * 13) % 3329 for i in range(256)])
         s_hat = ntt_3329([(i % 3) for i in range(256)])
         t_hat = ntt_base_mul_3329(a_hat, s_hat)
@@ -191,7 +191,7 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertTrue(LatticeZKProof.verify(a_hat, t_hat, b"auth-session-1", proof))
         self.assertFalse(LatticeZKProof.verify(a_hat, t_hat, b"wrong-session", proof))
 
-        # v1.0.0-pc Encrypted multi-device CRDT sync
+        # v1.1.0-pc Encrypted multi-device CRDT sync
         skey = os.urandom(64)
         dev_a = EncryptedLWWMapCRDT("phone", skey)
         dev_b = EncryptedLWWMapCRDT("desktop", skey)
@@ -201,13 +201,13 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         dev_a.merge_encrypted_op(op2)
         self.assertEqual(dev_a.snapshot(), dev_b.snapshot())
 
-        # v1.0.0-pc / v1.0.0-pc / v1.0.0-pc Formal models, Go port, Spec freeze, SPDX SBOM
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0-pc")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.0.0")
+        # v1.1.0-pc / v1.1.0-pc / v1.1.0-pc Formal models, Go port, Spec freeze, SPDX SBOM
+        self.assertEqual(UNIVERSAL_VERSION, "1.1.0-pc")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.1.0")
         self.assertTrue((REPO_ROOT / "formal/qpep_ake.pv").is_file())
         self.assertTrue((REPO_ROOT / "go/openqpep/wire_v3.go").is_file())
-        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.0.0-pc_PRODUCTION_CANDIDATE_SPEC.md").is_file())
-        sbom = generate_spdx_sbom(REPO_ROOT, version="1.0.0-pc")
+        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.1.0-pc_PRODUCTION_CANDIDATE_SPEC.md").is_file())
+        sbom = generate_spdx_sbom(REPO_ROOT, version="1.1.0-pc")
         self.assertEqual(sbom["dataLicense"], "CPOSLS-1.0")
         self.assertGreater(sbom["filesAnalyzed"], 40)
 

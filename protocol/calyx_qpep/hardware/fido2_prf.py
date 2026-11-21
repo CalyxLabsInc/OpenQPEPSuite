@@ -1,3 +1,4 @@
+# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
 """
 Combines QPKD-Argon2id passphrase key material with hardware-bound FIDO2 WebAuthn PRF
 (or Android StrongBox / Apple Secure Enclave) secret outputs, enforcing mandatory .qshare
