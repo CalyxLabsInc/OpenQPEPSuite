@@ -6,7 +6,7 @@
 **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)  
 **Package Name:** `com.calyxlabs.qpepclient`  
 **Supported Android Versions:** Android 10 (`API 29`) through Android 17 (`API 37`, compliant with [Android Target SDK Requirements](https://targetsdk.com/))  
-**Universal Version:** `Production Candidate 1.0.0` (`0.1.9`)  
+**Universal Version:** `Production Candidate 1.0.0` (`1.0.0-pc`)  
 **License:** **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**  
 
 ---

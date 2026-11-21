@@ -1,6 +1,6 @@
 # OpenQPEP Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Stable API Freeze Specification
 
-**Version:** Production Candidate 1.0.0 (`OpenQPEP/Beta-1.0.0-pc`)  
+**Version:** Production Candidate 1.0.0 (`OpenQPEP/PC-1.0.0`)  
 **Publisher:** Calyx Labs Inc. (Cleveland, Ohio)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 

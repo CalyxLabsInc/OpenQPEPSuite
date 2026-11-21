@@ -1,6 +1,6 @@
 # Calyx Encrypted Messenger (`Calyx QPEP Messenger`)
 
-[![OpenQPEP Ecosystem](https://img.shields.io/badge/OpenQPEP%20Ecosystem-Beta%20Version%200.1.6-00E5FF)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
+[![OpenQPEP Ecosystem](https://img.shields.io/badge/OpenQPEP%20Ecosystem-Beta%20Version%201.0.0-pc-00E5FF)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
 [![Android Package](https://img.shields.io/badge/Android-com.calyxlabs.qpem-2563EB)](https://calyxlabsinc.github.io/)
 [![Web Client](https://img.shields.io/badge/Web%20Messenger-messenger.calyxlabsinc.org-00E5FF)](https://messenger.calyxlabsinc.org)
 [![Key Ring Format](https://img.shields.io/badge/Account%20Identity-.qpkrf%20%7C%2064--Char%20Key%20Hash-10B981)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
