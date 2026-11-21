@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 Conflict-free LWW-Element-Map CRDT with per-operation CC-512 encryption for zero-knowledge
 multi-device synchronization of contact keyrings, subkeys, and messenger state.

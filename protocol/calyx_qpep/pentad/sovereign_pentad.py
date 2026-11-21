@@ -1,17 +1,17 @@
 """
-Tier 10: Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Production Candidate 1.1.0).
+Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Production Candidate 1.1.4).
 
 Simultaneously fuses FIVE mathematically disjoint post-quantum families in parallel threads:
   Family 1 — Unstructured Plain-LWE (CULC-2048): zero ring symmetry, worst-case general lattice
-             (native C99/AVX2 accelerated inner loops in v1.1.0-pc via libopenqpep)
+             (native C99/AVX2 accelerated inner loops in v1.1.4-pc via libopenqpep)
   Family 2 — Binary Goppa Codes (CGM-8192): NP-complete Hamming-metric syndrome decoding
   Family 3 — Higher-Dimensional Abelian Isogenies (CIF-SQI-512): supersingular quaternion geometry
   Family 4 — Multivariate Quadratic Signatures (QMQ-512): NP-complete MQ over GF(256)
   Family 5 — Stateless Hash-Based Hypertree (QHS-512): zero-trapdoor Keccak-f[1600] one-wayness
 
-Production Candidate 1.1.0 Updates:
+Production Candidate 1.1.4 Updates:
   - Frozen Wire Format v3 (\\x89QPE\\x03\\x00, packet_type=0x06 PACKET_TYPE_PENTAD) with full
-    read compatibility for legacy v1.1.0-pc–v1.1.0-pc Sovereign-Pentad packets.
+    read compatibility for legacy v1.1.4-pc–v1.1.4-pc Sovereign-Pentad packets.
   - Native C99/AVX2 acceleration for Family 1 Unstructured Plain-LWE row-streamed operations.
   - Mandatory >= 12 GB RAM flagship hardware guardrail (Samsung Galaxy Z Fold 8 / high-spec PCs).
 """

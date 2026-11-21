@@ -1,8 +1,8 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
-OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc) Verification Tests:
-  - Tier 7: Calyx Isogeny-Forge (CIF-SQI-512 + QHS-512) encrypt/decrypt & sign/verify
-  - Tier 9: Calyx Unstructured-Citadel (CULC-2048 + CGM-8192) encrypt/decrypt, sign/verify & >=12GB RAM guardrail
+OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc) Verification Tests:
+  - Calyx Isogeny-Forge (CIF-SQI-512 + QHS-512) encrypt/decrypt & sign/verify
+  - Calyx Unstructured-Citadel (CULC-2048 + CGM-8192) encrypt/decrypt, sign/verify & >=12GB RAM guardrail
   - Canonical 10-Suite Registry naming format & per-tier hardware classification
 """
 import re
@@ -18,7 +18,7 @@ from calyx_qpep.lattice.citadel_suite import CalyxUnstructuredCitadelSuite
 class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
     def test_01_version_and_canonical_10_tier_naming(self):
         self.assertEqual(UNIVERSAL_VERSION, "1.1.0-pc")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.1.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/PC-1.1.4")
         self.assertEqual(len(ALL_TEN_SUITES), 10)
         pattern = re.compile(r"^Calyx [A-Za-z -]+: [A-Za-z0-9-]+ \+ [A-Za-z0-9-]+ \(.+\)$")
         for suite_id, meta in ALL_TEN_SUITES.items():
@@ -28,7 +28,7 @@ class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
 
     def test_02_tier7_calyx_isogeny_forge_roundtrip_and_signature(self):
         pub, priv = CalyxIsogenyForgeSuite.keygen()
-        msg = b"Tier 7 Calyx Isogeny-Forge CIF-SQI-512 + QHS-512 v1.1.0-pc payload"
+        msg = b"Calyx Isogeny-Forge CIF-SQI-512 + QHS-512 v1.1.4-pc payload"
         ct = CalyxIsogenyForgeSuite.encrypt(msg, pub)
         self.assertEqual(CalyxIsogenyForgeSuite.decrypt(ct, priv), msg)
         sig = CalyxIsogenyForgeSuite.sign(msg, priv)
@@ -41,7 +41,7 @@ class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
             with self.assertRaises(QPEPSuiteError):
                 CalyxUnstructuredCitadelSuite.keygen()
         pub, priv = CalyxUnstructuredCitadelSuite.keygen(allow_low_ram_override=True)
-        msg = b"Tier 9 Calyx Unstructured-Citadel CULC-2048 + CGM-8192 v1.1.0-pc payload"
+        msg = b"Calyx Unstructured-Citadel CULC-2048 + CGM-8192 v1.1.4-pc payload"
         ct = CalyxUnstructuredCitadelSuite.encrypt(msg, pub)
         self.assertEqual(CalyxUnstructuredCitadelSuite.decrypt(ct, priv), msg)
         sig = CalyxUnstructuredCitadelSuite.sign(msg, priv)
@@ -52,3 +52,13 @@ class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_04_benchmark_results_cover_all_10_canonical_suites(self):
+        import json
+        from pathlib import Path
+        bpath = Path(__file__).resolve().parent.parent / "benchmarks/benchmark_results.json"
+        rows = json.loads(bpath.read_text(encoding="utf-8"))
+        self.assertEqual(len(rows), 10)
+        for r in rows:
+            self.assertNotRegex(r["suite"], r"\bTier\s*(?:7|9|10|11|12)\b")
+            self.assertRegex(r["suite"], r"^Calyx [A-Za-z -]+: [A-Za-z0-9-]+ \+ [A-Za-z0-9-]+ \(.+\)$")

@@ -1,5 +1,5 @@
 {
-  "protocol_version": "OpenQPEP/PC-1.1.0",
+  "protocol_version": "OpenQPEP/PC-1.1.4",
   "universal_version": "1.1.0-pc",
   "suite_count": 5,
   "vectors": [
@@ -8,35 +8,35 @@
       "suite_name": "QLX-768 + QVS-65",
       "qlx_ct_bytes": 1088,
       "qvs_sig_bytes": 1600,
-      "sha3_512": "1fe4da9c3dc1f7a8b606ab819839c58e8ae8b742666e692ed28eefe0d6687009a69b0f9aeaba37c425b2ecddac55bf00e8c1fe45d958388a6bcf0197ec1768f7"
+      "sha3_512": "66f2bb50cb386b89d4b055cfea59cede30fd46abb0d4a73ee7277fa44283d9a73be3bbc04bb8dd4a48d0f33f41a23660986d8723ee5fbcd94543c5538858eb65"
     },
     {
       "file": "kat_qlx1024_qvs87.json",
       "suite_name": "QLX-1024 + QVS-87",
       "qlx_ct_bytes": 1568,
       "qvs_sig_bytes": 2368,
-      "sha3_512": "e8634e9d3f2f25eb4f4f566e704ceb03e75c00c34915c58610ab6632b3d034addd45fd36af2aa3bf92c118cb552ceb2691793c3d0cc4adc784e31a702a507854"
+      "sha3_512": "fba493bff8234983c4e9a2bbd5f1dff5ce658b020436926957e3713b1343427447b3d1a283ef528a4b3a067d976519ff9930564fa31a0286f8749970076167ae"
     },
     {
       "file": "kat_qlx2048_qvs128.json",
       "suite_name": "QLX-2048 + QVS-128",
       "qlx_ct_bytes": 2976,
       "qvs_sig_bytes": 3904,
-      "sha3_512": "79428075190cb4e52102fd653c26a096a3b85e39e4b943ae0bdf74896fe1c555ac69cba0e2d4aaeb1e4beb3e653c8904ec7022c7e422101518bac3c81936202a"
+      "sha3_512": "6b9d2020af56202dcbb065e98eabf7ae49b8093a87fe48d6f29ae65de171fc0392907839a1718193f9ea302efa0ef4d0e6834cb8edc2378da192d90629bee794"
     },
     {
       "file": "kat_qlx4096_qvs256.json",
       "suite_name": "Signature QLX-4096 + QVS-256",
       "qlx_ct_bytes": 5792,
       "qvs_sig_bytes": 5440,
-      "sha3_512": "a4374e487fd0f534f7b3d00266ddef7e0073589a1681a45963eeddf05e1612bce8265ab15c7c55a55444202d693bf2a32b49d6e613abac4cca6bb0cd3074b7f2"
+      "sha3_512": "ac54c683e2afc3ddd602c31c5c739bf073ebcaa2780f17284dc0033071565f7bb783ab943fe33296f5214b403b0897b28ab0f88e2d999fa4d29aa579537fb27c"
     },
     {
       "file": "kat_qlx16384_qvs1024.json",
       "suite_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024",
       "qlx_ct_bytes": 23168,
       "qvs_sig_bytes": 10816,
-      "sha3_512": "6799943307147174c5283d9cf7946cbba0ad2de5de7e27739b848ef606ad318cbb8886105bd98cb2542e387d66bba4866654e265b66feb2d498d059a67a219dd"
+      "sha3_512": "14ac210702b04e7d516100a94bce6ffa25d7e329bb1a719215038eaef14da9284fc5bb4dc421582dc0c6c22dc58bb077029d975450d60935d46ec65b1ac5db74"
     }
   ]
 }

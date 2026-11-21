@@ -1,5 +1,5 @@
 """
-OpenQPEP Active Cryptographic Attack Simulator (Production Candidate 1.1.0).
+OpenQPEP Active Cryptographic Attack Simulator (Production Candidate 1.1.4).
 Simulates real-world adversarial attacks against OpenQPEP:
   1. Ciphertext malleability / chosen-ciphertext attacks against the Fujisaki-Okamoto transform
   2. Rowhammer/glitch fault injection inside QVSEngine.sign (proving Fault-Guard aborts 100%)

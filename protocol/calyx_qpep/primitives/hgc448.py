@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 HGC-448 (448-bit Goldilocks X448 Diffie-Hellman & Ed448 Edwards Signatures) Hybrid Combiner.
 """

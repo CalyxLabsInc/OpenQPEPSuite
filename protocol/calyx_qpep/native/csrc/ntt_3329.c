@@ -1,6 +1,6 @@
 /*
  * OpenQPEP Native C99 / SIMD Accelerated 7-Layer NTT over Z_3329[X]/(X^256 + 1)
- * Production Candidate 1.1.0 — Calyx Labs Inc. (CPOSLS-1.0)
+ * Production Candidate 1.1.4 — Calyx Labs Inc. (CPOSLS-1.0)
  *
  * Bit-for-bit identical to calyx_qpep/lattice/ntt_3329.py reference engine.
  */

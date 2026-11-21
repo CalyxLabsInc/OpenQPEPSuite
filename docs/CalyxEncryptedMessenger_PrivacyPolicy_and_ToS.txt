@@ -5,6 +5,6 @@ Official Websites: https://calyxlabsinc.org | https://calyxlabsinc.github.io | h
 OpenQPEP Repository: https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/
 
 1. ZERO TELEMETRY & SOVEREIGN END-TO-END ENCRYPTION
-Calyx Encrypted Messenger encrypts all messages and files on-device using OpenQPEP Production Candidate 1.1.0 (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512) before transmission. Private .qpkrf keys remain strictly locked on your device under your mandatory QPKD-Argon passphrase and are never transmitted to any server. Camera access is used exclusively on-device for the in-app Scannable CLX-Code (SC Code) scanner.
+Calyx Encrypted Messenger encrypts all messages and files on-device using OpenQPEP Production Candidate 1.1.4 (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512) before transmission. Private .qpkrf keys remain strictly locked on your device under your mandatory QPKD-Argon passphrase and are never transmitted to any server. Camera access is used exclusively on-device for the in-app Scannable CLX-Code (SC Code) scanner.
 
-<!-- OpenQPEP v1.1.0-pc (Production Candidate 1.1.0) -->
+<!-- OpenQPEP v1.1.4-pc (Production Candidate 1.1.4) -->

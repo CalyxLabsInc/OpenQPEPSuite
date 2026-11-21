@@ -1,5 +1,5 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
-"""Tier 10: Calyx Sovereign-Pentad (CSP-Omega — Five-Family Beyond-LWE Cryptographic Citadel)."""
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
+"""Calyx Sovereign-Pentad (CSP-Omega — Five-Family Beyond-LWE Cryptographic Citadel)."""
 from .sovereign_pentad import (
     PENTAD_SUITE_NAME,
     PENTAD_MIN_RAM_MIB,

@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 Sequential non-parallelizable qSponge-512 hash-chain time-lock puzzle for embargoed disclosures
 and dead-man's-switch capsules resistant to parallel quantum speedup.

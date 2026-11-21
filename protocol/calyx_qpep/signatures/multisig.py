@@ -1,5 +1,5 @@
 """
-OpenQPEP m-of-n Threshold Multi-Party Cosigning Bundles (Production Candidate 1.1.0).
+OpenQPEP m-of-n Threshold Multi-Party Cosigning Bundles (Production Candidate 1.1.4).
 Allows organizations, release maintainers, or security teams to require m-of-n independent
 conjunctive QVS + Ed448 signatures (e.g., 2-of-3 or 3-of-5) bound to the same canonical
 qSponge-512 payload digest and multisig policy—eliminating single points of compromise.
@@ -40,7 +40,7 @@ def create_multisig_policy(
         "authorized_key_hashes": hashes,
     }
     policy_id = qsponge_512(
-        b"CALYX-QPEP-MULTISIG-POLICY-v1.1.0-pc|"
+        b"CALYX-QPEP-MULTISIG-POLICY-v1.1.4-pc|"
         + json.dumps(policy_core, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hex()[:32].upper()
     policy_core["policy_id"] = policy_id
@@ -49,7 +49,7 @@ def create_multisig_policy(
 
 def _multisig_transcript(policy_id: str, threshold: int, payload_digest_hex: str) -> bytes:
     return qsponge_512(
-        f"CALYX-QPEP-MULTISIG-SIGN-v1.1.0-pc|{policy_id}|{threshold}|{payload_digest_hex}".encode("ascii")
+        f"CALYX-QPEP-MULTISIG-SIGN-v1.1.4-pc|{policy_id}|{threshold}|{payload_digest_hex}".encode("ascii")
     )
 
 

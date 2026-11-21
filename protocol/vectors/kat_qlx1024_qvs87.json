@@ -1,14 +1,14 @@
 {
   "schema": "openqpep-kat-v1",
-  "protocol_version": "OpenQPEP/PC-1.1.0",
+  "protocol_version": "OpenQPEP/PC-1.1.4",
   "universal_version": "1.1.0-pc",
   "suite_name": "QLX-1024 + QVS-87",
   "qlx_tier": "QLX-1024",
   "qvs_tier": "QVS-87",
-  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.0-pc|)",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.4-pc|)",
   "drbg_seed_hex": "101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f",
-  "message_utf8": "OpenQPEP PC 1.1.0 Deterministic Known Answer Test Vector",
-  "message_hex": "4f70656e5150455020504320312e312e302044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "message_utf8": "OpenQPEP PC 1.1.4 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020504320312e312e342044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
   "qlx": {
     "spec_pk_bytes": 1568,
     "spec_sk_bytes": 3168,
@@ -16,11 +16,11 @@
     "actual_pk_bytes": 1568,
     "actual_sk_bytes": 3168,
     "actual_ct_qlx_bytes": 1568,
-    "pk_sha3_512": "a94f85ea161b806b05b5a22fd88fc3e0d9b1166b8caf06815cfedbf693208229efb2c0218b5f937f50a8a9639a40f97b9f1eeac715af8a25c5c2ab9aa5ea0074",
-    "sk_sha3_512": "06e3c8f65240c23dadd8b539131096277f05145f29bacac2f4587efdeac310eafe17f7d4e9024afa8de96681f0ee63b101d8d4370a91c2c351f333457d25fd52",
-    "ct_qlx_sha3_512": "4428465986cb235cfc5ddb8b1cfee74e5938bd3ba69f83393e08c2351d2a5fc9b0fcbebc5184ada666678a25445da7e496660de8505d7db736aa18fca3aa0168",
-    "shared_secret_hex": "b6f9d72c3371b9e209d92488e1a365fd9186acdf79f0ebe75a52dc17a7fc4139",
-    "fo_implicit_rejection_hex": "69590775aff346127c27d9f2f2ed7a38ac155deccafa6f9f0786d75da9d84b4b"
+    "pk_sha3_512": "788079cee2d53085b38c72b8702247b89963574ccb48d8224b35a57a6577a1bb99892691ec9b3073c608eab3b79e99d68d96af8da8ccb99b5d32a3eb7507e0f2",
+    "sk_sha3_512": "e0f3fb1f3d8b8aec16ea2897f74d1f3c482d2b70101302f95dd297cf1b9e52e053d52ce418ee0f89d5da38e7d32808bcefb6207ec86421d835b2da48f246445f",
+    "ct_qlx_sha3_512": "c103141c15e3c277e2b6a4a95d76ae3c6a312077df1fc3c2d9889dff6bee21280b754baab0627d3f9bb5b4307c9b65270d9261b2b519c21d0e6c9944e7fe5dc2",
+    "shared_secret_hex": "b22e06588577c6643adcd712f39ef22bbfc172ae1205541e9106de99bec75c66",
+    "fo_implicit_rejection_hex": "599cb2d605d6b92ca93115d86851055bc8d91bee44c91bb70c28bcb45f1ce38d"
   },
   "qvs": {
     "spec_pk_bytes": 3104,
@@ -29,16 +29,16 @@
     "actual_pk_bytes": 3104,
     "actual_sk_bytes": 4992,
     "actual_sig_bytes": 2368,
-    "pk_sha3_512": "85857db92cce763891a3c78159cae27cd390e1d8c93990162e6e35d88bf7930cc1d009276ae75a04331120441f1f30e986a313276100115ea1ac5efae2b366f4",
-    "sig_sha3_512": "cbccb81a7777a9052088f7fad20e9d90c14ae6bba2db10961cff9199d48aa9f2fea74e73536acbafc94c8e31ea5aca61139fcdaf2c6c2288a242de107031e58f",
+    "pk_sha3_512": "a78297526c171c67529be68ecb1e47608d8e6cc6603b31f179237fcd8039b9ff40ec23bd652c2b6f855a8b7967120ba8e1757203a277d01a7472997230430527",
+    "sig_sha3_512": "6e1a072c6462bfc25b532a13e9134a71e8d022635e53e21899cd45dc34c1e4fe3b1c0b1f3e3cf17c011dbeba28699dbe7eac79d17865ea608d2c041d228dc181",
     "verified": true
   },
   "wire_packet": {
-    "key_hash": "99C798107F0E06202F655242E5D2A5560B59E686E71A515B9677AB1ED5A33BB2",
+    "key_hash": "A4865F3164A1995745921CE6F9D6F18315D11F1FD0340257F12B6E2F6C68EAB3",
     "wire_magic_hex": "895150450300",
     "wire_frame_bytes": 11449,
-    "wire_frame_sha3_512": "fd6803372571db0107ddcef3d28885424dd014e7a5e1a29319224547e4ac3f7ccd5d459ec0173b3de42c1c7481d1017539d54506fe6ccc6bf083b0fe15a0270b",
-    "wire_frame_prefix_hex": "8951504503000100f42f5a9c7c988a7b97bd14b8f9c4ef05740230ba417fa58612de365c4a960a5acf45ae019997563fe81686f0fc8e746cec858aac1975ff94",
+    "wire_frame_sha3_512": "29627c2485e84daf5b0e2e67fc73186c79a454c0bdea6fde407504783a2f26f8ac22e3cd1f93095ff6a16f954a9f41cc5e60470ef3659266f566b624bf70f771",
+    "wire_frame_prefix_hex": "89515045030001005dde439e1a3168a93df65bde35827ff87863fb512993e84b183f9566f026ac3980c95320f0693810c07650afba56925c8ebd0427ffb72956",
     "cleartext_identity_headers_present": false
   }
 }

@@ -1,12 +1,12 @@
 """
-OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Production Candidate 1.1.0.
+OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Production Candidate 1.1.4.
 
 Automatically loads the compiled shared library (libopenqpep.so / .dylib / .dll) via ctypes
 with zero-copy array.array buffer marshaling when present, accelerating:
   - 7-layer NTT_3329 / InvNTT_3329 / BaseMul / PolyAdd / PolySub
   - 8-layer NTT_8380417 / InvNTT_8380417 / PointwiseMul (QVS-65 through QVS-1024)
   - Centered Binomial Distribution CBD_1 / CBD_2 samplers
-  - Tier 10 Calyx Sovereign-Pentad (CSP-Omega) Plain-LWE inner loops
+  - Calyx Sovereign-Pentad (CSP-Omega) Plain-LWE inner loops
 
 If libopenqpep is not compiled or OPENQPEP_DISABLE_NATIVE=1 is set, seamlessly falls back
 to the bit-exact pure-Python reference engine with zero build dependencies.

@@ -1,4 +1,4 @@
-(* OpenQPEP v1.1.0-pc — ProVerif Symbolic Model for QPEP-AKE (1-RTT PQ-Noise-XX) *)
+(* OpenQPEP v1.1.4-pc — ProVerif Symbolic Model for QPEP-AKE (1-RTT PQ-Noise-XX) *)
 free c: channel.
 type key.
 fun qsponge512(bitstring): key.

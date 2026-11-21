@@ -1,4 +1,4 @@
-"""OpenQPEP v1.1.0-pc — Standalone Tier 12: Calyx Rank-Metric Tensor (RMT-512) Non-Lattice Suite."""
+"""OpenQPEP v1.1.4-pc — Standalone Calyx Rank-Metric Tensor (CRT-RSD512) Non-Lattice Suite."""
 import base64
 import json
 import os
@@ -13,7 +13,7 @@ RMT_LABEL = "CALYX QPEP RANK-METRIC PACKET"
 
 
 class CalyxRankMetricSuite:
-    SUITE_NAME = "Calyx Rank-Metric Tensor: RMT-512 (Rank-Syndrome Code-Based)"
+    SUITE_NAME = "Calyx Rank-Metric Tensor: CRT-RSD512 (Rank-Syndrome Code-Based)"
 
     @staticmethod
     def keygen() -> Tuple[bytes, bytes]:
@@ -24,7 +24,7 @@ class CalyxRankMetricSuite:
         ct_kem, ss = RankMetricKEM.encaps(recipient_pk)
         key64 = qsponge_512(b"CALYX-RMT512-CC512|" + ss + ct_kem)
         n24 = os.urandom(24)
-        ct = cc512_encrypt(key64, n24, plaintext, b"RMT-512")
+        ct = cc512_encrypt(key64, n24, plaintext, b"CRT-RSD512")
         pkt = {
             "suite": CalyxRankMetricSuite.SUITE_NAME,
             "ct_kem_b64": base64.b64encode(ct_kem).decode("ascii"),
@@ -40,4 +40,4 @@ class CalyxRankMetricSuite:
         ct_kem = base64.b64decode(pkt["ct_kem_b64"])
         ss = RankMetricKEM.decaps(recipient_sk, ct_kem)
         key64 = qsponge_512(b"CALYX-RMT512-CC512|" + ss + ct_kem)
-        return cc512_decrypt(key64, base64.b64decode(pkt["nonce24_b64"]), base64.b64decode(pkt["ct_b64"]), b"RMT-512")
+        return cc512_decrypt(key64, base64.b64decode(pkt["nonce24_b64"]), base64.b64decode(pkt["ct_b64"]), b"CRT-RSD512")

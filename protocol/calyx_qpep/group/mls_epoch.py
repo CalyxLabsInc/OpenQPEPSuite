@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 QPEP-MLS: O(log N) Post-Quantum TreeKEM Group Key Agreement over QLX + HGC-448 + CC-512.
 Supports member add, remove, and epoch PCS commits with forward secrecy and immediate eviction.

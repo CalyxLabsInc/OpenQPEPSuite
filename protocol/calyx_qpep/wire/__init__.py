@@ -1,4 +1,4 @@
-"""OpenQPEP Binary Wire Framing, Zero-Metadata Armor, File Registry & Multi-Recipient Engine (Production Candidate 1.1.0)."""
+"""OpenQPEP Binary Wire Framing, Zero-Metadata Armor, File Registry & Multi-Recipient Engine (Production Candidate 1.1.4)."""
 from .framing import BUCKET_SIZES, pad_to_bucket, unpad_from_bucket, pack_wire_frame, unpack_wire_frame
 from .armor import armor_wrap, armor_unwrap
 from .file_registry import SUPPORTED_FILE_EXTENSIONS, detect_file_extension_and_mime

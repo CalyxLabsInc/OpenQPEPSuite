@@ -1,5 +1,5 @@
 """
-QPEP-Ratchet Periodic Hybrid Post-Quantum Re-Encapsulation (Production Candidate 1.1.0).
+QPEP-Ratchet Periodic Hybrid Post-Quantum Re-Encapsulation (Production Candidate 1.1.4).
 Provides Post-Compromise Security (PCS) by generating fresh ephemeral QLX + HGC-448 (X448)
 key pairs and encapsulating new hybrid post-quantum entropy into the root chain every M messages
 or T hours—automatically healing sessions after temporary RAM compromise.
@@ -41,7 +41,7 @@ def perform_pq_rekey_encaps(
     with SecretBuffer(esk_hgc) as esk_buf:
         ss_hgc = x448_exchange(esk_buf.as_bytes(), peer_hgc_pk)
     with SecretBuffer(ss_qlx + ss_hgc) as ss_buf:
-        hybrid_ss = qsponge_512(b"CALYX-RATCHET-PCS-COMBINE-v1.1.0-pc|" + ss_buf.as_bytes())
+        hybrid_ss = qsponge_512(b"CALYX-RATCHET-PCS-COMBINE-v1.1.4-pc|" + ss_buf.as_bytes())
     header = {
         "qlx_tier": qlx_tier,
         "ct_qlx_b64": base64.b64encode(ct_qlx).decode("ascii"),
@@ -62,4 +62,4 @@ def perform_pq_rekey_decaps(
     ss_qlx = QLXEngine.decaps(my_qlx_sk, ct_qlx, qlx_tier)
     ss_hgc = x448_exchange(my_hgc_sk, epk_hgc)
     with SecretBuffer(ss_qlx + ss_hgc) as ss_buf:
-        return qsponge_512(b"CALYX-RATCHET-PCS-COMBINE-v1.1.0-pc|" + ss_buf.as_bytes())
+        return qsponge_512(b"CALYX-RATCHET-PCS-COMBINE-v1.1.4-pc|" + ss_buf.as_bytes())

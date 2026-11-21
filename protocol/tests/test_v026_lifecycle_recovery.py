@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.0 Cryptographic Key Lifecycle & Shamir Recovery:
+Unit tests for OpenQPEP Production Candidate 1.1.4 Cryptographic Key Lifecycle & Shamir Recovery:
   - Master Identity Key + rotatable operational Encryption & Signing subkeys + UTC expiration
   - Self-authenticating .qrev Revocation Certificates (KEY_COMPROMISED / SUPERSEDED / RETIRED)
   - Verifiable t-of-n Shamir Secret Sharing over GF(256) (.qshare) + tampered shard MAC rejection

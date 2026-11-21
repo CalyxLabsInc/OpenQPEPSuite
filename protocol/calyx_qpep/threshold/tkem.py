@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 t-of-n Proactive Threshold Decryption: splits a 32-byte decapsulation secret across n custodians
 over GF(256) with proactive share refresh so no single device ever holds the full decryption key.

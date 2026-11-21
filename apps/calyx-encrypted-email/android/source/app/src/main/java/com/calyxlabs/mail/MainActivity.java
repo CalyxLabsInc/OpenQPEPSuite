@@ -1,4 +1,4 @@
-/* OpenQPEP v1.1.0-pc (Production Candidate 1.1.0) */
+/* OpenQPEP v1.1.4-pc (Production Candidate 1.1.4) */
 package com.calyxlabs.mail;
 
 import android.app.Activity;

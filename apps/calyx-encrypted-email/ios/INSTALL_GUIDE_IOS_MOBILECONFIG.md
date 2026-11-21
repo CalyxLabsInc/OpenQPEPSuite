@@ -23,4 +23,4 @@ Because **Calyx Labs Inc.** distributes the iOS version without requiring an App
   <a href="/CalyxEncryptedEmail.mobileconfig">Install Calyx Encrypted Email for iOS</a>
   ```
 
-<!-- OpenQPEP v1.1.0-pc (Production Candidate 1.1.0) -->
+<!-- OpenQPEP v1.1.4-pc (Production Candidate 1.1.4) -->

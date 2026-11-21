@@ -1,9 +1,9 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.0:
+Unit tests for OpenQPEP Production Candidate 1.1.4:
   - O(1)-RAM Streaming Chunked AEAD (StreamingEncryptor / StreamingDecryptor)
   - Chunk-bound nonce truncation & reordering immunity
   - Seekable qSponge-512 Merkle-Tree arbitrary byte-range decryption
-  - Tier 10: Calyx Sovereign-Pentad (CSP-Omega) 5-Family Beyond-LWE Citadel & 12 GB RAM guardrail
+  - Calyx Sovereign-Pentad (CSP-Omega) 5-Family Beyond-LWE Citadel & 12 GB RAM guardrail
 """
 import io
 import os

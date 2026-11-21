@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 Sphinx-PQ: Fixed-size multi-hop layered post-quantum onion encryption using QLX-768 + CC-512
 with per-hop replay protection so no single relay knows both sender and final recipient.

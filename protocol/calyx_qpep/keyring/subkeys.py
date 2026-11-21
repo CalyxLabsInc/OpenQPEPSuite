@@ -1,5 +1,5 @@
 """
-OpenQPEP Master Identity Key + Rotatable Operational Subkeys (Production Candidate 1.1.0).
+OpenQPEP Master Identity Key + Rotatable Operational Subkeys (Production Candidate 1.1.4).
 Separates a user's long-lived Master Identity Key (64-character Key Hash) from short-lived
 operational Encryption Subkeys (QLX + X448) and Signing Subkeys (QVS + Ed448) with explicit
 UTC expiration timestamps and conjunctive Master QVS + Ed448 certification.
@@ -69,7 +69,7 @@ def _subkey_cert_transcript(
     public_bundle: Dict[str, str],
 ) -> bytes:
     payload = {
-        "domain": "CALYX-QPEP-SUBKEY-CERT-v1.1.0-pc",
+        "domain": "CALYX-QPEP-SUBKEY-CERT-v1.1.4-pc",
         "master_key_hash": master_key_hash,
         "subkey_id": subkey_id,
         "role": role,

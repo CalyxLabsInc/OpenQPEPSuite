@@ -1,4 +1,4 @@
-"""OpenQPEP v1.1.0-pc — Standalone Tier 11: Calyx Goppa-Monolith (CGM-8192) Non-Lattice Suite."""
+"""OpenQPEP v1.1.4-pc — Standalone Calyx Goppa-Monolith (CGM-8192) Non-Lattice Suite."""
 import base64
 import json
 import os

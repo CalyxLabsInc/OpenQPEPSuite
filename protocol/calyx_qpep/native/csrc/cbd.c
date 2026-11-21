@@ -1,7 +1,7 @@
 /*
  * OpenQPEP Native C99 Centered Binomial Distribution (CBD_1 / CBD_2) Samplers,
- * Tier 10 Sovereign-Pentad Plain-LWE Matrix-Vector Accelerators, and ABI Probe.
- * Production Candidate 1.1.0 — Calyx Labs Inc. (CPOSLS-1.0)
+ * Calyx Sovereign-Pentad Sovereign-Pentad Plain-LWE Matrix-Vector Accelerators, and ABI Probe.
+ * Production Candidate 1.1.4 — Calyx Labs Inc. (CPOSLS-1.0)
  */
 #include <stdint.h>
 #include <stddef.h>
@@ -66,7 +66,7 @@ void openqpep_cbd2_qvs(const uint8_t *buf, int32_t *out) {
 }
 
 /*
- * Tier 10 Calyx Sovereign-Pentad (CSP-Omega): Native C99 Unstructured Plain-LWE
+ * Calyx Sovereign-Pentad (CSP-Omega): Native C99 Unstructured Plain-LWE
  * row-accumulated matrix-vector multiply over Z_65536 (zero ring ideal / zero NTT).
  * Computes dst[j] = (dst[j] + scalar * row[j]) mod 65536 for j in [0, n).
  */

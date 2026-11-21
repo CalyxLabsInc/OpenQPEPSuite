@@ -1,14 +1,14 @@
 {
   "schema": "openqpep-kat-v1",
-  "protocol_version": "OpenQPEP/PC-1.1.0",
+  "protocol_version": "OpenQPEP/PC-1.1.4",
   "universal_version": "1.1.0-pc",
   "suite_name": "QLX-768 + QVS-65",
   "qlx_tier": "QLX-768",
   "qvs_tier": "QVS-65",
-  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.0-pc|)",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.4-pc|)",
   "drbg_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
-  "message_utf8": "OpenQPEP PC 1.1.0 Deterministic Known Answer Test Vector",
-  "message_hex": "4f70656e5150455020504320312e312e302044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "message_utf8": "OpenQPEP PC 1.1.4 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020504320312e312e342044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
   "qlx": {
     "spec_pk_bytes": 1184,
     "spec_sk_bytes": 2400,
@@ -16,11 +16,11 @@
     "actual_pk_bytes": 1184,
     "actual_sk_bytes": 2400,
     "actual_ct_qlx_bytes": 1088,
-    "pk_sha3_512": "fac53d954df330173e690f57dd8d6f1d6d345ec090ee0e9eaf130fb56153cecdadd53839fd1f390c7cf088beca35d66d44db2d7ed66b8bcaf7fc3c77ab33dc57",
-    "sk_sha3_512": "5d80100a7267454c1435b8541dffbb36afea1d386b3424835d0d69d3cbbdc82b92978879c7fbe1899eac39346060fc7edd5c0a41700bf4715f4a0c71829ba599",
-    "ct_qlx_sha3_512": "b0a9486551c5d8ce44dc3eb2b165e18d1a9dbb1930a0b1c36c5845307a09302c23cc697edc63454a8cdc58777aebe085ea03564ab6c2f9e0c2a483e572d75901",
-    "shared_secret_hex": "1b0cf1af9418a3b6be7d426e551676e51308dfcfd29b3ef0f705e988a453af77",
-    "fo_implicit_rejection_hex": "b0e870acdd92578c6a38de51b02056619eabcc6241f78d038a11c9072cf1d845"
+    "pk_sha3_512": "df6fda1d6589c8761c10443bb90dc2e672161c14fe758dab7e206b529200a196fad6d30243cc2e72892eb2de9ff41ffb6f5b9d3774935c0d4750f1ae52064b24",
+    "sk_sha3_512": "d48fdf5aa4b2d48fdaa93e3939b1572e48025b3581cb9dcbe9657848b4d3ad3753662dd9d9ff7b07ddca8bacd42b56d41f7debffdd0daf590a40af1a54a6a1a3",
+    "ct_qlx_sha3_512": "60e9086ca294a6bf8810dfbd5bfe282e56b9d9dec5afdfdb9119a9ba4901a84655904981d6173ee7ccd67b073f239b5c07f71ecfca2de09b5f0c15a6a141936e",
+    "shared_secret_hex": "af1ffca7ed01c9ae8e21bd6879d8c8bc1b12063823c860ba54efb8193bc8d83b",
+    "fo_implicit_rejection_hex": "e5afad9b333259a89e157e71f8e54c308a00b34b5bd00927d5354d8b463819d1"
   },
   "qvs": {
     "spec_pk_bytes": 2336,
@@ -29,16 +29,16 @@
     "actual_pk_bytes": 2336,
     "actual_sk_bytes": 3712,
     "actual_sig_bytes": 1600,
-    "pk_sha3_512": "a7121f5652cd56ec321ffe07287aeb463858edb5fb18d6b8475c0a0c979059adc3991d9152f7efd1c67e517655350b59a908b7f0a9236433f599856d68f7a332",
-    "sig_sha3_512": "a2d3b06565a77c043f97bd9384515d4682ba14ff1327340661eb92a0dca016f74d1fc004fcf18cda57cc35302c3f10700c2fafa7221f5b59857479d7c8fa239f",
+    "pk_sha3_512": "1f9aad4bd204bd9ae3c02da6d9debbc49b626992d769693d75e4f5ae00f032d239ead943d7b1ebe2d5dc09db73d86f190b8bb1d215ce7fd1b2ea232b0481d4b6",
+    "sig_sha3_512": "9f5c6ecf41de02ec6b0b9bfdc9f9f255c0fadf2d334fc92d05ea7685dac55825260b55c82501586340e4582b272c3938895c4f45c7dd42c1927dbb386673cb8d",
     "verified": true
   },
   "wire_packet": {
-    "key_hash": "F8968437A65F1CD5777685496B9B05B4BF4D0E0AC13A60EAEFE5A18FB2E0D2D4",
+    "key_hash": "A6235F1AF0DCE329E3E8E6C1350F1D899D32EF4BE9AF1347850CBD947DF90135",
     "wire_magic_hex": "895150450300",
     "wire_frame_bytes": 8924,
-    "wire_frame_sha3_512": "f1bc54ec829e454bb92703b4729b513b6e93bb169c6cc7d5d36623cced65e5ea95937832368b469437223895c6a1432994f28fdef9ab2b16a9dc0b075b6f3f38",
-    "wire_frame_prefix_hex": "8951504503000100095cf69b2745eeb288e0347c384aa602dff24dd69c4393d00fa3c77121f10473fc21321aee64733f32ac411b6e551d5e1b2431fd782a1ebc",
+    "wire_frame_sha3_512": "5d6823fff637f30eda1bb9869d5251cf65de2b8741e9ffc2349c5f7198d63fbade0f45328ed50fb69857bc0b9e4ad1e3fd6b5d86a396bea1b71dd43c9deb4d18",
+    "wire_frame_prefix_hex": "8951504503000100f8609b6957cb0f1846378de0e9c71041e8f7c3ea7c243d88e9bc33cda13033c8b4e5913960cd59951ccf02f6dc190cfb2696d40100d4b320",
     "cleartext_identity_headers_present": false
   }
 }

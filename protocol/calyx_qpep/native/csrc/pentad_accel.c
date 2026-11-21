@@ -1,5 +1,5 @@
 /*
- * OpenQPEP v1.1.0-pc — Native C99 / SIMD Accelerators for Tier 10 Calyx Sovereign-Pentad
+ * OpenQPEP v1.1.4-pc — Native C99 / SIMD Accelerators for Calyx Sovereign-Pentad
  * (GF(256) polynomial multiplication & Binary Goppa XOR syndrome accumulation).
  * Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
  */

@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 Rateless Luby-Transform (LT) QR Fountain Codec for transferring 24–69 KB PQ keys/packets
 over air-gapped cameras with automatic drop resilience and qSponge-512 integrity check.

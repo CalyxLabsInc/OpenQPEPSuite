@@ -1,5 +1,5 @@
 """
-OpenQPEP Known Answer Test (KAT) Generator (Production Candidate 1.1.0).
+OpenQPEP Known Answer Test (KAT) Generator (Production Candidate 1.1.4).
 Generates deterministic, byte-exact ACVP-style JSON test vectors across all 5 suites:
   - QLX-768 + QVS-65 (Velocity)
   - QLX-1024 + QVS-87 (Sovereign Hybrid)
@@ -58,7 +58,7 @@ SUITE_KAT_SPECS: List[Dict[str, str]] = [
 ]
 
 KAT_PASSPHRASE = "Calyx!@#$_2026Aa99"
-KAT_MESSAGE = b"OpenQPEP PC 1.1.0 Deterministic Known Answer Test Vector"
+KAT_MESSAGE = b"OpenQPEP PC 1.1.4 Deterministic Known Answer Test Vector"
 
 
 def _sha3_512_hex(data: bytes) -> str:
@@ -130,7 +130,7 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
         "suite_name": suite_name,
         "qlx_tier": qlx_tier,
         "qvs_tier": qvs_tier,
-        "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.0-pc|)",
+        "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.1.4-pc|)",
         "drbg_seed_hex": spec["seed_hex"],
         "message_utf8": KAT_MESSAGE.decode("utf-8"),
         "message_hex": KAT_MESSAGE.hex(),

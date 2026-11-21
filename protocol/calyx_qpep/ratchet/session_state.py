@@ -1,5 +1,5 @@
 """
-QPEP-Ratchet Stateful Session Machine (Production Candidate 1.1.0).
+QPEP-Ratchet Stateful Session Machine (Production Candidate 1.1.4).
 Implements:
   - Per-message symmetric CC-512 ratcheting (Forward Secrecy)
   - Periodic hybrid QLX + HGC-448 asymmetric re-encapsulation every M messages or T seconds (PCS)

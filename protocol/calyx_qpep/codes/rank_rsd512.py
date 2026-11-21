@@ -1,7 +1,7 @@
 """
-Rank-Metric Syndrome Decoding (CRT-RSD512) Engine over GF(2^127) (v1.1.0-pc+).
+Rank-Metric Syndrome Decoding (CRT-RSD512) Engine over GF(2^127) (v1.1.4-pc+).
 Provides carryless polynomial arithmetic over GF(2^127) and FO-hardened Rank-Metric KEM
-for Tier 12 Calyx Rank-Metric Tensor (RMT-512).
+for Calyx Rank-Metric Tensor (CRT-RSD512).
 """
 import os
 from typing import Tuple
@@ -42,7 +42,7 @@ def _gf2_127_inv(a: int) -> int:
 
 
 class RankMetricKEM:
-    """Standalone Rank-Metric Tensor (RMT-512) KEM over GF(2^127) with FO implicit rejection."""
+    """Standalone Rank-Metric Tensor (CRT-RSD512) KEM over GF(2^127) with FO implicit rejection."""
 
     @staticmethod
     def keygen() -> Tuple[bytes, bytes]:

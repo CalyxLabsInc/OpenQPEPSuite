@@ -1,7 +1,7 @@
 # OpenQPEP for Beginners (`NewbieDetails.md`)
 **A Plain-English Guide to How OpenQPEP Works, How Every Key Tier Encrypts, Decrypts & Signs, and Why OpenQPEP Is Stronger Than Post-Quantum PGP (`ML-KEM-1024` v6, `ML-DSA-87` v6 & `LibrePGP` v5)**
 
-* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`)
+* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.4`)
 * **Creator & Lead Architect:** Tristen Martinez, Founder of [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
 * **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) (Android 10 through Android 17)
 * **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
@@ -100,7 +100,7 @@ When you open a `.qpep` packet in [OpenQPEP](https://github.com/CalyxLabsInc/Ope
 
 ## 4. All Four OpenQPEP Key Tiers Explained Simply (And How They Compare to Post-Quantum PGP v6)
 
-Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) offers only two lattice encryption sizes (`ML-KEM-768` at 768 dimensions and `ML-KEM-1024` at 1,024 dimensions), [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`) gives you **four selectable key tiers** scaling all the way up to **4,096 lattice dimensions**:
+Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) offers only two lattice encryption sizes (`ML-KEM-768` at 768 dimensions and `ML-KEM-1024` at 1,024 dimensions), [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.4`) gives you **four selectable key tiers** scaling all the way up to **4,096 lattice dimensions**:
 
 | OpenQPEP Key Tier | Encryption Lattice (`QLX`) | Signature Lattice (`QVS`) | Nearest Post-Quantum PGP v6 Equivalent ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/)) | Public Key Size (`QLX` + `QVS`) | Ciphertext / Signature Size | Best Used For |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -133,7 +133,7 @@ Whereas Post-Quantum PGP ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/))
 
 ## 5. Head-to-Head Comparison: OpenQPEP vs. Post-Quantum PGP Protocols (`RFC 9980` v6 & `LibrePGP` v5)
 
-Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.0`)** is architecturally stronger than **[IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) (`ML-KEM-1024+X448` v6 / `ML-DSA-87+Ed448` v6)**, **[NIST/Brainpool Composite OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-nist-bp-comp/)**, and **[LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)**:
+Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.1.4`)** is architecturally stronger than **[IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) (`ML-KEM-1024+X448` v6 / `ML-DSA-87+Ed448` v6)**, **[NIST/Brainpool Composite OpenPGP](https://datatracker.ietf.org/doc/draft-ietf-openpgp-nist-bp-comp/)**, and **[LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)**:
 
 | Security Dimension / 2026 Threat Vector | Post-Quantum PGP Protocols ([RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) `ML-KEM-1024` v6, `ML-DSA-87` v6 & [LibrePGP v5](https://postquantum.com/security-pqc/post-quantum-openpgp-rfc-9980/)) | [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Signature QLX-4096 + QVS-256` Flagship Tier) |
 | :--- | :--- | :--- |
@@ -152,3 +152,20 @@ Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/p
 * **Choose `QLX-2048 + QVS-128 Ultra-Grid`:** When you want **2× the encryption lattice dimensions of `ML-KEM-1024` v6** (`2,048` dimensions) for long-term archival storage with smaller key files than `QLX-4096`.
 * **Choose `QLX-1024 + QVS-87 Sovereign Hybrid`:** When you want the same `1,024`-dimension grid footprint as `ML-KEM-1024` v6, upgraded with OpenQPEP's `CC-512` dual-cipher cascade, 512-bit `qSponge-512` Key Hashes, and hardcoded `QPKD-Argon` passphrase witness.
 * **Choose `QLX-768 + QVS-65 Velocity`:** When you want the fastest mobile packet sizes (`768` dimensions) while still keeping 448-bit `HGC-448` curve fusion and `CC-512` double encryption instead of downgrading to 255-bit curves or v4 subkeys.
+
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.4-pc`)
+
+Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
+
+| Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
+| :--- | :--- | :--- | :--- | :--- |
+| **Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)** | `QLX-4096` + `QVS-256` | Structured Module-LWE (`k=16`, 4,096-dim) + Hybrid X448 | **All Devices** | Default flagship security for mobile & desktop |
+| **Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)** | `QLX-768` + `QVS-65` | Structured Module-LWE (`k=3`, 768-dim) + Hybrid X448 | **All Devices** | Lowest-latency mobile messaging & constrained links |
+| **Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)** | `QLX-1024` + `QVS-87` | Structured Module-LWE (`k=4`, 1,024-dim) + Hybrid X448 | **All Devices** | Balanced NIST-Level-5-class lattice security |
+| **Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)** | `QLX-2048` + `QVS-128` | Structured Module-LWE (`k=8`, 2,048-dim) + Hybrid X448 | **All Devices** | Elevated 2,048-dimensional lattice margin |
+| **Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)** | `CIF-SQI-512` + `QHS-512` | 2D Supersingular Abelian Isogeny + Stateless Hash-Based Hypertree | **All Devices** | Beyond-LWE compact isogeny key exchange & hash signatures |
+| **Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)** | `CRT-RSD512` + `QMQ-512` | Rank-Metric Syndrome Decoding + Multivariate Quadratic (`MQ`) | **All Devices** | Beyond-LWE rank-metric code & multivariate diversity |
+| **Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)** | `QLX-16384` + `QVS-1024` | 4-Manifold Coupled Module-LWE (`k=64`, 16,384-dim) + `16×14` QVS | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Maximum structured-lattice dimension (~69 KB secret vectors) |
+| **Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)** | `CGM-8192` + `QHS-512` | Classic McEliece-class Binary Goppa Code (`n=8192`) + Hash Hypertree | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Beyond-LWE conservative code-based encryption (large public matrix) |
+| **Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)** | `CULC-2048` + `CGM-8192` | Unstructured Plain-LWE (`n×n` ring-free) + Binary Goppa Code | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Zero algebraic ring-structure defense against ring/ideal-lattice attacks |
+| **Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)** | `CSP-Omega` + `QHS-512` | 5-Family Combiner (Plain-LWE + Goppa + 2D Isogeny + MQ + Hash + X448) | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Ultimate multi-assumption citadel; secure if any 1 of 5 families holds |

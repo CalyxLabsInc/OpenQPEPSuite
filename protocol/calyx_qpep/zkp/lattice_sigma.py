@@ -1,4 +1,4 @@
-# OpenQPEP Production Candidate 1.1.0 (v1.1.0-pc)
+# OpenQPEP Production Candidate 1.1.4 (v1.1.4-pc)
 """
 Fiat-Shamir non-interactive zero-knowledge sigma protocol proving knowledge of a secret
 preimage over Z_3329[X]/(X^256+1) without revealing the secret vector.

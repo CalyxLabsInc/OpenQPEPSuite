@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Production Candidate 1.1.0 Modular Cryptographic Kernel:
+Unit tests for OpenQPEP Production Candidate 1.1.4 Modular Cryptographic Kernel:
   - Module layout & backward-compatible facade
   - Branchless ct_cmov & Fujisaki-Okamoto constant-time implicit rejection
   - SecretBuffer & ctypes.memset RAM zeroization
@@ -30,7 +30,7 @@ from calyx_qpep.lattice import QLXEngine, QVSEngine, ntt_3329, inv_ntt_3329, der
 class TestOpenQPEPv021ModularKernel(unittest.TestCase):
     def test_01_modular_imports_and_facade_version(self):
         self.assertEqual(calyx_qpep.__version__, "1.1.0-pc")
-        self.assertEqual(calyx_qpep.UNIVERSAL_VERSION_LABEL, "Production Candidate 1.1.0")
+        self.assertEqual(calyx_qpep.UNIVERSAL_VERSION_LABEL, "Production Candidate 1.1.4")
         self.assertEqual(len(derive_tesseract_manifold_seeds(b"A" * 32, 4)), 4)
 
     def test_02_branchless_ct_cmov_and_fo_implicit_rejection(self):

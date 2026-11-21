@@ -1,5 +1,5 @@
 """
-OpenQPEP Typed Cryptographic Exception Hierarchy (Production Candidate 1.1.0).
+OpenQPEP Typed Cryptographic Exception Hierarchy (Production Candidate 1.1.4).
 All custom exceptions inherit from OpenQPEPError(ValueError) to maintain
 100% backward compatibility with existing callers catching ValueError.
 """

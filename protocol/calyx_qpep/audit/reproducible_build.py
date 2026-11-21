@@ -1,4 +1,4 @@
-"""OpenQPEP v1.1.0-pc — Deterministic Reproducible Build Manifest & SPDX SBOM Generator."""
+"""OpenQPEP v1.1.4-pc — Deterministic Reproducible Build Manifest & SPDX SBOM Generator."""
 import hashlib
 import json
 from pathlib import Path

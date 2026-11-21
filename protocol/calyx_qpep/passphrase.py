@@ -1,5 +1,5 @@
 """
-Backward-compatible re-export facade for QPKD-Argon Passphrase Policy (Production Candidate 1.1.0).
+Backward-compatible re-export facade for QPKD-Argon Passphrase Policy (Production Candidate 1.1.4).
 Canonical implementation now lives in calyx_qpep.kdf.passphrase_policy.
 """
 from .kdf.passphrase_policy import (

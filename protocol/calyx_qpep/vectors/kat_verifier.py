@@ -1,5 +1,5 @@
 """
-OpenQPEP Known Answer Test (KAT) Verifier (Production Candidate 1.1.0).
+OpenQPEP Known Answer Test (KAT) Verifier (Production Candidate 1.1.4).
 Re-runs deterministic KAT derivation from golden JSON files in vectors/*.json and
 verifies 100% bit-for-bit equality on key lengths, ct_qlx lengths, shared secrets,
 FO implicit rejections, QVS signatures, and whitened \x89QPE wire frames.
