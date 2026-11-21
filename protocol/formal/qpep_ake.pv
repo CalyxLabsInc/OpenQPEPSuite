@@ -1,0 +1,13 @@
+(* OpenQPEP v1.0.0-pc — ProVerif Symbolic Model for QPEP-AKE (1-RTT PQ-Noise-XX) *)
+free c: channel.
+type key.
+fun qsponge512(bitstring): key.
+fun cc512_enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; cc512_dec(cc512_enc(m, k), k) = m.
+free secret_payload: bitstring [private].
+query attacker(secret_payload).
+process
+  new ss_qlx: bitstring;
+  new ss_x448: bitstring;
+  let k = qsponge512((ss_qlx, ss_x448)) in
+  out(c, cc512_enc(secret_payload, k))

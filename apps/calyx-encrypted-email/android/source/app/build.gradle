@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace "com.calyxlabs.mail"
+    compileSdk 37
+
+    defaultConfig {
+        applicationId "com.calyxlabs.mail"
+        minSdk 29
+        targetSdk 37
+        versionCode 3
+        versionName "PC 1.0.0"
+    }
+}

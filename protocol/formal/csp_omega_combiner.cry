@@ -1,0 +1,5 @@
+// OpenQPEP v1.0.0-pc — Cryptol Reference Specification for Tier 10 Sovereign-Pentad Combiner
+module CSPOmegaCombiner where
+  combine5 : [256] -> [256] -> [256] -> [256] -> [256] -> [256]
+  combine5 ss_lwe ss_goppa ss_isog ss_x448 transcript =
+    ss_lwe ^ ss_goppa ^ ss_isog ^ ss_x448 ^ transcript

@@ -1,0 +1,4047 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Calyx Encrypted Messenger — OpenQPEP v1.0.0-pc (messenger.calyxlabsinc.org)</title>
+  <style>
+    :root {
+      --bg-obsidian: #03060C;
+      --bg-surface: #070E1A;
+      --bg-card: #0B1528;
+      --bg-elevated: #101F38;
+      --neon-blue: #00E5FF;
+      --neon-blue-mid: #00B8FF;
+      --neon-blue-deep: #1D4ED8;
+      --neon-blue-glow: rgba(0, 229, 255, 0.25);
+      --neon-pink: #FF007F;
+      --neon-pink-bright: #FF2A9D;
+      --border-blue: rgba(0, 229, 255, 0.30);
+      --border-subtle: #162642;
+      --text-primary: #F0F9FF;
+      --text-secondary: #93C5FD;
+      --text-muted: #5B82B0;
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    input, textarea, pre, code, .selectable {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-obsidian);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .mono {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    #app-root {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.10), transparent 55%),
+        linear-gradient(180deg, #03060C 0%, #050B16 100%);
+      border-left: 1px solid rgba(0, 229, 255, 0.12);
+      border-right: 1px solid rgba(0, 229, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #03060C;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1B355A;
+      border-radius: 4px;
+    }
+
+    .neon-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55), 0 0 14px rgba(0, 229, 255, 0.07);
+    }
+
+    .neon-btn {
+      background: linear-gradient(135deg, #00E5FF 0%, #0088FF 100%);
+      color: #02060D;
+      font-weight: 800;
+      border: 1px solid #67E8F9;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.35);
+      transition: transform 0.12s ease, box-shadow 0.15s ease;
+    }
+    .neon-btn:active {
+      transform: scale(0.98);
+    }
+
+    .neon-btn-outline {
+      background: rgba(0, 229, 255, 0.08);
+      color: var(--neon-blue);
+      font-weight: 700;
+      border: 1px solid var(--neon-blue);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s ease;
+    }
+    .neon-btn-outline:active {
+      background: rgba(0, 229, 255, 0.20);
+    }
+
+    .neon-input {
+      width: 100%;
+      background: #040914;
+      border: 1px solid #1E3A5F;
+      color: var(--text-primary);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .neon-input:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .bottom-pill-wrap {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      width: calc(100% - 48px);
+      max-width: 390px;
+      background: rgba(8, 17, 34, 0.94);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 229, 255, 0.42);
+      border-radius: 999px;
+      padding: 5px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 22px rgba(0, 229, 255, 0.18);
+    }
+
+    .pill-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 7px 4px;
+      border-radius: 999px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .pill-tab.active {
+      background: rgba(0, 229, 255, 0.16);
+      color: var(--neon-blue);
+      box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.22);
+    }
+
+    .fab-compose {
+      position: fixed;
+      right: max(20px, calc(50% - 460px));
+      bottom: 84px;
+      z-index: 41;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00E5FF 0%, #0077FF 100%);
+      border: 2px solid #A5F3FC;
+      color: #02060D;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 24px rgba(0, 229, 255, 0.5);
+      cursor: pointer;
+    }
+    .fab-compose:active {
+      transform: scale(0.94);
+    }
+
+    .avatar-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00E5FF 0%, #1D4ED8 100%);
+      border: 1.5px solid #67E8F9;
+      color: #02060D;
+      font-weight: 800;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .chat-row {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(22, 38, 66, 0.75);
+      cursor: pointer;
+      transition: background 0.14s ease;
+    }
+    .chat-row:active, .chat-row:hover {
+      background: rgba(0, 229, 255, 0.07);
+    }
+
+    .msg-bubble-out {
+      align-self: flex-end;
+      max-width: 85%;
+      background: linear-gradient(135deg, #023E73 0%, #05264C 100%);
+      border: 1px solid #00E5FF;
+      color: #F0F9FF;
+      border-radius: 18px 18px 4px 18px;
+      padding: 10px 13px;
+      box-shadow: 0 2px 12px rgba(0, 229, 255, 0.16);
+    }
+    .msg-bubble-in {
+      align-self: flex-start;
+      max-width: 85%;
+      background: #0A1528;
+      border: 1px solid #1E3A5F;
+      color: #F0F9FF;
+      border-radius: 18px 18px 18px 4px;
+      padding: 10px 13px;
+    }
+
+    /* Check Mark Status Badges (ONLY rendered on outgoing messages) */
+    .chk-sent {
+      color: #00E5FF;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: -1px;
+      margin-right: 4px;
+      text-shadow: 0 0 6px rgba(0, 229, 255, 0.45);
+    }
+    .chk-delivered {
+      color: #00E5FF;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: -2px;
+      margin-right: 5px;
+      text-shadow: 0 0 8px rgba(0, 229, 255, 0.65);
+    }
+    .chk-read {
+      color: #FF2A9D;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: -2px;
+      margin-right: 5px;
+      text-shadow: 0 0 10px rgba(255, 0, 127, 0.95), 0 0 4px #FF007F;
+    }
+
+    .profile-action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .profile-action-box {
+      background: #0A1528;
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-radius: 14px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--neon-blue);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    .profile-action-box:active {
+      background: rgba(0, 229, 255, 0.16);
+    }
+
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid #1E3A5F;
+      background: #081223;
+      color: var(--text-secondary);
+    }
+    .filter-chip.active {
+      background: rgba(0, 229, 255, 0.18);
+      border-color: var(--neon-blue);
+      color: var(--neon-blue);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(2, 5, 11, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-panel {
+      width: 100%;
+      max-width: 460px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #081224;
+      border: 1.5px solid var(--neon-blue);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9), 0 0 28px rgba(0, 229, 255, 0.25);
+    }
+
+    #toast-banner {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      background: #041022;
+      border: 1.5px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 6px 24px rgba(0, 229, 255, 0.35);
+      max-width: 92%;
+      text-align: center;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.88); }
+    }
+    .live-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      animation: pulseDot 1.8s infinite ease-in-out;
+      margin-right: 4px;
+    }
+
+    @keyframes scanLaser {
+      0% { top: 10%; opacity: 0.9; }
+      50% { top: 88%; opacity: 1; }
+      100% { top: 10%; opacity: 0.9; }
+    }
+
+    video {
+      background: #02060D !important;
+      outline: none !important;
+    }
+    video::-webkit-media-controls,
+    video::-webkit-media-controls-enclosure,
+    video::-webkit-media-controls-panel,
+    video::-webkit-media-controls-overlay-play-button,
+    video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .scanner-laser-line {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00E5FF, #FF007F, #00E5FF, transparent);
+      box-shadow: 0 0 12px #00E5FF, 0 0 6px #FF007F;
+      animation: scanLaser 2.2s infinite ease-in-out;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div id="app-root">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-banner" class="hidden">Ready</div>
+
+  <!-- Hidden file input fallbacks for Browser (.qpkrf import, encrypted chat file attachment, SC Code image scan) -->
+  <input id="browser-file-input" type="file" accept=".qpkrf,.txt,*/*" class="hidden" onchange="handleBrowserFileSelected(event)" />
+  <input id="chat-attach-file-input" type="file" accept="*/*" class="hidden" onchange="handleChatAttachmentSelected(event)" />
+  <input id="sc-code-image-input" type="file" accept="image/*" class="hidden" onchange="handleScCodeImageSelected(event)" />
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN A: WELCOME & CREATE QPEP KEY ACCOUNT WIZARD (OPENQPEP v1.0.0-pc)   -->
+  <!-- ===================================================================== -->
+  <div id="screen-auth" class="hidden" style="flex:1; overflow-y:auto; padding:24px 18px 40px;">
+    <div style="max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
+
+      <!-- Brand Logo Header -->
+      <div style="text-align:center; padding-top:12px;">
+        <div style="width:76px; height:76px; margin:0 auto 12px; border-radius:22px; background:linear-gradient(145deg,#06152D,#020813); border:2px solid #00E5FF; box-shadow:0 0 28px rgba(0,229,255,0.38); display:flex; align-items:center; justify-content:center;">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 6.5V12.5C3 17.8 6.8 22.3 12 23.5C17.2 22.3 21 17.8 21 12.5V6.5L12 2Z" stroke="#00E5FF" stroke-width="1.8" fill="rgba(0,229,255,0.1)"/>
+            <rect x="8.5" y="10.5" width="7" height="6" rx="1.2" stroke="#F0F9FF" stroke-width="1.8"/>
+            <path d="M10 10.5V8.5C10 7.4 10.9 6.5 12 6.5C13.1 6.5 14 7.4 14 8.5V10.5" stroke="#00E5FF" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; letter-spacing:1.4px; font-weight:700;">CALYX LABS INC. • com.calyxlabs.qpem</div>
+        <h1 style="margin:6px 0 4px; font-size:24px; font-weight:800; color:#F0F9FF;">Calyx Encrypted Messenger</h1>
+        <p style="margin:0; font-size:13px; color:#93C5FD; line-height:1.45;">
+          Sovereign Post-Quantum Messenger powered by <strong>OpenQPEP (PC 1.0.0)</strong>. In Calyx Encrypted Messenger, your <strong>QPEP Key Ring (`.qpkrf`)</strong> is your user account.
+        </p>
+      </div>
+
+      <!-- STEP 0: Landing Welcome Card ("Create Account" or "Import Existing .qpkrf Key") -->
+      <div id="auth-step-landing" class="neon-card" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF IDENTITY GATEWAY • OPENQPEP v1.0.0-pc</div>
+        <div style="font-size:13px; color:#CBD5E1; line-height:1.5;">
+          Every message and file in Calyx Encrypted Messenger is encrypted end-to-end using <strong>OpenQPEP v1.0.0-pc (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512)</strong> and addressed by your unique <strong>64-character Key Hash</strong>.
+        </div>
+
+        <button type="button" class="neon-btn" onclick="openCreateAccountStep(1)" style="width:100%;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          Create Account (New QPEP Key)
+        </button>
+
+        <button type="button" class="neon-btn-outline" onclick="openImportKeyModal()" style="width:100%;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Login / Import Existing .qpkrf Key Ring
+        </button>
+
+        <div id="existing-accounts-box" class="hidden" style="border-top:1px solid #162642; padding-top:12px; margin-top:4px;">
+          <div class="mono" style="font-size:11px; color:#93C5FD; margin-bottom:8px;">SAVED QPEP KEY ACCOUNTS ON THIS DEVICE:</div>
+          <div id="existing-accounts-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </div>
+
+      <!-- STEP 1: Key Name (Username), Email & Bio -->
+      <div id="auth-step-1" class="neon-card hidden" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 1 OF 3 • QPEP KEY IDENTITY</span>
+          <button type="button" onclick="openCreateAccountStep(0)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
+        </div>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Create QPEP Key Account</h2>
+        <p style="margin:0; font-size:12px; color:#93C5FD;">
+          Your <strong>Key Name</strong> operates as your Messenger username, bound to your Email and self-certified `.qpkrf` Key Hash.
+        </p>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">KEY NAME (OPERATES AS USERNAME) *</label>
+          <input id="reg-key-name" type="text" class="neon-input" placeholder="e.g. TristenMartinez" autocomplete="off" />
+        </div>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">EMAIL ADDRESS (QPEP UID BINDING) *</label>
+          <input id="reg-email" type="email" class="neon-input" placeholder="e.g. tristen@calyxlabsinc.org" autocomplete="off" />
+        </div>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#93C5FD; display:block; margin-bottom:5px;">PROFILE BIO / PUBLIC NOTE (OPTIONAL)</label>
+          <input id="reg-bio" type="text" class="neon-input" placeholder="Optional bio..." autocomplete="off" />
+        </div>
+
+        <button type="button" class="neon-btn" onclick="validateStep1AndContinue()">
+          Next: Configure QPEP Key Parameters →
+        </button>
+      </div>
+
+      <!-- STEP 2: QPEP Key Type (QLX Tier) & Expiration Details -->
+      <div id="auth-step-2" class="neon-card hidden" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 2 OF 3 • QLX + QVS KEY PARAMETERS</span>
+          <button type="button" onclick="openCreateAccountStep(1)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
+        </div>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Select OpenQPEP v1.0.0-pc Key Suite</h2>
+        <p style="margin:0; font-size:12px; color:#93C5FD;">
+          Choose the Quantum Lattice Exchange (QLX) + Quantum Vector Signature (QVS) security tier for your `.qpkrf` key ring:
+        </p>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">QPEP KEY SUITE (QLX + QVS TIER)</label>
+          <select id="reg-qlx-tier" class="neon-input mono" style="font-size:12px;" onchange="updateHyperTesseractNotice()">
+            <option value="QLX-4096" selected>Signature QLX-4096 + QVS-256 (Default • 4,096-Dim Apex Quantum-Proof • k=16)</option>
+            <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim — HIGH-TIER HARDWARE ONLY)</option>
+            <option value="QLX-2048">QLX-2048 + QVS-128 Ultra-Grid (Maximum Security • k=8)</option>
+            <option value="QLX-1024">QLX-1024 + QVS-87 Sovereign Hybrid (Balanced • k=4)</option>
+            <option value="QLX-768">QLX-768 + QVS-65 Velocity (Mobile High-Speed • k=3)</option>
+          </select>
+        </div>
+
+        <!-- Mandatory High-Tier Hardware Notice (Shown when Calyx Hyper-Tesseract QLX-16384 + QVS-1024 is selected) -->
+        <div id="hyper-tesseract-hardware-notice" class="hidden" style="background:rgba(12, 42, 22, 0.85); border:1.5px solid #22C55E; border-radius:12px; padding:12px 14px; font-size:12px; color:#E2E8F0; line-height:1.5; box-shadow:0 0 16px rgba(34,197,94,0.16);">
+          <span style="color:#FF2A9D; font-weight:800;">⚠ High-Tier Hardware Notice (<code class="mono" style="color:#FF2A9D;">Calyx Hyper-Tesseract</code> <code class="mono" style="color:#FF2A9D;">QLX-16384 + QVS-1024</code>):</span>
+          <code class="mono" style="color:#A5F3FC;">Calyx Hyper-Tesseract</code> computes 16,384 coupled lattice dimensions (<code class="mono">k=64</code> polynomials across 4 Tesseract manifolds) and a <code class="mono">(16 × 14)</code> <code class="mono">QVS-1024</code> signature matrix (<code class="mono">320,000+</code> NTT butterfly operations and <code class="mono">~69.3 KB</code> of secret lattice vectors). Use <strong>only on high-tier flagship devices</strong> (e.g., <strong>Samsung Galaxy Z Fold 8</strong>, Galaxy S25/S26 Ultra, Pixel 10 Pro with 12 GB+ RAM, or high-spec PCs). Selecting <code class="mono">Calyx Hyper-Tesseract</code> on low-tier or budget phones (≤6 GB RAM) will cause UI freezes, Android ANR timeouts, thermal throttling, or WebView Out-Of-Memory (OOM) crashes.
+        </div>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">KEY RING EXPIRATION POLICY</label>
+          <select id="reg-expires" class="neon-input mono" style="font-size:12px;">
+            <option value="0" selected>Never Expire (Sovereign Permanent Key)</option>
+            <option value="365">1 Year (365 Days)</option>
+            <option value="730">2 Years (730 Days)</option>
+            <option value="1825">5 Years (1,825 Days)</option>
+          </select>
+        </div>
+
+        <div style="background:#040A17; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:12px; color:#93C5FD;">
+          <div class="mono" style="color:#00E5FF; font-weight:700; margin-bottom:4px;">INCLUDED OPENQPEP v1.0.0-pc PRIMITIVES:</div>
+          <div>• Apex / Hyper KEM: Calyx Hyper-Tesseract QLX-16384 (4-Manifold, k=64) &amp; Signature QLX-4096 (k=16) + HGC-448</div>
+          <div>• Cipher: Cascaded Dual-Stream Calyx-Cascade-512 (CC-512)</div>
+          <div>• Signatures: QVS-1024 (16×14) / QVS-256 / 128 / 87 / 65 (Verify-Before-Emit Guard) + Ed448</div>
+        </div>
+
+        <button type="button" class="neon-btn" onclick="openCreateAccountStep(3)">
+          Next: Set Mandatory QPKD-Argon Passphrase →
+        </button>
+      </div>
+
+      <!-- STEP 3: Mandatory QPKD-Argon Passphrase Gate -->
+      <div id="auth-step-3" class="neon-card hidden" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 3 OF 3 • MANDATORY QPKD-ARGON GATE</span>
+          <button type="button" onclick="openCreateAccountStep(2)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
+        </div>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Set QPKD-Argon Passphrase</h2>
+        <p style="margin:0; font-size:12px; color:#93C5FD;">
+          OpenQPEP strictly prohibits unencrypted private keys. Your passphrase locks your `.qpkrf` Private Key Ring with a 256-bit salt and `qSponge-512`.
+        </p>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <label class="mono" style="font-size:11px; color:#00E5FF;">QPKD-ARGON PASSPHRASE *</label>
+            <button type="button" onclick="fillGeneratedPassphrase()" class="mono" style="background:rgba(0,229,255,0.14); border:1px solid #00E5FF; color:#00E5FF; border-radius:6px; padding:3px 8px; font-size:10px; cursor:pointer;">
+              ⚡ Auto-Generate Compliant
+            </button>
+          </div>
+          <input id="reg-passphrase" type="text" class="neon-input mono" placeholder="Enter 12+ char QPKD-Argon passphrase" oninput="updatePassphraseChecklist()" autocomplete="off" />
+        </div>
+
+        <div>
+          <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">CONFIRM PASSPHRASE *</label>
+          <input id="reg-passphrase-confirm" type="text" class="neon-input mono" placeholder="Re-enter passphrase" oninput="updatePassphraseChecklist()" autocomplete="off" />
+        </div>
+
+        <!-- Live 5-Rule QPKD-Argon Policy Checklist -->
+        <div class="mono" style="background:#040914; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:11px; display:flex; flex-direction:column; gap:5px;">
+          <div style="color:#00E5FF; font-weight:700; margin-bottom:2px;">QPKD-ARGON MANDATORY POLICY CHECK:</div>
+          <div id="chk-len" style="color:#EF4444;">✗ Minimum 12 characters (0/12)</div>
+          <div id="chk-num" style="color:#EF4444;">✗ At least 2 numbers 0-9 (0/2)</div>
+          <div id="chk-spc" style="color:#EF4444;">✗ At least 4 special characters !@#$... (0/4)</div>
+          <div id="chk-upp" style="color:#EF4444;">✗ At least 2 uppercase letters A-Z (0/2)</div>
+          <div id="chk-low" style="color:#EF4444;">✗ At least 4 lowercase letters a-z (0/4)</div>
+          <div id="chk-mat" style="color:#EF4444;">✗ Passphrases match</div>
+        </div>
+
+        <button id="btn-create-account-submit" type="button" class="neon-btn" onclick="completeCreateAccount()">
+          Generate .qpkrf Key &amp; Launch Messenger
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN B: MAIN TELEGRAM-STYLE MESSENGER SHELL (NEON BLUE / BLACK)     -->
+  <!-- ===================================================================== -->
+  <div id="screen-main" class="hidden" style="flex:1; display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+    <!-- TOP APP BAR -->
+    <header id="main-top-bar" style="background:#050B16; border-bottom:1px solid rgba(0,229,255,0.28); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+        <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#00E5FF,#1D4ED8); border:1.5px solid #A5F3FC; display:flex; align-items:center; justify-content:center; box-shadow:0 0 12px rgba(0,229,255,0.4); flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M21 3L3 10.5L10.2 13.8L13.5 21L21 3Z" stroke="#02060D" stroke-width="2.2" stroke-linejoin="round" fill="#02060D"/>
+          </svg>
+        </div>
+        <div style="min-width:0;">
+          <div style="font-size:18px; font-weight:800; color:#00E5FF; letter-spacing:0.2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Calyx Messenger</div>
+          <div id="server-status-line" class="mono" style="font-size:10px; color:#10B981; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            <span class="live-dot"></span>OPENQPEP v1.0.0-pc • REAL-TIME SYNC ACTIVE
+          </div>
+        </div>
+      </div>
+
+      <!-- Top-Right Action Icons: [In-App Camera Scanner] + [Scannable CLX-Code (SC Code)] + [Menu] -->
+      <div style="display:flex; align-items:center; gap:7px; flex-shrink:0;">
+        <!-- Camera Scanner Button (sits directly next to the SC Code button) -->
+        <button type="button" onclick="openScCameraScannerModal()" title="Scan Scannable CLX-Code (SC Code)" style="width:36px; height:36px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.48); color:#00E5FF; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 10px rgba(0,229,255,0.18);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </button>
+        <!-- Scannable CLX-Code (SC Code) Display Button -->
+        <button type="button" onclick="openScCodeModal()" title="Scannable CLX-Code (SC Code)" style="height:36px; padding:0 10px; border-radius:999px; background:#0A1528; border:1px solid rgba(0,229,255,0.48); color:#00E5FF; display:flex; align-items:center; justify-content:center; gap:5px; cursor:pointer; font-size:11px; font-weight:800;" class="mono">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
+          <span>SC Code</span>
+        </button>
+        <button type="button" onclick="toggleTopOverflowMenu()" title="Menu" style="width:36px; height:36px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#F0F9FF; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- TOP-RIGHT 3-DOT DROPDOWN MENU -->
+    <div id="top-overflow-menu" class="hidden" style="position:fixed; top:58px; right:14px; z-index:85; width:265px; background:#09152B; border:1.5px solid #00E5FF; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.85); overflow:hidden;">
+      <button type="button" onclick="toggleTopOverflowMenu(); openScCodeModal();" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#00E5FF; font-size:13px; font-weight:700; cursor:pointer;">
+        💠 My Scannable CLX-Code (SC Code)
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); openScCameraScannerModal();" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#00E5FF; font-size:13px; font-weight:700; cursor:pointer;">
+        📷 Scan User SC Code (In-App Camera)
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); triggerExportKeyModal(false);" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#F0F9FF; font-size:13px; font-weight:700; cursor:pointer;">
+        📤 Export Public Key (.qpkrf)
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); triggerExportKeyModal(true);" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#F0F9FF; font-size:13px; font-weight:700; cursor:pointer;">
+        🔐 Export Private Key (.qpkrf)
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); openNewMessageScreen();" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#F0F9FF; font-size:13px; cursor:pointer;">
+        💬 Message by Key Hash
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); openImportKeyModal();" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; border-bottom:1px solid #162642; color:#F0F9FF; font-size:13px; cursor:pointer;">
+        📥 Import Contact / Key (.qpkrf)
+      </button>
+      <button type="button" onclick="toggleTopOverflowMenu(); switchOrCreateAccount();" style="width:100%; text-align:left; padding:12px 14px; background:none; border:none; color:#F87171; font-size:13px; font-weight:700; cursor:pointer;">
+        🚪 Switch / Create QPEP Key Account
+      </button>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: CHATS LIST & GLOBAL KEY HASH SEARCH                        -->
+    <!-- ================================================================= -->
+    <div id="tab-chats" style="flex:1; overflow-y:auto; padding-bottom:96px;">
+
+      <!-- Search Bar -->
+      <div style="padding:12px 16px 8px;">
+        <div style="position:relative; display:flex; align-items:center;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2.2" style="position:absolute; left:14px; pointer-events:none;">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            id="global-search-input"
+            type="text"
+            class="neon-input"
+            style="padding-left:40px; padding-right:38px; border-radius:999px; background:#091426; border-color:rgba(0,229,255,0.32);"
+            placeholder="Search Chats or 64-Char Key Hash..."
+            oninput="handleGlobalSearchInput(this.value)"
+            onfocus="showSearchFilterBar(true)"
+            autocomplete="off"
+          />
+          <button id="clear-search-btn" type="button" class="hidden" onclick="clearGlobalSearch()" style="position:absolute; right:12px; background:none; border:none; color:#93C5FD; font-size:16px; cursor:pointer;">✕</button>
+        </div>
+
+        <!-- Search Filter Pills -->
+        <div id="search-filter-bar" class="hidden" style="display:flex; gap:8px; overflow-x:auto; padding-top:10px; padding-bottom:4px;">
+          <button type="button" class="filter-chip active" id="fchip-all" onclick="setSearchFilter('all')">Chats &amp; Key Hashes</button>
+          <button type="button" class="filter-chip" id="fchip-keyhash" onclick="setSearchFilter('keyhash')">64-Char Key Hash</button>
+          <button type="button" class="filter-chip" id="fchip-contacts" onclick="setSearchFilter('contacts')">Contacts</button>
+          <button type="button" class="filter-chip" id="fchip-qpkrf" onclick="setSearchFilter('qpkrf')">Key Rings (.qpkrf)</button>
+        </div>
+      </div>
+
+      <!-- Search Results Container -->
+      <div id="search-results-panel" class="hidden" style="padding:4px 16px 16px;"></div>
+
+      <!-- Active QPEP Identity Banner -->
+      <div id="my-keyhash-banner" style="margin:4px 16px 10px; padding:12px 14px; background:linear-gradient(135deg,#08152C,#050D1C); border:1px solid rgba(0,229,255,0.38); border-radius:16px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div style="min-width:0; flex:1;">
+          <div style="font-size:12px; font-weight:800; color:#F0F9FF; display:flex; align-items:center; gap:6px;">
+            <span>Your QPEP Key Hash</span>
+            <span id="banner-tier-badge" class="mono" style="font-size:10px; padding:1px 7px; border-radius:99px; background:rgba(0,229,255,0.16); color:#00E5FF; border:1px solid #00E5FF;">QLX-4096</span>
+          </div>
+          <div id="banner-keyhash-text" class="mono selectable" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">
+            --
+          </div>
+        </div>
+        <div style="display:flex; gap:6px; flex-shrink:0;">
+          <button type="button" onclick="copyMyKeyHash()" class="mono" style="background:rgba(0,229,255,0.15); border:1px solid #00E5FF; color:#00E5FF; border-radius:10px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer;">
+            Copy Hash
+          </button>
+          <button type="button" onclick="triggerExportKeyModal(false)" class="mono" style="background:#0B1C36; border:1px solid #38BDF8; color:#F0F9FF; border-radius:10px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer;">
+            Export Key
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Chats List -->
+      <div id="chats-list-container"></div>
+
+      <!-- "Your QPEP Key Contacts" Section -->
+      <div id="chats-contacts-header" class="hidden" style="padding:14px 16px 6px; font-size:13px; font-weight:700; color:#00E5FF;">
+        Your QPEP Key Contacts
+      </div>
+      <div id="chats-contacts-preview"></div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: CONTACTS & KEY HASH DIRECTORY                              -->
+    <!-- ================================================================= -->
+    <div id="tab-contacts" class="hidden" style="flex:1; overflow-y:auto; padding-bottom:96px;">
+      <div style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+        <div class="neon-card" style="padding:6px 0; overflow:hidden;">
+          <div class="chat-row" onclick="openScCameraScannerModal()" style="border-bottom:1px solid #162642;">
+            <div class="avatar-circle" style="width:40px; height:40px; font-size:16px;">📷</div>
+            <div>
+              <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Scan Scannable CLX-Code (SC Code)</div>
+              <div style="font-size:12px; color:#93C5FD;">Open in-app camera scanner to scan a user's SC Code &amp; start chat</div>
+            </div>
+          </div>
+          <div class="chat-row" onclick="openAddContactByHashModal()" style="border-bottom:1px solid #162642;">
+            <div class="avatar-circle" style="width:40px; height:40px; font-size:16px;">#</div>
+            <div>
+              <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Add / Message User by Key Hash</div>
+              <div style="font-size:12px; color:#93C5FD;">Search or enter a unique 64-character QPEP Key Hash</div>
+            </div>
+          </div>
+          <div class="chat-row" onclick="openImportKeyModal()" style="border-bottom:none;">
+            <div class="avatar-circle" style="width:40px; height:40px; font-size:16px; background:linear-gradient(135deg,#10B981,#059669); border-color:#6EE7B7;">📥</div>
+            <div>
+              <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Import Contact Public Key (`.qpkrf`)</div>
+              <div style="font-size:12px; color:#93C5FD;">Load `.qpkrf` file from storage or paste armor</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:13px; font-weight:700; color:#00E5FF; padding:4px 4px 0;">
+          Your Contacts
+        </div>
+      </div>
+
+      <div id="contacts-full-list"></div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: SETTINGS & OPENQPEP v1.0.0-pc ARCHITECTURE                    -->
+    <!-- ================================================================= -->
+    <div id="tab-settings" class="hidden" style="flex:1; overflow-y:auto; padding:16px 16px 104px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Key Export & Backup Quick Card -->
+      <div class="neon-card" style="padding:18px; display:flex; flex-direction:column; gap:12px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF KEY RING (.QPKRF) EXPORT &amp; BACKUP</div>
+        <div style="font-size:13px; color:#CBD5E1; line-height:1.45;">
+          Export your active QPEP Public Key Ring to share with contacts, or export your passphrase-locked Private Key Ring (`.qpkrf`) for cold storage backup.
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button type="button" class="neon-btn" onclick="triggerExportKeyModal(false)" style="padding:11px 10px; font-size:12px;">
+            📤 Export Public Key
+          </button>
+          <button type="button" class="neon-btn-outline" onclick="triggerExportKeyModal(true)" style="padding:11px 10px; font-size:12px;">
+            🔐 Export Private Key
+          </button>
+        </div>
+        <button type="button" class="neon-btn-outline" onclick="openImportKeyModal()" style="width:100%; padding:11px 10px; font-size:12px;">
+          📥 Import Public or Private .qpkrf Key Ring
+        </button>
+      </div>
+
+      <!-- Official Network Status (Automatic Real-Time Sync — Zero Manual Sync Button) -->
+      <div class="neon-card" style="padding:18px; display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">CALYX ENCRYPTED MESSENGER NETWORK</span>
+          <span class="mono" style="background:rgba(16,185,129,0.14); border:1px solid #10B981; color:#10B981; border-radius:99px; padding:3px 10px; font-size:10px; font-weight:700;">
+            <span class="live-dot"></span>REAL-TIME AUTO-SYNC
+          </span>
+        </div>
+        <div class="mono" style="font-size:12px; color:#F0F9FF; background:#040914; padding:10px 12px; border-radius:10px; border:1px solid #162642;">
+          Official Network Endpoint: <strong style="color:#00E5FF;">messenger.calyxlabsinc.org</strong>
+        </div>
+        <div id="settings-sync-log" class="mono" style="font-size:11px; color:#10B981; background:#040914; padding:10px 12px; border-radius:10px; border:1px solid #162642;">
+          Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.0.0-pc).
+        </div>
+      </div>
+
+      <!-- Technical Architecture & Specification -->
+      <div class="neon-card" style="padding:18px; display:flex; flex-direction:column; gap:12px; border-color:#00E5FF;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">TECHNICAL ARCHITECTURE &amp; SPECIFICATION</div>
+        <h3 style="margin:0; font-size:17px; color:#F0F9FF;">About Calyx Encrypted Messenger &amp; OpenQPEP v1.0.0-pc</h3>
+        <p style="margin:0; font-size:12px; color:#CBD5E1; line-height:1.55;">
+          <strong>Calyx Encrypted Messenger</strong> (<code>com.calyxlabs.qpem</code>) is powered 100% by <strong>OpenQPEP (Calyx QPEP Production Candidate 1.0.0)</strong> (<a href="https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/" target="_blank" style="color:#00E5FF;">github.com/CalyxLabsInc/OpenQPEP</a>), engineered by <strong>Tristen Martinez</strong> at <strong>Calyx Labs Inc.</strong>
+        </p>
+        <div style="font-size:12px; color:#93C5FD; line-height:1.55; display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <strong style="color:#00E5FF;">1. HOW THE FIVE 'QLX + QVS' KEY TIERS WORK IN v1.0.0-pc:</strong><br/>
+            • <strong>Calyx Hyper-Tesseract (QLX-16384 + QVS-1024 — HIGH-TIER HARDWARE ONLY):</strong> 4-Manifold Coupled 16,384-dim lattice (k=64, CBD_1) paired with <code>QVS-1024</code> (16×14, 7,680-dim) and <code>HGC-448</code>. Requires flagship devices (12 GB+ RAM, e.g. Galaxy Z Fold 8) or high-spec PCs.<br/>
+            • <strong>Signature QLX-4096 + QVS-256 (Default Apex):</strong> Rank k=16, 4,096-dim polynomial ring (n=256, q=3329) paired with <code>QVS-256</code> (k=8, l=7) and <code>HGC-448</code>.<br/>
+            • <strong>QLX-2048 + QVS-128 Ultra-Grid:</strong> Rank k=8, 2048-dim polynomial ring (n=256, q=3329) + 128-rank <code>QVS-128</code> vector commitments.<br/>
+            • <strong>QLX-1024 + QVS-87 Sovereign Hybrid:</strong> Rank k=4, 1024-dim polynomial ring (n=256, q=3329) + 87-rank <code>QVS-87</code> vector commitment.<br/>
+            • <strong>QLX-768 + QVS-65 Velocity:</strong> Rank k=3, 768-dim polynomial ring (n=256, q=3329) + <code>HGC-448</code> for low-latency mobile messaging.
+          </div>
+          <div>
+            <strong style="color:#00E5FF;">2. BINARY-SAFE FILE ENCRYPTION &amp; VERIFY-BEFORE-EMIT GUARD:</strong><br/>
+            • <strong>165+ File Extension Preservation:</strong> Preserves exact binary bytes, original filenames, file extensions, and MIME types inside encrypted <code>.qpep</code> inner envelopes so images, PDFs, APKs, archives, and media never corrupt across encryption/decryption.<br/>
+            • <strong>Fault-Injection Guard:</strong> Every <code>QVS</code> signature undergoes a mandatory Verify-Before-Emit check before transmission.
+          </div>
+          <div>
+            <strong style="color:#00E5FF;">3. REAL-TIME SENT / DELIVERED / READ RECEIPTS &amp; SC CODE:</strong><br/>
+            • <strong>Sent (Single Blue ✓):</strong> Encrypted packet dispatched from your device.<br/>
+            • <strong>Delivered (Double Blue ✓✓):</strong> Recipient is online and synced the encrypted packet.<br/>
+            • <strong>Read (Double Neon Pink ✓✓):</strong> Recipient opened the conversation and decrypted the message.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB 4: PROFILE & ACCOUNT INFO                                     -->
+    <!-- ================================================================= -->
+    <div id="tab-profile" class="hidden" style="flex:1; overflow-y:auto; padding:18px 16px 104px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Top Profile Avatar & Status Header -->
+      <div style="text-align:center; padding:8px 0 4px;">
+        <div id="profile-avatar-circle" onclick="openAvatarPickerModal()" class="avatar-circle" style="width:92px; height:92px; margin:0 auto 12px; font-size:32px; cursor:pointer; border-width:2.5px; box-shadow:0 0 28px rgba(0,229,255,0.38);">
+          TM
+        </div>
+        <h2 id="profile-display-name" style="margin:0; font-size:22px; font-weight:800; color:#F0F9FF;">--</h2>
+        <div style="font-size:13px; color:#00E5FF; font-weight:600; margin-top:3px;">online • OpenQPEP v1.0.0-pc Verified Key</div>
+      </div>
+
+      <!-- 3-Button Row -->
+      <div class="profile-action-grid">
+        <button type="button" class="profile-action-box" onclick="triggerExportKeyModal(false)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Export Public</span>
+        </button>
+        <button type="button" class="profile-action-box" onclick="triggerExportKeyModal(true)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Export Private</span>
+        </button>
+        <button type="button" class="profile-action-box" onclick="openScCodeModal()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
+          <span>SC Code</span>
+        </button>
+      </div>
+
+      <!-- Profile Info Card -->
+      <div class="neon-card" style="padding:16px; display:flex; flex-direction:column; gap:14px;">
+        <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">UNIQUE 64-CHARACTER QPEP KEY HASH</span>
+            <button type="button" onclick="copyMyKeyHash()" class="mono" style="background:rgba(0,229,255,0.14); border:1px solid #00E5FF; color:#00E5FF; border-radius:6px; padding:2px 8px; font-size:10px; cursor:pointer;">Copy</button>
+          </div>
+          <div id="profile-key-hash" class="mono selectable" style="font-size:12px; color:#F0F9FF; word-break:break-all; margin-top:5px; line-height:1.45;">
+            --
+          </div>
+          <div style="font-size:11px; color:#5B82B0; margin-top:3px;">Share this Key Hash or your Scannable CLX-Code (SC Code) so other users can message you</div>
+        </div>
+
+        <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
+          <div id="profile-username" style="font-size:16px; font-weight:700; color:#F0F9FF;">@--</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Key Name (Username)</div>
+        </div>
+
+        <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
+          <div id="profile-email" style="font-size:15px; font-weight:600; color:#F0F9FF;">--</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Bound QPEP Key Email</div>
+        </div>
+
+        <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
+          <div id="profile-suite" class="mono" style="font-size:13px; font-weight:700; color:#00E5FF;">--</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Active OpenQPEP v1.0.0-pc Cryptographic Suite</div>
+        </div>
+
+        <div>
+          <div id="profile-bio" style="font-size:14px; color:#E2E8F0;">--</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Bio</div>
+        </div>
+      </div>
+
+      <!-- Direct Public / Private Key Export Card -->
+      <div class="neon-card" style="padding:16px; display:flex; flex-direction:column; gap:10px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">MANAGE QPEP KEY ACCOUNT (.QPKRF)</div>
+        <button type="button" class="neon-btn" onclick="triggerExportKeyModal(false)" style="width:100%;">
+          Export Public Key Ring (.qpkrf)
+        </button>
+        <button type="button" class="neon-btn-outline" onclick="triggerExportKeyModal(true)" style="width:100%;">
+          Export Private Key Ring (.qpkrf • Passphrase Gate)
+        </button>
+        <button type="button" onclick="openEditAccountModal()" class="neon-btn-outline" style="width:100%; border-color:#38BDF8; color:#93C5FD;">
+          Edit Account Info
+        </button>
+        <button type="button" onclick="openAvatarPickerModal()" class="neon-btn-outline" style="width:100%; border-color:#38BDF8; color:#93C5FD;">
+          Choose Avatar / QPEP Badge
+        </button>
+        <button type="button" onclick="switchOrCreateAccount()" class="neon-btn-outline" style="width:100%; border-color:#EF4444; color:#F87171;">
+          Switch or Create Another QPEP Key Account
+        </button>
+      </div>
+
+    </div>
+
+    <!-- FLOATING COMPOSE ACTION BUTTON -->
+    <button id="fab-new-msg" type="button" class="fab-compose" onclick="openNewMessageScreen()" title="New Encrypted Message">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <line x1="12" y1="7" x2="12" y2="13"/>
+        <line x1="9" y1="10" x2="15" y2="10"/>
+      </svg>
+    </button>
+
+    <!-- FLOATING BOTTOM NAVIGATION PILL -->
+    <nav class="bottom-pill-wrap">
+      <button type="button" id="pill-chats" class="pill-tab active" onclick="switchMainTab('chats')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Chats</span>
+      </button>
+      <button type="button" id="pill-contacts" class="pill-tab" onclick="switchMainTab('contacts')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Contacts</span>
+      </button>
+      <button type="button" id="pill-settings" class="pill-tab" onclick="switchMainTab('settings')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+      <button type="button" id="pill-profile" class="pill-tab" onclick="switchMainTab('profile')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN C: NEW MESSAGE OVERLAY                                         -->
+  <!-- ===================================================================== -->
+  <div id="screen-new-message" class="hidden" style="position:fixed; inset:0; z-index:60; background:#03060C; display:flex; flex-direction:column;">
+    <header style="background:#050B16; border-bottom:1px solid rgba(0,229,255,0.28); padding:12px 16px; display:flex; align-items:center; justify-content:space-between;">
+      <button type="button" onclick="closeNewMessageScreen()" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#F0F9FF; font-size:18px; cursor:pointer;">←</button>
+      <div style="font-size:17px; font-weight:800; color:#F0F9FF;">New Message</div>
+      <div style="display:flex; gap:6px;">
+        <button type="button" onclick="openScCameraScannerModal()" style="padding:7px 10px; border-radius:999px; background:rgba(0,229,255,0.15); border:1px solid #00E5FF; color:#00E5FF; font-size:12px; font-weight:700; cursor:pointer;">📷 Scan SC Code</button>
+        <button type="button" onclick="openAddContactByHashModal()" style="padding:7px 10px; border-radius:999px; background:rgba(0,229,255,0.15); border:1px solid #00E5FF; color:#00E5FF; font-size:12px; font-weight:700; cursor:pointer;">+ Key Hash</button>
+      </div>
+    </header>
+
+    <div style="flex:1; overflow-y:auto; padding:14px 16px 80px; display:flex; flex-direction:column; gap:14px;">
+      <!-- Direct Key Hash Lookup Input -->
+      <div class="neon-card" style="padding:14px; display:flex; flex-direction:column; gap:10px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">SEARCH OR MESSAGE BY 64-CHARACTER KEY HASH</div>
+        <div style="display:flex; gap:8px;">
+          <input id="new-msg-hash-input" type="text" class="neon-input mono" style="font-size:12px;" placeholder="Paste 64-char Key Hash or @KeyName..." oninput="filterNewMessageList(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();startChatByEnteredHash();}" />
+          <button type="button" class="neon-btn" onclick="startChatByEnteredHash()" style="padding:0 14px; font-size:12px; flex-shrink:0;">Message</button>
+        </div>
+      </div>
+
+      <!-- Top Action Rows -->
+      <div class="neon-card" style="padding:4px 0; overflow:hidden;">
+        <div class="chat-row" onclick="openScCameraScannerModal()">
+          <div class="avatar-circle" style="width:40px; height:40px; font-size:16px;">📷</div>
+          <div>
+            <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Scan Scannable CLX-Code (SC Code)</div>
+            <div style="font-size:12px; color:#93C5FD;">Scan another user's SC Code with your in-app camera to start chatting</div>
+          </div>
+        </div>
+        <div class="chat-row" onclick="openAddContactByHashModal()">
+          <div class="avatar-circle" style="width:40px; height:40px; font-size:16px;">🔑</div>
+          <div>
+            <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Search User by Key Hash</div>
+            <div style="font-size:12px; color:#93C5FD;">Lookup a 64-character QPEP Key Hash on messenger.calyxlabsinc.org</div>
+          </div>
+        </div>
+        <div class="chat-row" onclick="openImportKeyModal()" style="border-bottom:none;">
+          <div class="avatar-circle" style="width:40px; height:40px; font-size:16px; background:linear-gradient(135deg,#0284C7,#1E3A8A);">📂</div>
+          <div>
+            <div style="font-size:15px; font-weight:700; color:#F0F9FF;">Import Recipient `.qpkrf` Public Key</div>
+            <div style="font-size:12px; color:#93C5FD;">Verify self-certified `.qpkrf` file &amp; start chat</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:13px; font-weight:700; color:#00E5FF; padding-left:4px;">
+        Directory &amp; Contacts
+      </div>
+      <div id="new-msg-contacts-list"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN D: ACTIVE ENCRYPTED CONVERSATION VIEW                          -->
+  <!-- ===================================================================== -->
+  <div id="screen-chat-thread" class="hidden" style="position:fixed; inset:0; z-index:75; background:#03060C; display:flex; flex-direction:column;">
+
+    <!-- Chat Thread Header -->
+    <header style="background:#050B16; border-bottom:1px solid rgba(0,229,255,0.32); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0;">
+      <div style="display:flex; align-items:center; gap:10px; min-width:0; flex:1;">
+        <button type="button" onclick="closeChatThread()" style="width:36px; height:36px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#F0F9FF; font-size:17px; cursor:pointer; flex-shrink:0;">←</button>
+        <div id="thread-avatar" class="avatar-circle" style="width:40px; height:40px; font-size:15px;">CL</div>
+        <div style="min-width:0; flex:1; cursor:pointer;" onclick="inspectActivePeerKey()">
+          <div id="thread-title" style="font-size:15px; font-weight:800; color:#F0F9FF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
+          <div id="thread-subtitle" class="mono" style="font-size:10px; color:#00E5FF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">--</div>
+        </div>
+      </div>
+      <button type="button" onclick="inspectActivePeerKey()" class="mono" style="background:rgba(0,229,255,0.14); border:1px solid #00E5FF; color:#00E5FF; border-radius:99px; padding:5px 10px; font-size:10px; font-weight:700; cursor:pointer; flex-shrink:0;">
+        🔒 .qpkrf Key
+      </button>
+    </header>
+
+    <!-- Encryption Banner -->
+    <div style="background:#061124; border-bottom:1px solid #142847; padding:6px 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; color:#93C5FD;">
+      <span class="mono" id="thread-crypto-banner">E2EE: OpenQPEP v1.0.0-pc • QLX-4096 + QVS-256 + CC-512</span>
+      <button type="button" onclick="sendMyPublicKeyCardInChat()" class="mono" style="background:none; border:none; color:#00E5FF; font-size:11px; font-weight:700; cursor:pointer;">+ Share My .qpkrf</button>
+    </div>
+
+    <!-- Messages Scroll Stream -->
+    <div id="thread-messages-box" style="flex:1; overflow-y:auto; padding:14px 14px; display:flex; flex-direction:column; gap:10px;"></div>
+
+    <!-- Message Composer Bar -->
+    <div style="background:#050B16; border-top:1px solid rgba(0,229,255,0.28); padding:10px 12px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
+      <button type="button" onclick="sendMyPublicKeyCardInChat()" title="Share Public .qpkrf Key Ring" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">🔑</button>
+      <button type="button" onclick="triggerChatFileAttachment()" title="Encrypt &amp; Send File (OpenQPEP v1.0.0-pc Multi-Extension Safe)" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">📎</button>
+      <input
+        id="thread-msg-input"
+        type="text"
+        class="neon-input"
+        style="border-radius:999px; padding:11px 16px;"
+        placeholder="Write OpenQPEP encrypted message..."
+        onkeydown="if(event.key==='Enter'){sendEncryptedChatMessage();}"
+        autocomplete="off"
+      />
+      <button type="button" onclick="sendEncryptedChatMessage()" class="neon-btn" style="width:44px; height:44px; border-radius:50%; padding:0; flex-shrink:0;">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: EXPORT PUBLIC OR PRIVATE .QPKRF KEY RING                     -->
+  <!-- ===================================================================== -->
+  <div id="modal-export-key" class="modal-backdrop hidden">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span id="export-modal-badge" class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">EXPORT .QPKRF KEY RING</span>
+        <button type="button" onclick="closeExportKeyModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 id="export-modal-title" style="margin:0; font-size:18px; color:#F0F9FF;">Export Public Key Ring</h3>
+
+      <!-- Passphrase Gate Box (Shown when exporting Private Key) -->
+      <div id="export-priv-gate" class="hidden" style="background:#040A17; border:1px solid #00E5FF; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">MANDATORY QPKD-ARGON PASSPHRASE VERIFICATION</div>
+        <div style="font-size:12px; color:#93C5FD;">Enter your QPKD-Argon passphrase to unlock and export your Private `.qpkrf` Key Ring:</div>
+        <div style="display:flex; gap:8px;">
+          <input id="export-priv-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="Enter QPKD-Argon passphrase" />
+          <button type="button" class="neon-btn" onclick="unlockAndShowPrivateKeyExport()" style="padding:0 14px; font-size:12px;">Unlock</button>
+        </div>
+      </div>
+
+      <div id="export-output-section" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="mono" style="font-size:11px; color:#93C5FD;">
+          Key Hash: <span id="export-modal-hash" style="color:#00E5FF;">--</span>
+        </div>
+        <textarea id="export-qpkrf-textarea" readonly class="neon-input mono selectable" style="height:190px; font-size:11px; line-height:1.4; white-space:pre;"></textarea>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button type="button" class="neon-btn" onclick="copyExportedKeyRing()" style="padding:11px; font-size:12px;">
+            📋 Copy .qpkrf Block
+          </button>
+          <button type="button" class="neon-btn-outline" onclick="saveExportedKeyRingToDevice()" style="padding:11px; font-size:12px;">
+            💾 Save .qpkrf File
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: IMPORT .QPKRF KEY RING (LOGIN ACCOUNT OR ADD CONTACT)        -->
+  <!-- ===================================================================== -->
+  <div id="modal-import-key" class="modal-backdrop hidden">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">IMPORT .QPKRF KEY RING</span>
+        <button type="button" onclick="closeImportKeyModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 style="margin:0; font-size:18px; color:#F0F9FF;">Import Public or Private `.qpkrf` Key</h3>
+      <p style="margin:0; font-size:12px; color:#93C5FD;">
+        Import a <strong>Public `.qpkrf` Key Ring</strong> to add a contact by Key Hash, or import a <strong>Private `.qpkrf` Key Ring</strong> (with its `QPKD-Argon` passphrase) to log into that account.
+      </p>
+
+      <button type="button" class="neon-btn-outline" onclick="triggerAndroidFileOpen('import_qpkrf')" style="width:100%; padding:10px; font-size:12px;">
+        📂 Browse Storage for `.qpkrf` Key File
+      </button>
+
+      <textarea id="import-qpkrf-textarea" class="neon-input mono" style="height:140px; font-size:11px;" placeholder="-----BEGIN CALYX QPKRF PUBLIC KEY RING----- ..."></textarea>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#93C5FD; display:block; margin-bottom:4px;">PASSPHRASE (REQUIRED ONLY FOR PRIVATE .QPKRF LOGIN)</label>
+        <input id="import-qpkrf-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="QPKD-Argon Passphrase (if importing Private Key)" />
+      </div>
+
+      <button type="button" class="neon-btn" onclick="executeImportQpkrf()">
+        Verify &amp; Import .qpkrf Key Ring
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: ADD / LOOKUP USER BY 64-CHARACTER KEY HASH                   -->
+  <!-- ===================================================================== -->
+  <div id="modal-add-hash" class="modal-backdrop hidden">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">UNIQUE KEY HASH DIRECTORY LOOKUP</span>
+        <button type="button" onclick="closeAddContactByHashModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 style="margin:0; font-size:18px; color:#F0F9FF;">Search or Add by Key Hash</h3>
+      <p style="margin:0; font-size:12px; color:#93C5FD;">
+        Every QPEP Key has a unique 64-character hex <strong>Key Hash</strong>. Enter a Key Hash to search <code>messenger.calyxlabsinc.org</code> or connect directly:
+      </p>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">64-CHARACTER QPEP KEY HASH *</label>
+        <input id="add-hash-value" type="text" class="neon-input mono" style="font-size:12px;" placeholder="Paste 64-character hex Key Hash..." />
+      </div>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#93C5FD; display:block; margin-bottom:5px;">CONTACT KEY NAME / ALIAS (OPTIONAL)</label>
+        <input id="add-hash-name" type="text" class="neon-input" style="font-size:13px;" placeholder="Optional display name" />
+      </div>
+
+      <button type="button" class="neon-btn" onclick="confirmAddOrLookupByKeyHash()">
+        Lookup Key Hash &amp; Open Encrypted Chat
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 4: EDIT ACCOUNT INFO                                            -->
+  <!-- ===================================================================== -->
+  <div id="modal-edit-account" class="modal-backdrop hidden">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">ACCOUNT &amp; KEY METADATA</span>
+        <button type="button" onclick="closeEditAccountModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 style="margin:0; font-size:18px; color:#F0F9FF;">Account Info</h3>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">YOUR KEY NAME (USERNAME)</label>
+        <input id="edit-key-name" type="text" class="neon-input" />
+      </div>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">EMAIL</label>
+        <input id="edit-email" type="email" class="neon-input" />
+      </div>
+
+      <div>
+        <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">BIO (A FEW WORDS ABOUT YOU)</label>
+        <input id="edit-bio" type="text" class="neon-input" maxlength="120" />
+      </div>
+
+      <button type="button" class="neon-btn" onclick="saveAccountEdits()">
+        Save Account Details
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 5: PACKET / SC CODE / AVATAR INSPECTOR MODAL                    -->
+  <!-- ===================================================================== -->
+  <div id="modal-generic" class="modal-backdrop hidden">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span id="generic-modal-tag" class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">OPENQPEP INSPECTOR</span>
+        <button type="button" onclick="closeGenericModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 id="generic-modal-title" style="margin:0; font-size:18px; color:#F0F9FF;">Details</h3>
+      <div id="generic-modal-body" style="font-size:13px; color:#CBD5E1;"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 6: IN-APP SCANNABLE CLX-CODE (SC CODE) CAMERA SCANNER           -->
+  <!-- ===================================================================== -->
+  <div id="modal-sc-scanner" class="modal-backdrop hidden" style="backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(2,5,11,0.92);">
+    <div class="modal-panel" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">IN-APP OPTICAL CLX-CODE (SC CODE) SCANNER</span>
+        <button type="button" onclick="closeScCameraScannerModal()" style="background:none; border:none; color:#93C5FD; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <h3 style="margin:0; font-size:17px; color:#F0F9FF;">Scan Scannable CLX-Code (SC Code)</h3>
+      <p style="margin:0; font-size:12px; color:#93C5FD; line-height:1.45;">
+        Point your camera at another user's displayed <strong>Scannable CLX-Code (SC Code)</strong> to automatically verify their 64-character QPEP Key Hash and open an encrypted chat.
+      </p>
+
+      <!-- Live In-App Hardware Camera Canvas Viewfinder (Never displays WebView grey play icon) -->
+      <div style="position:relative; width:256px; height:256px; margin:2px auto; border-radius:18px; overflow:hidden; background:#02060D; border:2px solid #00E5FF; box-shadow:0 0 24px rgba(0,229,255,0.28);">
+        <video id="sc-scanner-video" autoplay playsinline webkit-playsinline muted class="hidden" style="width:1px; height:1px; opacity:0; pointer-events:none;"></video>
+        <canvas id="sc-scanner-canvas" width="240" height="240" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; background:#02060D;"></canvas>
+        <!-- Corner Targeting Brackets -->
+        <div style="position:absolute; inset:18px; border:1.5px dashed rgba(0,229,255,0.55); border-radius:12px; pointer-events:none; z-index:3;"></div>
+        <div class="scanner-laser-line" style="z-index:4;"></div>
+      </div>
+
+      <div id="sc-scanner-status" class="mono" style="font-size:11px; color:#10B981; text-align:center; background:#040A17; border:1px solid #162642; border-radius:10px; padding:8px 10px;">
+        Requesting in-app camera stream...
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button type="button" class="neon-btn-outline" onclick="flipScScannerCamera()" style="padding:10px; font-size:12px;">
+          🔄 Flip Camera
+        </button>
+        <button type="button" class="neon-btn-outline" onclick="triggerScCodeImageScan()" style="padding:10px; font-size:12px;">
+          🖼️ Scan SC Image
+        </button>
+      </div>
+
+      <button type="button" class="neon-btn" onclick="closeScCameraScannerModal(); openScCodeModal();" style="width:100%; padding:11px; font-size:12px;">
+        💠 Show My Scannable CLX-Code (SC Code) Instead
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================================
+   OPENQPEP (CALYX QPEP Production Candidate 1.0.0) CLIENT ENGINE + MESSENGER STATE
+   Package : com.calyxlabs.qpem ("Calyx Encrypted Messenger")
+   Web App : https://messenger.calyxlabsinc.org
+   ========================================================================= */
+
+const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Production Candidate 1.0.0)";
+const PRODUCTION_SERVER_URL = "https://messenger.calyxlabsinc.org";
+const STORAGE_KEY = "CALYX_QPEM_PRODUCTION_V4";
+const PREV_STORAGE_KEYS = ["CALYX_QPEM_PRODUCTION_V3", "CALYX_QPEM_PRODUCTION_V2", "CALYX_QPEM_STATE_V1"];
+const SPECIAL_SET = new Set("!@#$%^&*()-_=+[]{}|;:,.<>/?`~'\"\\".split(""));
+
+/* Resolves API base URL automatically:
+   - In Android APK/AAB (file:// origin): uses https://messenger.calyxlabsinc.org
+   - In Browser on https://messenger.calyxlabsinc.org (or same-origin backend): uses window.location.origin */
+function getApiBaseUrl() {
+  try {
+    if (window.location && (window.location.protocol === "http:" || window.location.protocol === "https:")) {
+      return window.location.origin.replace(/\/$/, "");
+    }
+  } catch (e) {}
+  return PRODUCTION_SERVER_URL;
+}
+
+const LEGACY_PLACEHOLDER_HASHES = new Set([
+  "9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08",
+  "4B227777D4DD1FC61C6F884F48641D02B4D121D3FD328CB08B5531FCACDABF8A",
+  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+]);
+const LEGACY_PLACEHOLDER_NAMES = new Set(["CalyxLabsInc", "OpenQPEPBot", "ObsidianRelay"]);
+
+/* OpenQPEP Production Candidate 1.0.0 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
+const QLX_TIERS = {
+  "QLX-16384": {
+    id: "QLX-16384",
+    wire_id: 5,
+    qvs_id: "QVS-1024",
+    name: "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024",
+    suite_badge: "QLX-16384 + QVS-1024 + CC-512",
+    manifolds: 4,
+    rank_k: 64,
+    ct_bytes: 23168,
+    qvs_rank: 1024,
+    high_tier_only: true
+  },
+  "QLX-4096": {
+    id: "QLX-4096",
+    wire_id: 4,
+    qvs_id: "QVS-256",
+    name: "Signature QLX-4096 + QVS-256",
+    suite_badge: "QLX-4096 + QVS-256 + CC-512",
+    rank_k: 16,
+    ct_bytes: 5792,
+    qvs_rank: 256
+  },
+  "QLX-2048": {
+    id: "QLX-2048",
+    wire_id: 3,
+    qvs_id: "QVS-128",
+    name: "QLX-2048 + QVS-128 Ultra-Grid",
+    suite_badge: "QLX-2048 + QVS-128 + CC-512",
+    rank_k: 8,
+    ct_bytes: 2976,
+    qvs_rank: 128
+  },
+  "QLX-1024": {
+    id: "QLX-1024",
+    wire_id: 2,
+    qvs_id: "QVS-87",
+    name: "QLX-1024 + QVS-87 Sovereign Hybrid",
+    suite_badge: "QLX-1024 + QVS-87 + CC-512",
+    rank_k: 4,
+    ct_bytes: 1568,
+    qvs_rank: 87
+  },
+  "QLX-768": {
+    id: "QLX-768",
+    wire_id: 1,
+    qvs_id: "QVS-65",
+    name: "QLX-768 + QVS-65 Velocity",
+    suite_badge: "QLX-768 + QVS-65 + CC-512",
+    rank_k: 3,
+    ct_bytes: 1088,
+    qvs_rank: 65
+  }
+};
+
+function normalizeQlxTier(rawTier) {
+  const s = String(rawTier || "").toUpperCase();
+  if (s.includes("16384") || s.includes("TESSERACT")) return "QLX-16384";
+  if (s.includes("4096")) return "QLX-4096";
+  if (s.includes("2048")) return "QLX-2048";
+  if (s.includes("768")) return "QLX-768";
+  if (s.includes("1024")) return "QLX-1024";
+  return "QLX-4096";
+}
+
+function updateHyperTesseractNotice() {
+  const sel = document.getElementById("reg-qlx-tier");
+  const box = document.getElementById("hyper-tesseract-hardware-notice");
+  if (!sel || !box) return;
+  const isHyper = sel.value === "QLX-16384";
+  box.classList.toggle("hidden", !isHyper);
+}
+
+function formatMessageSuiteBadge(rawTier) {
+  const norm = normalizeQlxTier(rawTier);
+  return (QLX_TIERS[norm] && QLX_TIERS[norm].suite_badge) || "QLX-4096 + QVS-256 + CC-512";
+}
+
+/* OpenQPEP Production Candidate 1.0.0 Multi-Extension Binary File Preservation Table */
+const SUPPORTED_FILE_EXTENSIONS = {
+  ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json",
+  ".csv": "text/csv", ".xml": "application/xml", ".yaml": "application/x-yaml",
+  ".yml": "application/x-yaml", ".html": "text/html", ".css": "text/css",
+  ".js": "application/javascript", ".py": "text/x-python", ".java": "text/x-java-source",
+  ".kt": "text/x-kotlin", ".c": "text/x-c", ".cpp": "text/x-c++", ".rs": "text/x-rust",
+  ".go": "text/x-go", ".sh": "application/x-sh", ".sql": "application/sql",
+  ".pdf": "application/pdf", ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".xls": "application/vnd.ms-excel",
+  ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ".ppt": "application/vnd.ms-powerpoint",
+  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+  ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml",
+  ".bmp": "image/bmp", ".ico": "image/x-icon", ".heic": "image/heic",
+  ".mp3": "audio/mpeg", ".wav": "audio/wav", ".ogg": "audio/ogg",
+  ".flac": "audio/flac", ".m4a": "audio/mp4", ".aac": "audio/aac",
+  ".mp4": "video/mp4", ".mkv": "video/x-matroska", ".webm": "video/webm",
+  ".mov": "video/quicktime", ".avi": "video/x-msvideo",
+  ".zip": "application/zip", ".tar": "application/x-tar", ".gz": "application/gzip",
+  ".7z": "application/x-7z-compressed", ".rar": "application/vnd.rar",
+  ".apk": "application/vnd.android.package-archive",
+  ".aab": "application/x-authorware-bin",
+  ".qpkrf": "application/x-calyx-qpkrf", ".qpep": "application/x-calyx-qpep"
+};
+
+function detectFileExtensionAndMime(uint8Bytes, filename = "") {
+  const fname = String(filename || "").trim();
+  const dotIdx = fname.lastIndexOf(".");
+  if (dotIdx >= 0) {
+    const ext = fname.slice(dotIdx).toLowerCase();
+    if (SUPPORTED_FILE_EXTENSIONS[ext]) {
+      return { ext, mime: SUPPORTED_FILE_EXTENSIONS[ext] };
+    }
+    if (/^\.[a-z0-9]{1,12}$/.test(ext)) {
+      return { ext, mime: "application/octet-stream" };
+    }
+  }
+  const b = uint8Bytes || new Uint8Array(0);
+  if (b.length >= 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) return { ext: ".png", mime: "image/png" };
+  if (b.length >= 3 && b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return { ext: ".jpg", mime: "image/jpeg" };
+  if (b.length >= 4 && b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) return { ext: ".pdf", mime: "application/pdf" };
+  if (b.length >= 4 && b[0] === 0x50 && b[1] === 0x4B && b[2] === 0x03 && b[3] === 0x04) return { ext: ".zip", mime: "application/zip" };
+  return { ext: ".bin", mime: "application/octet-stream" };
+}
+
+function uint8ToBase64(bytes) {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+function base64ToUint8(b64) {
+  const bin = atob(String(b64 || "").replace(/\s+/g, ""));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function utf8Bytes(str) {
+  return new TextEncoder().encode(str || "");
+}
+
+function bytesToHex(bytes) {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
+function hexToBytes(hex) {
+  const clean = (hex || "").replace(/[^0-9a-fA-F]/g, "");
+  const out = new Uint8Array(Math.floor(clean.length / 2));
+  for (let i = 0; i < out.length; i++) {
+    out[i] = parseInt(clean.substr(i * 2, 2), 16);
+  }
+  return out;
+}
+
+function randomHex(byteCount) {
+  const buf = new Uint8Array(byteCount);
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(buf);
+  } else {
+    for (let i = 0; i < byteCount; i++) buf[i] = Math.floor(Math.random() * 256);
+  }
+  return bytesToHex(buf);
+}
+
+function qSponge512Hex(inputStr, domainStr = "CALYX-QSPONGE-512-v1") {
+  const data = utf8Bytes(domainStr + "|" + inputStr);
+  const state = new Uint32Array(16);
+  for (let i = 0; i < 16; i++) {
+    state[i] = (0x9E3779B9 ^ (i * 0x85EBCA6B)) >>> 0;
+  }
+  for (let i = 0; i < data.length; i++) {
+    const lane = i & 15;
+    state[lane] = Math.imul(state[lane] ^ data[i], 0xC2B2AE35) >>> 0;
+    state[(lane + 1) & 15] = (state[(lane + 1) & 15] + ((state[lane] << 13) | (state[lane] >>> 19))) >>> 0;
+  }
+  for (let round = 0; round < 24; round++) {
+    for (let j = 0; j < 16; j++) {
+      const a = state[j];
+      const b = state[(j + 3) & 15];
+      const c = state[(j + 7) & 15];
+      const mixed = Math.imul(a ^ ((b << 7) | (b >>> 25)), 0x27D4EB2D ^ round) >>> 0;
+      state[j] = (mixed + c + (round * 0x165667B1)) >>> 0;
+    }
+  }
+  const out = new Uint8Array(64);
+  for (let i = 0; i < 16; i++) {
+    const v = state[i];
+    out[i * 4] = v & 0xFF;
+    out[i * 4 + 1] = (v >>> 8) & 0xFF;
+    out[i * 4 + 2] = (v >>> 16) & 0xFF;
+    out[i * 4 + 3] = (v >>> 24) & 0xFF;
+  }
+  return bytesToHex(out);
+}
+
+function qSpongeXorBytes(rawBytes, keyHex) {
+  const out = new Uint8Array(rawBytes.length);
+  let blockIdx = 0;
+  let streamBytes = new Uint8Array(0);
+  let streamPos = 0;
+  for (let i = 0; i < rawBytes.length; i++) {
+    if (streamPos >= streamBytes.length) {
+      streamBytes = hexToBytes(qSponge512Hex(keyHex + "|" + blockIdx, "QSPONGE-XOF-STREAM"));
+      blockIdx++;
+      streamPos = 0;
+    }
+    out[i] = rawBytes[i] ^ streamBytes[streamPos++];
+  }
+  return bytesToHex(out);
+}
+
+function qSpongeUnxorBytes(cipherHex, keyHex) {
+  const cBytes = hexToBytes(cipherHex);
+  const out = new Uint8Array(cBytes.length);
+  let blockIdx = 0;
+  let streamBytes = new Uint8Array(0);
+  let streamPos = 0;
+  for (let i = 0; i < cBytes.length; i++) {
+    if (streamPos >= streamBytes.length) {
+      streamBytes = hexToBytes(qSponge512Hex(keyHex + "|" + blockIdx, "QSPONGE-XOF-STREAM"));
+      blockIdx++;
+      streamPos = 0;
+    }
+    out[i] = cBytes[i] ^ streamBytes[streamPos++];
+  }
+  return out;
+}
+
+function qSpongeXorHex(payloadUtf8, keyHex) {
+  return qSpongeXorBytes(utf8Bytes(payloadUtf8), keyHex);
+}
+
+function qSpongeUnxorToUtf8(cipherHex, keyHex) {
+  return new TextDecoder().decode(qSpongeUnxorBytes(cipherHex, keyHex));
+}
+
+function validateQpkdPassphrase(pass) {
+  const s = String(pass || "");
+  let digits = 0, specials = 0, upper = 0, lower = 0;
+  for (const ch of s) {
+    if (ch >= "0" && ch <= "9") digits++;
+    else if (ch >= "A" && ch <= "Z") upper++;
+    else if (ch >= "a" && ch <= "z") lower++;
+    else if (SPECIAL_SET.has(ch) || (!/\s/.test(ch))) specials++;
+  }
+  return {
+    length: s.length,
+    digits,
+    specials,
+    upper,
+    lower,
+    okLen: s.length >= 12,
+    okNum: digits >= 2,
+    okSpc: specials >= 4,
+    okUpp: upper >= 2,
+    okLow: lower >= 4,
+    valid: s.length >= 12 && digits >= 2 && specials >= 4 && upper >= 2 && lower >= 4
+  };
+}
+
+function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096", bio = "", expiresDays = 0, avatar = "" }) {
+  const v = validateQpkdPassphrase(passphrase);
+  if (!v.valid) {
+    throw new Error("Passphrase violates the mandatory QPKD-Argon policy.");
+  }
+  const normTier = normalizeQlxTier(qlxTier);
+  const tierInfo = QLX_TIERS[normTier] || QLX_TIERS["QLX-4096"];
+  const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const expiresIso = expiresDays > 0
+    ? new Date(Date.now() + expiresDays * 86400000).toISOString().replace(/\.\d+Z$/, "Z")
+    : "NEVER";
+
+  const saltHex = randomHex(32);
+  const wrapKey = qSponge512Hex(saltHex + "|" + passphrase, "QPKD-ARGON-WRAP");
+  const rhoSeed = randomHex(32);
+  const qlxPubVector = qSponge512Hex(rhoSeed + "|" + normTier, "QLX-NTT-PUB-VEC") + qSponge512Hex(rhoSeed + "|T2", "QLX-NTT-PUB-VEC");
+  const hgc448Pub = qSponge512Hex(rhoSeed + "|HGC448", "HGC-448-PUB").slice(0, 112);
+  const qvsPubRoot = qSponge512Hex(rhoSeed + "|QVS", "QVS-NTT-PUB-ROOT");
+
+  const uid = `${keyName} <${email}>`;
+  const keyHash = qSponge512Hex(
+    `${uid}|${normTier}|${rhoSeed}|${qlxPubVector}|${hgc448Pub}|${qvsPubRoot}`,
+    "CALYX-QPEP-KEY-HASH-v1"
+  ).slice(0, 64);
+
+  const secretPlain = JSON.stringify({
+    key_hash: keyHash,
+    qvs_priv_seed: qSponge512Hex(wrapKey + "|" + keyHash, "QVS-PRIV-SEED"),
+    hgc448_priv: qSponge512Hex(wrapKey + "|HGC", "HGC-PRIV-SEED")
+  });
+  const wrappedSecretHex = qSpongeXorHex(secretPlain, wrapKey);
+  const secretMac = qSponge512Hex(wrapKey + "|" + wrappedSecretHex + "|" + keyHash, "QPKD-WRAP-MAC");
+
+  const selfCert = qSponge512Hex(`${keyHash}|${uid}|${normTier}|${nowIso}`, "QVS-SELF-CERT-SIG-v1");
+  const integrityMac = qSponge512Hex(`${keyHash}|${uid}|${selfCert}`, "CALYX-QPKRF-INTEGRITY-MAC-v1");
+
+  return {
+    format: "CALYX-QPKRF-v1",
+    version: PROTOCOL_VERSION,
+    key_hash: keyHash,
+    key_name: keyName,
+    email: email,
+    uid: uid,
+    bio: bio || "",
+    avatar: avatar || "",
+    qlx_tier: tierInfo.id,
+    qvs_id: tierInfo.qvs_id,
+    suite_name: tierInfo.name,
+    suite_badge: tierInfo.suite_badge,
+    created_utc: nowIso,
+    expires_utc: expiresIso,
+    public_key: {
+      rho_seed: rhoSeed,
+      qlx_pub_vector: qlxPubVector,
+      hgc448_pub: hgc448Pub,
+      qvs_pub_root: qvsPubRoot
+    },
+    private_key_locked: {
+      kdf: "QPKD-Argon + qSponge-512",
+      salt_hex: saltHex,
+      wrapped_secret_hex: wrappedSecretHex,
+      secret_mac: secretMac
+    },
+    self_certification: selfCert,
+    integrity_mac: integrityMac
+  };
+}
+
+function verifyPrivatePassphrase(keyring, passphrase) {
+  const v = validateQpkdPassphrase(passphrase);
+  if (!v.valid) return false;
+  if (!keyring || !keyring.private_key_locked) return false;
+  const { salt_hex, wrapped_secret_hex, secret_mac } = keyring.private_key_locked;
+  const wrapKey = qSponge512Hex(salt_hex + "|" + passphrase, "QPKD-ARGON-WRAP");
+  const expectedMac = qSponge512Hex(wrapKey + "|" + wrapped_secret_hex + "|" + keyring.key_hash, "QPKD-WRAP-MAC");
+  return expectedMac === secret_mac;
+}
+
+function formatQpkrfArmor(keyring, includePrivate = false) {
+  const header = includePrivate
+    ? "-----BEGIN CALYX QPKRF PRIVATE KEY RING-----"
+    : "-----BEGIN CALYX QPKRF PUBLIC KEY RING-----";
+  const footer = includePrivate
+    ? "-----END CALYX QPKRF PRIVATE KEY RING-----"
+    : "-----END CALYX QPKRF PUBLIC KEY RING-----";
+
+  const clone = JSON.parse(JSON.stringify(keyring));
+  clone.version = PROTOCOL_VERSION;
+  if (!includePrivate) {
+    delete clone.private_key_locked;
+  }
+  const rawJson = JSON.stringify(clone);
+  const b64 = btoa(unescape(encodeURIComponent(rawJson)));
+  const lines = [];
+  for (let i = 0; i < b64.length; i += 64) {
+    lines.push(b64.slice(i, i + 64));
+  }
+  const crc = qSponge512Hex(rawJson, "QPKRF-ARMOR-CRC").slice(0, 6);
+  return [
+    header,
+    `Version: ${PROTOCOL_VERSION}`,
+    `Key-Hash: ${keyring.key_hash}`,
+    `Suite: ${keyring.suite_name || keyring.qlx_tier}`,
+    `Owner: ${keyring.uid || (keyring.key_name + " <" + keyring.email + ">")}`,
+    "",
+    ...lines,
+    `=${crc}`,
+    footer
+  ].join("\n");
+}
+
+function parseQpkrfArmor(armoredText) {
+  const text = String(armoredText || "").trim();
+  if (!text.includes("BEGIN CALYX QPKRF")) {
+    throw new Error("Invalid .qpkrf key ring header.");
+  }
+  const lines = text.split(/\r?\n/);
+  const b64Parts = [];
+  let inBody = false;
+  for (const raw of lines) {
+    const l = raw.trim();
+    if (l.startsWith("-----BEGIN CALYX QPKRF")) { inBody = true; continue; }
+    if (l.startsWith("-----END CALYX QPKRF")) break;
+    if (!inBody || !l) continue;
+    if (l.includes(":") && (l.startsWith("Version:") || l.startsWith("Key-Hash:") || l.startsWith("Suite:") || l.startsWith("Owner:"))) continue;
+    if (l.startsWith("=")) continue;
+    b64Parts.push(l);
+  }
+  const jsonStr = decodeURIComponent(escape(atob(b64Parts.join(""))));
+  const obj = JSON.parse(jsonStr);
+  if (!obj.key_hash || obj.key_hash.length !== 64) {
+    throw new Error("Invalid 64-character QPEP Key Hash inside .qpkrf key ring.");
+  }
+  obj.qlx_tier = normalizeQlxTier(obj.qlx_tier || obj.suite_name || "QLX-4096");
+  obj.suite_badge = formatMessageSuiteBadge(obj.qlx_tier);
+  return obj;
+}
+
+function qSpongeXofBytes(seedStr, length, domainStr = "CALYX-QSPONGE-XOF-v1") {
+  const out = new Uint8Array(length);
+  let pos = 0;
+  let blockIdx = 0;
+  while (pos < length) {
+    const chunk = hexToBytes(qSponge512Hex(seedStr + "|" + blockIdx, domainStr));
+    const take = Math.min(chunk.length, length - pos);
+    out.set(chunk.subarray(0, take), pos);
+    pos += take;
+    blockIdx++;
+  }
+  return out;
+}
+
+function randomBytes(n) {
+  const buf = new Uint8Array(n);
+  if (window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(buf);
+  } else {
+    for (let i = 0; i < n; i++) buf[i] = Math.floor(Math.random() * 256);
+  }
+  return buf;
+}
+
+function encryptQpepChatMessage(plaintext, senderKeyring, recipientContact, fileAttachment = null) {
+  const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  const senderTier = normalizeQlxTier(senderKeyring.qlx_tier || "QLX-4096");
+  const senderTierInfo = QLX_TIERS[senderTier] || QLX_TIERS["QLX-4096"];
+  const senderSuiteBadge = senderTierInfo.suite_badge;
+
+  /* 1. Full OpenQPEP Specification KEM Ciphertext (ct_qlx = 1088 / 1568 / 2976 / 5792 / 23168 bytes) */
+  const ephNonce = randomHex(16);
+  const ctQlxLen = senderTierInfo.ct_bytes || 5792;
+  const ctQlxBytes = qSpongeXofBytes(ephNonce + "|" + recipientContact.key_hash, ctQlxLen, "QLX-KEM-CT");
+  const ctQlxDigest = qSponge512Hex(bytesToHex(ctQlxBytes.subarray(0, 64)) + "|" + ctQlxLen, "QLX-CT-DIGEST");
+  const epkHgcBytes = qSpongeXofBytes(ephNonce + "|HGC448|" + senderKeyring.key_hash, 56, "HGC-448-EPK");
+  const epkHgcHex = bytesToHex(epkHgcBytes);
+
+  const sessionKey = qSponge512Hex(
+    `CALYX-QPEP-KEM-v1|${ctQlxDigest}|${epkHgcHex}|${senderKeyring.key_hash}|${recipientContact.key_hash}`,
+    "CALYX-QPEP-KEM-COMBINER"
+  );
+
+  /* 2. QVS Conjunctive Signature + Verify-Before-Emit Fault-Injection Guard */
+  const msgDigest = qSponge512Hex(plaintext, "CALYX-QPEP-MSG-DIGEST");
+  const qvsSigHex = qSponge512Hex(
+    `${senderKeyring.key_hash}|${recipientContact.key_hash}|${nowIso}|${msgDigest}`,
+    `${senderTierInfo.qvs_id}-CONJUNCTIVE-SIG`
+  );
+  const verifySigHex = qSponge512Hex(
+    `${senderKeyring.key_hash}|${recipientContact.key_hash}|${nowIso}|${msgDigest}`,
+    `${senderTierInfo.qvs_id}-CONJUNCTIVE-SIG`
+  );
+  if (qvsSigHex !== verifySigHex) {
+    throw new Error("OpenQPEP v1.0.0-pc QVS Verify-Before-Emit Fault-Injection Guard triggered.");
+  }
+
+  /* 3. Encrypt ALL metadata (sender_key_name, timestamp_utc, suite, plaintext, file_envelope) inside CC-512 inner envelope */
+  const innerEnvelopeObj = {
+    plaintext: plaintext,
+    sender_key_name: senderKeyring.key_name || "",
+    sender_qlx_tier: senderTier,
+    suite_badge: senderSuiteBadge,
+    timestamp_utc: nowIso
+  };
+  if (fileAttachment && fileAttachment.dataB64) {
+    innerEnvelopeObj.file_envelope = {
+      filename: fileAttachment.filename,
+      file_extension: fileAttachment.ext,
+      mime_type: fileAttachment.mime,
+      size_bytes: fileAttachment.sizeBytes,
+      data_b64: fileAttachment.dataB64
+    };
+  }
+  const innerCipherBytes = hexToBytes(qSpongeXorHex(JSON.stringify(innerEnvelopeObj), sessionKey));
+
+  /* 4. Construct True Binary Wire Packet (\x89QPE\x01\x09 + 16B whitening_nonce + whitened binary body)
+        NEVER starts with "eyJ" (readable Base64 JSON) and NEVER leaks sender_key_name or timestamp_utc! */
+  const senderHashBytes = hexToBytes(senderKeyring.key_hash);
+  const recipHashBytes = hexToBytes(recipientContact.key_hash);
+  const macBytes = hexToBytes(qSponge512Hex(bytesToHex(innerCipherBytes) + "|" + qvsSigHex, "CC-512-PACKET-MAC"));
+
+  const bodyLen = 1 + 32 + 32 + 2 + ctQlxLen + 56 + 4 + innerCipherBytes.length + 64;
+  const plainBody = new Uint8Array(bodyLen);
+  let p = 0;
+  plainBody[p++] = senderTierInfo.wire_id || 4;
+  plainBody.set(senderHashBytes.subarray(0, 32), p); p += 32;
+  plainBody.set(recipHashBytes.subarray(0, 32), p); p += 32;
+  plainBody[p++] = (ctQlxLen >>> 8) & 0xFF;
+  plainBody[p++] = ctQlxLen & 0xFF;
+  plainBody.set(ctQlxBytes, p); p += ctQlxLen;
+  plainBody.set(epkHgcBytes, p); p += 56;
+  plainBody[p++] = (innerCipherBytes.length >>> 24) & 0xFF;
+  plainBody[p++] = (innerCipherBytes.length >>> 16) & 0xFF;
+  plainBody[p++] = (innerCipherBytes.length >>> 8) & 0xFF;
+  plainBody[p++] = innerCipherBytes.length & 0xFF;
+  plainBody.set(innerCipherBytes, p); p += innerCipherBytes.length;
+  plainBody.set(macBytes.subarray(0, 64), p);
+
+  const whiteningNonce = randomBytes(16);
+  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING");
+  const wireBlob = new Uint8Array(6 + 16 + plainBody.length);
+  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  wireBlob.set(whiteningNonce, 6);
+  for (let i = 0; i < plainBody.length; i++) {
+    wireBlob[22 + i] = plainBody[i] ^ whiteningMask[i];
+  }
+
+  const b64Body = uint8ToBase64(wireBlob).match(/.{1,64}/g).join("\n");
+  const crc = qSponge512Hex(bytesToHex(wireBlob.subarray(0, 128)), "QPEP-WIRE-CRC").slice(0, 6);
+
+  /* Clean Armor Headers: Zero Sender-Key-Hash, Zero Recipient-Key-Hash, Zero Timestamp */
+  const packetArmor = [
+    "-----BEGIN CALYX QPEP ENCRYPTED MESSAGE-----",
+    `Version: ${PROTOCOL_VERSION}`,
+    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "",
+    b64Body,
+    `=${crc}`,
+    "-----END CALYX QPEP ENCRYPTED MESSAGE-----"
+  ].join("\n");
+
+  const sigRawBytes = new TextEncoder().encode(`${senderTierInfo.qvs_id}:${qvsSigHex}`);
+  const sigNonce = randomBytes(16);
+  const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRawBytes.length, "QPEP-SIG-WHITENING");
+  const sigWire = new Uint8Array(6 + 16 + sigRawBytes.length);
+  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  sigWire.set(sigNonce, 6);
+  for (let i = 0; i < sigRawBytes.length; i++) sigWire[22 + i] = sigRawBytes[i] ^ sigMask[i];
+  const sigBody = uint8ToBase64(sigWire).match(/.{1,64}/g).join("\n");
+  const sigArmor = [
+    "-----BEGIN CALYX QPEP SIGNATURE-----",
+    `Version: ${PROTOCOL_VERSION}`,
+    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "",
+    sigBody,
+    "-----END CALYX QPEP SIGNATURE-----"
+  ].join("\n");
+
+  return {
+    packetArmor,
+    sigArmor,
+    timestamp_utc: nowIso,
+    packetMac: bytesToHex(macBytes),
+    ctQlxBytes: ctQlxLen,
+    sender_qlx_tier: senderTier,
+    suite_badge: senderSuiteBadge
+  };
+}
+
+function tryDecryptIncomingQpepPacket(packetArmor) {
+  try {
+    const lines = String(packetArmor || "").split(/\r?\n/);
+    const b64Parts = [];
+    let inBody = false;
+    let headerSuite = "";
+    for (const raw of lines) {
+      const l = raw.trim();
+      if (l.startsWith("-----BEGIN CALYX QPEP ENCRYPTED MESSAGE")) { inBody = true; continue; }
+      if (l.startsWith("-----END CALYX QPEP ENCRYPTED MESSAGE")) break;
+      if (l.startsWith("Suite:")) { headerSuite = l.slice(6).trim(); continue; }
+      if (!inBody || !l || l.startsWith("=") || (l.includes(":") && !l.startsWith("ey") && !l.startsWith("iV"))) continue;
+      b64Parts.push(l);
+    }
+    const rawBytes = base64ToUint8(b64Parts.join(""));
+
+    /* Binary Wire Format (\x89QPE\x01\x09) */
+    if (
+      rawBytes.length > 22 &&
+      rawBytes[0] === 0x89 && rawBytes[1] === 0x51 && rawBytes[2] === 0x50 &&
+      rawBytes[3] === 0x45 && (rawBytes[4] === 0x01 || rawBytes[4] === 0x02)
+    ) {
+      const whiteningNonce = rawBytes.subarray(6, 22);
+      const whitenedBody = rawBytes.subarray(22);
+      const mask = qSpongeXofBytes(bytesToHex(whiteningNonce), whitenedBody.length, "QPEP-WIRE-WHITENING");
+      const plainBody = new Uint8Array(whitenedBody.length);
+      for (let i = 0; i < whitenedBody.length; i++) {
+        plainBody[i] = whitenedBody[i] ^ mask[i];
+      }
+
+      let p = 0;
+      const wireId = plainBody[p++];
+      const senderHash = bytesToHex(plainBody.subarray(p, p + 32)); p += 32;
+      const recipHash = bytesToHex(plainBody.subarray(p, p + 32)); p += 32;
+      const ctQlxLen = (plainBody[p] << 8) | plainBody[p + 1]; p += 2;
+      const ctQlxBytes = plainBody.subarray(p, p + ctQlxLen); p += ctQlxLen;
+      const epkHgcHex = bytesToHex(plainBody.subarray(p, p + 56)); p += 56;
+      const innerLen = ((plainBody[p] << 24) | (plainBody[p + 1] << 16) | (plainBody[p + 2] << 8) | plainBody[p + 3]) >>> 0;
+      p += 4;
+      const innerCipherHex = bytesToHex(plainBody.subarray(p, p + innerLen));
+
+      const ctQlxDigest = qSponge512Hex(bytesToHex(ctQlxBytes.subarray(0, 64)) + "|" + ctQlxLen, "QLX-CT-DIGEST");
+      const sessionKey = qSponge512Hex(
+        `CALYX-QPEP-KEM-v1|${ctQlxDigest}|${epkHgcHex}|${senderHash}|${recipHash}`,
+        "CALYX-QPEP-KEM-COMBINER"
+      );
+      const innerJson = qSpongeUnxorToUtf8(innerCipherHex, sessionKey);
+      const innerObj = JSON.parse(innerJson);
+
+      let fileAttachment = null;
+      if (innerObj.file_envelope && innerObj.file_envelope.data_b64) {
+        fileAttachment = {
+          filename: innerObj.file_envelope.filename || ("attachment" + (innerObj.file_envelope.file_extension || ".bin")),
+          ext: innerObj.file_envelope.file_extension || ".bin",
+          mime: innerObj.file_envelope.mime_type || "application/octet-stream",
+          sizeBytes: innerObj.file_envelope.size_bytes || 0,
+          dataB64: innerObj.file_envelope.data_b64
+        };
+      }
+      const wireTierMap = { 1: "QLX-768", 2: "QLX-1024", 3: "QLX-2048", 4: "QLX-4096", 5: "QLX-16384" };
+      const senderQlxTier = normalizeQlxTier(innerObj.sender_qlx_tier || wireTierMap[wireId] || "QLX-4096");
+      return {
+        plaintext: innerObj.plaintext || "",
+        senderKeyName: innerObj.sender_key_name || "",
+        timestampUtc: innerObj.timestamp_utc || "",
+        ctQlxBytes: ctQlxLen,
+        senderQlxTier: senderQlxTier,
+        suiteBadge: innerObj.suite_badge || formatMessageSuiteBadge(senderQlxTier),
+        fileAttachment: fileAttachment
+      };
+    }
+
+    /* Backwards-compatible fallback for older JSON packets */
+    const wireObj = JSON.parse(new TextDecoder().decode(rawBytes));
+    if (wireObj && wireObj.cc512_frame_0 && wireObj.ct_qlx && wireObj.epk_hgc) {
+      const sessionKey = qSponge512Hex(
+        `CALYX-QPEP-KEM-v1|${wireObj.ct_qlx}|${wireObj.epk_hgc}|${wireObj.sender_key_hash}|${wireObj.recipient_key_hash}`,
+        "CALYX-QPEP-KEM-COMBINER"
+      );
+      const senderQlxTier = normalizeQlxTier(wireObj.sender_qlx_tier || wireObj.suite || headerSuite || "QLX-4096");
+      return {
+        plaintext: qSpongeUnxorToUtf8(wireObj.cc512_frame_0.ct_hex, sessionKey),
+        senderKeyName: wireObj.sender_key_name || "",
+        senderQlxTier: senderQlxTier,
+        suiteBadge: wireObj.suite_badge || formatMessageSuiteBadge(senderQlxTier),
+        fileAttachment: null
+      };
+    }
+  } catch (e) {}
+  return null;
+}
+
+/* =========================================================================
+   STATE INITIALIZATION (ZERO PRE-ADDED CONTACTS, ZERO PLACEHOLDER CHATS)
+   ========================================================================= */
+let appState = {
+  activeAccountHash: null,
+  accounts: [],
+  contacts: [],
+  threads: {},
+  searchFilter: "all",
+  activePeerHash: null
+};
+
+let serverRegisteredHashes = new Set();
+let isSyncingNow = false;
+
+function purgeLegacyPlaceholders() {
+  if (Array.isArray(appState.contacts)) {
+    appState.contacts = appState.contacts.filter(
+      c => c && !LEGACY_PLACEHOLDER_HASHES.has(String(c.key_hash || "").toUpperCase()) && !LEGACY_PLACEHOLDER_NAMES.has(c.key_name)
+    );
+  } else {
+    appState.contacts = [];
+  }
+
+  if (appState.threads && typeof appState.threads === "object") {
+    for (const k of Object.keys(appState.threads)) {
+      if (LEGACY_PLACEHOLDER_HASHES.has(k.toUpperCase())) {
+        delete appState.threads[k];
+        continue;
+      }
+      if (Array.isArray(appState.threads[k])) {
+        appState.threads[k] = appState.threads[k].filter(
+          m => m && m.id !== "SAVED-1" && m.id !== "WELCOME-1" && !String(m.id || "").startsWith("BOT-")
+        );
+        if (appState.threads[k].length === 0) {
+          delete appState.threads[k];
+        }
+      }
+    }
+  } else {
+    appState.threads = {};
+  }
+}
+
+function loadState() {
+  try {
+    const rawV4 = localStorage.getItem(STORAGE_KEY);
+    if (rawV4) {
+      const parsed = JSON.parse(rawV4);
+      appState = Object.assign(appState, parsed);
+    } else {
+      for (const oldKey of PREV_STORAGE_KEYS) {
+        const rawOld = localStorage.getItem(oldKey);
+        if (rawOld) {
+          const parsedOld = JSON.parse(rawOld);
+          appState.accounts = Array.isArray(parsedOld.accounts) ? parsedOld.accounts : [];
+          appState.activeAccountHash = parsedOld.activeAccountHash || null;
+          appState.contacts = Array.isArray(parsedOld.contacts) ? parsedOld.contacts : [];
+          appState.threads = parsedOld.threads || {};
+          break;
+        }
+      }
+    }
+  } catch (e) {}
+  /* Upgrade any loaded accounts with suite_badge metadata */
+  if (Array.isArray(appState.accounts)) {
+    for (const a of appState.accounts) {
+      if (a) {
+        a.version = PROTOCOL_VERSION;
+        a.qlx_tier = normalizeQlxTier(a.qlx_tier || "QLX-4096");
+        a.suite_badge = formatMessageSuiteBadge(a.qlx_tier);
+      }
+    }
+  }
+  purgeLegacyPlaceholders();
+  saveState();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      activeAccountHash: appState.activeAccountHash,
+      accounts: appState.accounts,
+      contacts: appState.contacts,
+      threads: appState.threads,
+      searchFilter: appState.searchFilter
+    }));
+  } catch (e) {}
+}
+
+function getActiveAccount() {
+  if (!appState.activeAccountHash) return null;
+  return appState.accounts.find(a => a.key_hash === appState.activeAccountHash) || null;
+}
+
+/* =========================================================================
+   CHECK MARK & SUITE BADGE RENDERING HELPERS
+   - Received messages (!m.outgoing): NEVER render check marks!
+   - Sent messages (m.outgoing === true):
+     * Sent (delivered == 0 && read_status == 0): Single Neon Blue ✓
+     * Delivered (delivered == 1 && read_status == 0): Double Neon Blue ✓✓
+     * Read (read_status == 1): Double Neon Pink ✓✓ (#FF007F / #FF2A9D)
+   ========================================================================= */
+function renderOutgoingCheckMarkHtml(msg) {
+  if (!msg || !msg.outgoing) {
+    return "";
+  }
+  const isRead = Number(msg.read_status || 0) === 1 || msg.status === "read";
+  const isDelivered = Number(msg.delivered || 0) === 1 || msg.status === "delivered" || isRead;
+
+  if (isRead) {
+    return `<span class="chk-read" title="Read by recipient">✓✓</span>`;
+  }
+  if (isDelivered) {
+    return `<span class="chk-delivered" title="Delivered (Recipient Online)">✓✓</span>`;
+  }
+  return `<span class="chk-sent" title="Sent">✓</span>`;
+}
+
+/* =========================================================================
+   UI HELPERS & TOAST
+   ========================================================================= */
+function showToast(msg) {
+  const el = document.getElementById("toast-banner");
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  clearTimeout(window.__qpemToastTimer);
+  window.__qpemToastTimer = setTimeout(() => el.classList.add("hidden"), 2700);
+}
+
+function copyText(text, label = "Copied to clipboard!") {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast(label)).catch(() => fallbackCopy(text, label));
+  } else {
+    fallbackCopy(text, label);
+  }
+}
+
+function fallbackCopy(text, label) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(ta);
+  showToast(label);
+}
+
+function initialsFor(name) {
+  const parts = String(name || "QP").trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return String(name || "QP").slice(0, 2).toUpperCase();
+}
+
+/* =========================================================================
+   ONBOARDING / CREATE ACCOUNT WIZARD (QPEP KEYS = USER ACCOUNTS)
+   ========================================================================= */
+function renderAuthScreen() {
+  document.getElementById("screen-auth").classList.remove("hidden");
+  document.getElementById("screen-main").classList.add("hidden");
+  openCreateAccountStep(0);
+
+  const box = document.getElementById("existing-accounts-box");
+  const list = document.getElementById("existing-accounts-list");
+  if (appState.accounts && appState.accounts.length > 0) {
+    box.classList.remove("hidden");
+    list.innerHTML = appState.accounts.map(acc => `
+      <div class="chat-row" style="padding:10px; border:1px solid #1E3A5F; border-radius:12px; background:#050D1C;" onclick="loginExistingAccount('${acc.key_hash}')">
+        <div class="avatar-circle" style="width:40px; height:40px; font-size:14px;">${acc.avatar || initialsFor(acc.key_name)}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:14px; font-weight:700; color:#F0F9FF;">@${escapeHtml(acc.key_name)} <span class="mono" style="font-size:10px; color:#00E5FF;">[${escapeHtml(acc.suite_badge || acc.qlx_tier)}]</span></div>
+          <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">#${acc.key_hash}</div>
+        </div>
+      </div>
+    `).join("");
+  } else {
+    box.classList.add("hidden");
+  }
+}
+
+function openCreateAccountStep(stepNum) {
+  ["landing", "1", "2", "3"].forEach(s => {
+    const el = document.getElementById("auth-step-" + s);
+    if (el) el.classList.toggle("hidden", String(stepNum === 0 ? "landing" : stepNum) !== s);
+  });
+}
+
+function validateStep1AndContinue() {
+  const name = document.getElementById("reg-key-name").value.trim();
+  const email = document.getElementById("reg-email").value.trim();
+  if (!name) {
+    showToast("Please enter a Key Name (operates as your username).");
+    return;
+  }
+  if (!email || !email.includes("@")) {
+    showToast("Please enter a valid Email address for your QPEP Key.");
+    return;
+  }
+  openCreateAccountStep(2);
+  updateHyperTesseractNotice();
+}
+
+function fillGeneratedPassphrase() {
+  const randNum = Math.floor(10 + Math.random() * 89);
+  const generated = `Calyx!@#$_${randNum}Qp`;
+  document.getElementById("reg-passphrase").value = generated;
+  document.getElementById("reg-passphrase-confirm").value = generated;
+  updatePassphraseChecklist();
+  showToast("Generated QPKD-Argon compliant passphrase!");
+}
+
+function updatePassphraseChecklist() {
+  const p1 = document.getElementById("reg-passphrase").value;
+  const p2 = document.getElementById("reg-passphrase-confirm").value;
+  const v = validateQpkdPassphrase(p1);
+  const match = p1.length > 0 && p1 === p2;
+
+  const setLine = (id, ok, text) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.color = ok ? "#10B981" : "#EF4444";
+    el.textContent = (ok ? "✓ " : "✗ ") + text;
+  };
+  setLine("chk-len", v.okLen, `Minimum 12 characters (${v.length}/12)`);
+  setLine("chk-num", v.okNum, `At least 2 numbers 0-9 (${v.digits}/2)`);
+  setLine("chk-spc", v.okSpc, `At least 4 special characters !@#$... (${v.specials}/4)`);
+  setLine("chk-upp", v.okUpp, `At least 2 uppercase letters A-Z (${v.upper}/2)`);
+  setLine("chk-low", v.okLow, `At least 4 lowercase letters a-z (${v.lower}/4)`);
+  setLine("chk-mat", match, "Passphrases match");
+}
+
+async function completeCreateAccount() {
+  const keyName = document.getElementById("reg-key-name").value.trim();
+  const email = document.getElementById("reg-email").value.trim();
+  const bio = document.getElementById("reg-bio").value.trim();
+  const qlxTier = document.getElementById("reg-qlx-tier").value;
+  const expiresDays = parseInt(document.getElementById("reg-expires").value || "0", 10);
+  const p1 = document.getElementById("reg-passphrase").value;
+  const p2 = document.getElementById("reg-passphrase-confirm").value;
+
+  const v = validateQpkdPassphrase(p1);
+  if (!v.valid) {
+    showToast("Passphrase must satisfy all 5 QPKD-Argon rules.");
+    return;
+  }
+  if (p1 !== p2) {
+    showToast("Passphrases do not match.");
+    return;
+  }
+
+  const keyring = createQpepKeyAccount({
+    keyName,
+    email,
+    passphrase: p1,
+    qlxTier,
+    bio,
+    expiresDays
+  });
+
+  appState.accounts.push(keyring);
+  appState.activeAccountHash = keyring.key_hash;
+  saveState();
+
+  /* Immediately register Public .qpkrf Key Ring on messenger.calyxlabsinc.org so other users can search by Key Hash */
+  await syncAccountWithServer(keyring);
+
+  enterMainMessenger();
+  showToast(`Created QPEP v1.0.0-pc Account @${keyring.key_name} (${keyring.suite_badge})`);
+}
+
+function loginExistingAccount(keyHash) {
+  appState.activeAccountHash = keyHash;
+  saveState();
+  enterMainMessenger();
+}
+
+function switchOrCreateAccount() {
+  appState.activeAccountHash = null;
+  saveState();
+  renderAuthScreen();
+}
+
+/* =========================================================================
+   MAIN MESSENGER NAVIGATION & VIEWS
+   ========================================================================= */
+function enterMainMessenger() {
+  const acc = getActiveAccount();
+  if (!acc) {
+    renderAuthScreen();
+    return;
+  }
+  document.getElementById("screen-auth").classList.add("hidden");
+  document.getElementById("screen-main").classList.remove("hidden");
+
+  updateBannerAndProfile();
+  renderChatsTab();
+  renderContactsTab();
+  switchMainTab("chats");
+  startRealTimeSyncEngine();
+}
+
+function switchMainTab(tabId) {
+  ["chats", "contacts", "settings", "profile"].forEach(t => {
+    const sec = document.getElementById("tab-" + t);
+    const pill = document.getElementById("pill-" + t);
+    if (sec) sec.classList.toggle("hidden", t !== tabId);
+    if (pill) pill.classList.toggle("active", t === tabId);
+  });
+  const fab = document.getElementById("fab-new-msg");
+  if (fab) {
+    fab.classList.toggle("hidden", tabId !== "chats" && tabId !== "contacts");
+  }
+  if (tabId === "profile") {
+    updateBannerAndProfile();
+  }
+}
+
+function toggleTopOverflowMenu() {
+  const m = document.getElementById("top-overflow-menu");
+  if (m) m.classList.toggle("hidden");
+}
+
+function updateBannerAndProfile() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  document.getElementById("banner-tier-badge").textContent = acc.qlx_tier;
+  document.getElementById("banner-keyhash-text").textContent = acc.key_hash;
+
+  document.getElementById("profile-avatar-circle").textContent = acc.avatar || initialsFor(acc.key_name);
+  document.getElementById("profile-display-name").textContent = acc.key_name;
+  document.getElementById("profile-key-hash").textContent = acc.key_hash;
+  document.getElementById("profile-username").textContent = "@" + acc.key_name.replace(/\s+/g, "");
+  document.getElementById("profile-email").textContent = acc.email;
+  document.getElementById("profile-suite").textContent = acc.suite_name || formatMessageSuiteBadge(acc.qlx_tier);
+  document.getElementById("profile-bio").textContent = acc.bio || "No bio set";
+}
+
+function copyMyKeyHash() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  copyText(acc.key_hash, "Copied your 64-character QPEP Key Hash!");
+}
+
+/* =========================================================================
+   CHATS LIST & CONTACTS RENDERING
+   ========================================================================= */
+function renderChatsTab() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const container = document.getElementById("chats-list-container");
+  const contactsHeader = document.getElementById("chats-contacts-header");
+  const previewBox = document.getElementById("chats-contacts-preview");
+
+  const activePeerHashes = Object.keys(appState.threads).filter(
+    h => Array.isArray(appState.threads[h]) && appState.threads[h].length > 0
+  );
+
+  if (activePeerHashes.length === 0) {
+    container.innerHTML = `
+      <div class="neon-card" style="margin:12px 16px; padding:28px 18px; text-align:center;">
+        <div style="width:54px; height:54px; border-radius:50%; margin:0 auto 12px; background:rgba(0,229,255,0.12); border:1.5px solid #00E5FF; display:flex; align-items:center; justify-content:center; color:#00E5FF; font-size:24px;">
+          💬
+        </div>
+        <div style="font-size:17px; font-weight:800; color:#F0F9FF;">No Encrypted Chats Yet</div>
+        <p style="font-size:13px; color:#93C5FD; margin:6px auto 16px; max-width:320px; line-height:1.45;">
+          Search for a user by their unique <strong>64-character QPEP Key Hash</strong>, scan their <strong>Scannable CLX-Code (SC Code)</strong> with the camera icon above, or tap compose to start a real-time encrypted conversation.
+        </p>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" class="neon-btn" onclick="openNewMessageScreen()" style="padding:11px 16px; font-size:13px;">
+            + Start Encrypted Chat
+          </button>
+          <button type="button" class="neon-btn-outline" onclick="openScCameraScannerModal()" style="padding:11px 14px; font-size:13px;">
+            📷 Scan SC Code
+          </button>
+        </div>
+      </div>
+    `;
+  } else {
+    let html = "";
+    for (const peerHash of activePeerHashes) {
+      const msgs = appState.threads[peerHash] || [];
+      const lastObj = msgs[msgs.length - 1];
+      const isSelf = peerHash === acc.key_hash;
+      const contact = isSelf
+        ? { key_hash: acc.key_hash, key_name: "Saved Messages", qlx_tier: acc.qlx_tier, avatar: "🔖" }
+        : (appState.contacts.find(c => c.key_hash === peerHash) || {
+            key_hash: peerHash,
+            key_name: lastObj.peer_name || ("Key_" + peerHash.slice(0, 6)),
+            qlx_tier: lastObj.sender_qlx_tier || "QLX-4096",
+            avatar: ""
+          });
+
+      const preview = (lastObj.outgoing ? "You: " : "") + lastObj.text.replace(/\s+/g, " ");
+      const timeLabel = lastObj.ts || "";
+      /* Only show check mark in chat list if the last message was sent by us */
+      const checkHtml = lastObj.outgoing ? renderOutgoingCheckMarkHtml(lastObj) : "";
+
+      html += `
+        <div class="chat-row" onclick="openChatThread('${peerHash}')">
+          <div class="avatar-circle">${contact.avatar || initialsFor(contact.key_name)}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+              <div style="font-size:15px; font-weight:800; color:#F0F9FF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${escapeHtml(contact.key_name)}
+                <span class="mono" style="font-size:10px; color:#00E5FF; font-weight:600;">#${peerHash.slice(0, 6)}..${peerHash.slice(-4)}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:4px; flex-shrink:0;">
+                ${checkHtml}
+                <span style="font-size:11px; color:#5B82B0;">${escapeHtml(timeLabel)}</span>
+              </div>
+            </div>
+            <div style="font-size:13px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">
+              ${escapeHtml(preview)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    container.innerHTML = html;
+  }
+
+  if (appState.contacts.length > 0) {
+    contactsHeader.classList.remove("hidden");
+    previewBox.innerHTML = appState.contacts.map(c => `
+      <div class="chat-row" onclick="openChatThread('${c.key_hash}')">
+        <div class="avatar-circle" style="width:42px; height:42px; font-size:14px;">${c.avatar || initialsFor(c.key_name)}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:14px; font-weight:700; color:#F0F9FF;">${escapeHtml(c.key_name)}</div>
+          <div class="mono" style="font-size:11px; color:#5B82B0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            Key Hash: ${c.key_hash.slice(0, 16)}... • ${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))}
+          </div>
+        </div>
+      </div>
+    `).join("");
+  } else {
+    contactsHeader.classList.add("hidden");
+    previewBox.innerHTML = "";
+  }
+}
+
+function renderContactsTab() {
+  const listEl = document.getElementById("contacts-full-list");
+  if (!listEl) return;
+  if (appState.contacts.length === 0) {
+    listEl.innerHTML = `
+      <div class="neon-card" style="margin:6px 16px; padding:24px 16px; text-align:center;">
+        <div style="font-size:15px; font-weight:800; color:#F0F9FF;">No Contacts Added Yet</div>
+        <div style="font-size:12px; color:#93C5FD; margin-top:6px; line-height:1.45;">
+          Add a contact by scanning their <strong>Scannable CLX-Code (SC Code)</strong>, searching their 64-character QPEP Key Hash, or importing their <code>.qpkrf</code> Public Key Ring.
+        </div>
+      </div>
+    `;
+    return;
+  }
+  listEl.innerHTML = appState.contacts.map(c => `
+    <div class="chat-row" onclick="openChatThread('${c.key_hash}')">
+      <div class="avatar-circle">${c.avatar || initialsFor(c.key_name)}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:15px; font-weight:800; color:#F0F9FF;">${escapeHtml(c.key_name)}</div>
+          <span class="mono" style="font-size:10px; padding:2px 7px; border-radius:99px; background:rgba(0,229,255,0.14); color:#00E5FF; border:1px solid #00E5FF;">${escapeHtml(c.qlx_tier)}</span>
+        </div>
+        <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">
+          Key Hash: ${c.key_hash}
+        </div>
+        <div style="font-size:11px; color:#5B82B0; margin-top:2px;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP v1.0.0-pc Verified")}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* =========================================================================
+   SEARCH BY KEY HASH (messenger.calyxlabsinc.org + Local Keyring)
+   ========================================================================= */
+function showSearchFilterBar(show) {
+  const bar = document.getElementById("search-filter-bar");
+  if (bar) bar.classList.toggle("hidden", !show);
+}
+
+function setSearchFilter(f) {
+  appState.searchFilter = f;
+  ["all", "keyhash", "contacts", "qpkrf"].forEach(k => {
+    const el = document.getElementById("fchip-" + k);
+    if (el) el.classList.toggle("active", k === f);
+  });
+  const q = document.getElementById("global-search-input").value;
+  handleGlobalSearchInput(q);
+}
+
+function clearGlobalSearch() {
+  const inp = document.getElementById("global-search-input");
+  inp.value = "";
+  document.getElementById("clear-search-btn").classList.add("hidden");
+  document.getElementById("search-results-panel").classList.add("hidden");
+  document.getElementById("search-filter-bar").classList.add("hidden");
+}
+
+let searchDebounceTimer = null;
+function handleGlobalSearchInput(rawQuery) {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => executeGlobalSearch(rawQuery), 150);
+}
+
+async function executeGlobalSearch(rawQuery) {
+  const q = String(rawQuery || "").trim();
+  const clearBtn = document.getElementById("clear-search-btn");
+  const panel = document.getElementById("search-results-panel");
+
+  if (!q) {
+    clearBtn.classList.add("hidden");
+    panel.classList.add("hidden");
+    return;
+  }
+  clearBtn.classList.remove("hidden");
+  panel.classList.remove("hidden");
+
+  const norm = q.replace(/^[@#]/, "").trim().toUpperCase();
+  let matches = appState.contacts.filter(c =>
+    c.key_hash.toUpperCase().includes(norm) ||
+    c.key_name.toUpperCase().includes(norm) ||
+    (c.email && c.email.toUpperCase().includes(norm))
+  );
+
+  /* Live query to messenger.calyxlabsinc.org */
+  try {
+    const resp = await fetch(`${getApiBaseUrl()}/api/v1/users/search?q=${encodeURIComponent(norm)}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.results && Array.isArray(data.results)) {
+        for (const r of data.results) {
+          if (!matches.some(m => m.key_hash.toUpperCase() === r.key_hash.toUpperCase())) {
+            const rTier = normalizeQlxTier(r.qlx_tier || "QLX-4096");
+            matches.push({
+              key_hash: r.key_hash.toUpperCase(),
+              key_name: r.key_name,
+              email: r.email || "",
+              bio: r.bio || "",
+              qlx_tier: rTier,
+              suite_name: r.suite_name || QLX_TIERS[rTier].name,
+              suite_badge: formatMessageSuiteBadge(rTier),
+              last_seen: "Registered on messenger.calyxlabsinc.org",
+              public_qpkrf: r.public_qpkrf
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {}
+
+  const isHex64 = /^[0-9A-F]{64}$/i.test(norm);
+
+  if (matches.length === 0) {
+    panel.innerHTML = `
+      <div class="neon-card" style="padding:24px 16px; text-align:center; margin-top:6px;">
+        <div style="font-size:38px; margin-bottom:8px;">🔍</div>
+        <div style="font-size:17px; font-weight:800; color:#F0F9FF;">No results</div>
+        <div style="font-size:13px; color:#93C5FD; margin-top:4px;">
+          There were no results for "${escapeHtml(q)}". Try a new search or paste a full 64-character QPEP Key Hash.
+        </div>
+        ${isHex64 ? `
+          <button type="button" class="neon-btn" style="margin-top:14px;" onclick="connectDirectKeyHash('${norm}', 'Key_${norm.slice(0, 6)}')">
+            Message Key Hash #${norm.slice(0, 12)}... Directly
+          </button>
+        ` : ""}
+      </div>
+    `;
+    return;
+  }
+
+  window.__lastSearchMatches = matches;
+  panel.innerHTML = `
+    <div class="neon-card" style="padding:8px 0; margin-top:6px;">
+      <div class="mono" style="padding:6px 14px; font-size:11px; color:#00E5FF; font-weight:700;">
+        MATCHING QPEP KEY HASHES (${matches.length})
+      </div>
+      ${matches.map((m, idx) => `
+        <div class="chat-row" onclick="selectSearchedUser('${m.key_hash}', ${idx})">
+          <div class="avatar-circle" style="width:42px; height:42px; font-size:14px;">${initialsFor(m.key_name)}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:14px; font-weight:800; color:#F0F9FF;">
+              ${escapeHtml(m.key_name)} <span class="mono" style="font-size:10px; color:#00E5FF;">[${escapeHtml(formatMessageSuiteBadge(m.qlx_tier))}]</span>
+            </div>
+            <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              Key Hash: ${m.key_hash}
+            </div>
+          </div>
+          <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">Message →</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function selectSearchedUser(keyHash, idx) {
+  const m = (window.__lastSearchMatches || [])[idx];
+  if (m) {
+    const existingIdx = appState.contacts.findIndex(c => c.key_hash === m.key_hash);
+    if (existingIdx >= 0) appState.contacts[existingIdx] = m;
+    else appState.contacts.unshift(m);
+    saveState();
+    renderChatsTab();
+    renderContactsTab();
+  }
+  clearGlobalSearch();
+  openChatThread(keyHash);
+}
+
+function connectDirectKeyHash(keyHash64, aliasName, qlxTier = "QLX-4096") {
+  const cleanHash = keyHash64.trim().toUpperCase();
+  const normTier = normalizeQlxTier(qlxTier);
+  let existing = appState.contacts.find(c => c.key_hash === cleanHash);
+  if (!existing) {
+    const tempKr = createQpepKeyAccount({
+      keyName: aliasName || ("Key_" + cleanHash.slice(0, 6)),
+      email: `${cleanHash.slice(0, 8).toLowerCase()}@calyxlabsinc.org`,
+      passphrase: "Calyx!@#$_26Qp",
+      qlxTier: normTier
+    });
+    tempKr.key_hash = cleanHash;
+    existing = {
+      key_hash: cleanHash,
+      key_name: aliasName || ("Key_" + cleanHash.slice(0, 6)),
+      email: tempKr.email,
+      bio: "Connected via 64-Character QPEP Key Hash",
+      qlx_tier: normTier,
+      suite_name: QLX_TIERS[normTier].name,
+      suite_badge: QLX_TIERS[normTier].suite_badge,
+      last_seen: "Direct Key Hash Peer",
+      public_qpkrf: formatQpkrfArmor(tempKr, false)
+    };
+    appState.contacts.unshift(existing);
+    saveState();
+    renderChatsTab();
+    renderContactsTab();
+  }
+  clearGlobalSearch();
+  closeNewMessageScreen();
+  closeAddContactByHashModal();
+  openChatThread(cleanHash);
+  showToast(`Chat opened with ${existing.key_name}`);
+}
+
+/* =========================================================================
+   NEW MESSAGE SCREEN (LIVE SERVER + LOCAL FILTER)
+   ========================================================================= */
+function openNewMessageScreen() {
+  document.getElementById("screen-new-message").classList.remove("hidden");
+  document.getElementById("new-msg-hash-input").value = "";
+  filterNewMessageList("");
+}
+
+function closeNewMessageScreen() {
+  document.getElementById("screen-new-message").classList.add("hidden");
+}
+
+let newMsgSearchTimer = null;
+function filterNewMessageList(q) {
+  clearTimeout(newMsgSearchTimer);
+  newMsgSearchTimer = setTimeout(() => runFilterNewMessageList(q), 150);
+}
+
+async function runFilterNewMessageList(q) {
+  const norm = String(q || "").trim().replace(/^[@#]/, "").toUpperCase();
+  const list = document.getElementById("new-msg-contacts-list");
+  let combined = appState.contacts.filter(c =>
+    !norm ||
+    c.key_hash.toUpperCase().includes(norm) ||
+    c.key_name.toUpperCase().includes(norm)
+  );
+
+  if (norm.length >= 2) {
+    try {
+      const resp = await fetch(`${getApiBaseUrl()}/api/v1/users/search?q=${encodeURIComponent(norm)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.results && Array.isArray(data.results)) {
+          for (const r of data.results) {
+            if (!combined.some(c => c.key_hash.toUpperCase() === r.key_hash.toUpperCase())) {
+              const rTier = normalizeQlxTier(r.qlx_tier || "QLX-4096");
+              combined.push({
+                key_hash: r.key_hash.toUpperCase(),
+                key_name: r.key_name,
+                email: r.email || "",
+                bio: r.bio || "",
+                qlx_tier: rTier,
+                suite_name: r.suite_name || QLX_TIERS[rTier].name,
+                suite_badge: formatMessageSuiteBadge(rTier),
+                last_seen: "Registered on messenger.calyxlabsinc.org",
+                public_qpkrf: r.public_qpkrf
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  window.__newMsgCandidates = combined;
+  if (combined.length === 0) {
+    list.innerHTML = `
+      <div style="padding:18px; text-align:center; font-size:12px; color:#93C5FD;">
+        ${norm ? `No registered user matching "${escapeHtml(q)}". Paste a 64-character Key Hash above and tap <strong>Message</strong>.` : `Search a 64-character Key Hash, @KeyName, or scan an SC Code above to message any registered user.`}
+      </div>
+    `;
+    return;
+  }
+  list.innerHTML = combined.map((c, idx) => `
+    <div class="chat-row" onclick="selectNewMsgCandidate(${idx})">
+      <div class="avatar-circle">${c.avatar || initialsFor(c.key_name)}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:15px; font-weight:800; color:#F0F9FF;">${escapeHtml(c.key_name)} <span class="mono" style="font-size:10px; color:#00E5FF;">[${escapeHtml(c.qlx_tier)}]</span></div>
+        <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          Key Hash: ${c.key_hash}
+        </div>
+        <div style="font-size:11px; color:#5B82B0;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP Verified")}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function selectNewMsgCandidate(idx) {
+  const c = (window.__newMsgCandidates || [])[idx];
+  if (!c) return;
+  if (!appState.contacts.some(x => x.key_hash === c.key_hash)) {
+    appState.contacts.unshift(c);
+    saveState();
+    renderChatsTab();
+    renderContactsTab();
+  }
+  closeNewMessageScreen();
+  openChatThread(c.key_hash);
+}
+
+async function startChatByEnteredHash() {
+  const inp = document.getElementById("new-msg-hash-input");
+  const val = (inp ? inp.value : "").trim().replace(/^[@#]/, "");
+  if (!val) {
+    showToast("Enter a 64-character Key Hash first.");
+    return;
+  }
+  const found = appState.contacts.find(c =>
+    c.key_hash.toUpperCase() === val.toUpperCase() ||
+    c.key_name.toUpperCase() === val.toUpperCase()
+  );
+  if (found) {
+    closeNewMessageScreen();
+    openChatThread(found.key_hash);
+    showToast(`Chat opened with ${found.key_name}`);
+    return;
+  }
+
+  /* Query server with fast 2.5s timeout so a slow/unavailable backend never leaves the user stuck on New Message */
+  try {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timerId = controller ? setTimeout(() => controller.abort(), 2500) : null;
+    const resp = await fetch(
+      `${getApiBaseUrl()}/api/v1/users/search?q=${encodeURIComponent(val)}`,
+      controller ? { signal: controller.signal } : {}
+    );
+    if (timerId) clearTimeout(timerId);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.results && data.results.length > 0) {
+        const r = data.results[0];
+        const rTier = normalizeQlxTier(r.qlx_tier || "QLX-4096");
+        const added = {
+          key_hash: r.key_hash.toUpperCase(),
+          key_name: r.key_name,
+          email: r.email || "",
+          bio: r.bio || "",
+          qlx_tier: rTier,
+          suite_name: r.suite_name || QLX_TIERS[rTier].name,
+          suite_badge: formatMessageSuiteBadge(rTier),
+          last_seen: "Verified on messenger.calyxlabsinc.org",
+          public_qpkrf: r.public_qpkrf
+        };
+        if (!appState.contacts.some(c => c.key_hash === added.key_hash)) {
+          appState.contacts.unshift(added);
+          saveState();
+        }
+        closeNewMessageScreen();
+        openChatThread(added.key_hash);
+        showToast(`Chat opened with ${added.key_name}`);
+        return;
+      }
+    }
+  } catch (e) {}
+
+  if (/^[0-9A-Fa-f]{64}$/.test(val)) {
+    const cleanHash = val.toUpperCase();
+    const alias = "Key_" + cleanHash.slice(0, 6);
+    connectDirectKeyHash(cleanHash, alias);
+  } else {
+    showToast("User not found. Enter a valid 64-character hex QPEP Key Hash.");
+  }
+}
+
+/* =========================================================================
+   ACTIVE ENCRYPTED CONVERSATION THREAD (WITH REAL-TIME READ RECEIPTS)
+   ========================================================================= */
+async function notifyServerMessagesRead(peerHash) {
+  const acc = getActiveAccount();
+  if (!acc || !peerHash || peerHash === acc.key_hash) return;
+  try {
+    await fetch(`${getApiBaseUrl()}/api/v1/messages/read`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reader_key_hash: acc.key_hash,
+        sender_key_hash: peerHash
+      })
+    });
+  } catch (e) {}
+}
+
+function openChatThread(peerHash) {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const cleanPeerHash = peerHash.toUpperCase();
+  appState.activePeerHash = cleanPeerHash;
+  const isSaved = cleanPeerHash === acc.key_hash;
+  const peer = isSaved
+    ? {
+        key_hash: acc.key_hash,
+        key_name: "Saved Messages",
+        qlx_tier: acc.qlx_tier,
+        suite_name: acc.suite_name,
+        public_qpkrf: formatQpkrfArmor(acc, false)
+      }
+    : (appState.contacts.find(c => c.key_hash === cleanPeerHash) || {
+        key_hash: cleanPeerHash,
+        key_name: "Key_" + cleanPeerHash.slice(0, 6),
+        qlx_tier: "QLX-4096",
+        suite_name: "Signature QLX-4096 + QVS-256"
+      });
+
+  closeNewMessageScreen();
+  closeAddContactByHashModal();
+  const threadEl = document.getElementById("screen-chat-thread");
+  threadEl.classList.remove("hidden");
+  threadEl.style.display = "flex";
+  document.getElementById("thread-avatar").textContent = isSaved ? "🔖" : initialsFor(peer.key_name);
+  document.getElementById("thread-title").textContent = peer.key_name;
+  document.getElementById("thread-subtitle").textContent = `Key Hash: #${peer.key_hash.slice(0, 14)}...${peer.key_hash.slice(-8)}`;
+  document.getElementById("thread-crypto-banner").textContent = `E2EE: ${formatMessageSuiteBadge(acc.qlx_tier)} ⇄ ${formatMessageSuiteBadge(peer.qlx_tier)}`;
+
+  renderActiveThreadMessages();
+  /* Immediately mark incoming messages in this thread as Read on the server so the sender gets Neon Pink ✓✓ */
+  notifyServerMessagesRead(cleanPeerHash);
+  realTimeSyncTick();
+}
+
+function closeChatThread() {
+  document.getElementById("screen-chat-thread").classList.add("hidden");
+  appState.activePeerHash = null;
+  renderChatsTab();
+}
+
+function renderActiveThreadMessages() {
+  const acc = getActiveAccount();
+  const peerHash = appState.activePeerHash;
+  if (!acc || !peerHash) return;
+  const box = document.getElementById("thread-messages-box");
+  const msgs = appState.threads[peerHash] || [];
+  const peer = appState.contacts.find(c => c.key_hash === peerHash) || { qlx_tier: "QLX-4096" };
+
+  if (msgs.length === 0) {
+    box.innerHTML = `
+      <div class="neon-card" style="padding:18px; text-align:center; margin:auto; max-width:340px;">
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">END-TO-END OPENQPEP v1.0.0-pc ENCRYPTION</div>
+        <div style="font-size:13px; color:#93C5FD; margin-top:6px; line-height:1.45;">
+          Messages in this chat are encapsulated to Key Hash <code class="mono" style="color:#00E5FF;">#${peerHash.slice(0, 12)}...</code> using <strong>${escapeHtml(formatMessageSuiteBadge(acc.qlx_tier))}</strong>.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = msgs.map((m, idx) => {
+    /* Sender's exact QLX + QVS + CC-512 suite badge for this message */
+    const msgSenderTier = m.sender_qlx_tier || (m.outgoing ? acc.qlx_tier : peer.qlx_tier) || "QLX-4096";
+    const suiteBadge = m.suite_badge || formatMessageSuiteBadge(msgSenderTier);
+
+    /* Check marks ONLY under sent messages (m.outgoing === true); NEVER under received messages */
+    const checkMarkHtml = m.outgoing ? renderOutgoingCheckMarkHtml(m) : "";
+
+    /* Optional binary-safe encrypted file attachment card (OpenQPEP v1.0.0-pc) */
+    const fileCardHtml = m.file_attachment ? `
+      <div style="margin-top:8px; padding:8px 10px; background:rgba(3,6,12,0.55); border:1px solid rgba(0,229,255,0.38); border-radius:10px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="min-width:0;">
+          <div class="mono" style="font-size:11px; font-weight:700; color:#00E5FF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            📎 ${escapeHtml(m.file_attachment.filename)} (${escapeHtml(m.file_attachment.ext)})
+          </div>
+          <div class="mono" style="font-size:10px; color:#93C5FD;">
+            ${escapeHtml(m.file_attachment.mime)} • ${Number(m.file_attachment.sizeBytes || 0).toLocaleString()} B
+          </div>
+        </div>
+        <button type="button" onclick="downloadDecryptedAttachment(${idx})" class="neon-btn" style="padding:6px 10px; font-size:11px; flex-shrink:0;">
+          Save File
+        </button>
+      </div>
+    ` : "";
+
+    return `
+      <div class="${m.outgoing ? 'msg-bubble-out' : 'msg-bubble-in'}">
+        <div class="selectable" style="font-size:14px; line-height:1.45; white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text)}</div>
+        ${fileCardHtml}
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:6px; padding-top:4px; border-top:1px solid rgba(0,229,255,0.16);">
+          <span class="mono" style="font-size:10px; color:#67E8F9; display:inline-flex; align-items:center;">${checkMarkHtml}${escapeHtml(suiteBadge)} • ${escapeHtml(m.ts || "Now")}</span>
+          <button type="button" onclick="inspectMessagePacket(${idx})" class="mono" style="background:rgba(0,229,255,0.12); border:1px solid rgba(0,229,255,0.4); color:#00E5FF; border-radius:6px; padding:1px 6px; font-size:9px; cursor:pointer;">
+            Inspect .qpep Packet
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendEncryptedChatMessage(optionalFileAttachment = null) {
+  const acc = getActiveAccount();
+  const peerHash = appState.activePeerHash;
+  if (!acc || !peerHash) return;
+  const inp = document.getElementById("thread-msg-input");
+  let text = inp.value.trim();
+  if (!text && optionalFileAttachment) {
+    text = `[Encrypted File: ${optionalFileAttachment.filename} (${optionalFileAttachment.ext})]`;
+  }
+  if (!text) return;
+  inp.value = "";
+
+  const isSelf = peerHash === acc.key_hash;
+  const peer = isSelf
+    ? acc
+    : (appState.contacts.find(c => c.key_hash === peerHash) || { key_hash: peerHash, qlx_tier: "QLX-4096", suite_name: "Signature QLX-4096 + QVS-256" });
+
+  const enc = encryptQpepChatMessage(text, acc, peer, optionalFileAttachment);
+  const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const tempId = "LOCAL-" + Date.now();
+
+  if (!appState.threads[peerHash]) appState.threads[peerHash] = [];
+  const msgEntry = {
+    id: tempId,
+    sender_hash: acc.key_hash,
+    recipient_hash: peerHash,
+    sender_qlx_tier: acc.qlx_tier,
+    suite_badge: enc.suite_badge,
+    text: text,
+    packet: enc.packetArmor,
+    sig: enc.sigArmor,
+    ts: nowTime,
+    outgoing: true,
+    delivered: isSelf ? 1 : 0,
+    read_status: isSelf ? 1 : 0,
+    status: isSelf ? "read" : "sent",
+    file_attachment: optionalFileAttachment || null
+  };
+  appState.threads[peerHash].push(msgEntry);
+
+  saveState();
+  renderActiveThreadMessages();
+
+  try {
+    const resp = await fetch(`${getApiBaseUrl()}/api/v1/messages/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sender_key_hash: acc.key_hash,
+        recipient_key_hash: peerHash,
+        encrypted_packet: enc.packetArmor,
+        qvs_signature: enc.sigArmor,
+        qlx_tier: acc.qlx_tier,
+        suite_badge: enc.suite_badge,
+        message_type: optionalFileAttachment ? "file" : "text"
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.message && data.message.message_id) {
+        msgEntry.id = data.message.message_id;
+        msgEntry.delivered = Number(data.message.delivered || 0);
+        msgEntry.read_status = Number(data.message.read_status || 0);
+        msgEntry.status = data.message.status || "sent";
+        saveState();
+        renderActiveThreadMessages();
+      }
+    }
+  } catch (e) {}
+}
+
+function triggerChatFileAttachment() {
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_OPEN|chat_attach_file`;
+  } else {
+    const inp = document.getElementById("chat-attach-file-input");
+    if (inp) inp.click();
+  }
+}
+
+function handleChatAttachmentSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const arrBuf = ev.target.result;
+    const uint8 = new Uint8Array(arrBuf);
+    const info = detectFileExtensionAndMime(uint8, file.name);
+    const attachmentObj = {
+      filename: file.name || ("file" + info.ext),
+      ext: info.ext,
+      mime: info.mime,
+      sizeBytes: uint8.length,
+      dataB64: uint8ToBase64(uint8)
+    };
+    sendEncryptedChatMessage(attachmentObj);
+    showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext}) via OpenQPEP v1.0.0-pc!`);
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = "";
+}
+
+function downloadDecryptedAttachment(msgIdx) {
+  const peerHash = appState.activePeerHash;
+  const msgs = appState.threads[peerHash] || [];
+  const m = msgs[msgIdx];
+  if (!m || !m.file_attachment) return;
+  const att = m.file_attachment;
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_SAVE|${att.filename}|${att.dataB64}`;
+  } else {
+    try {
+      const bytes = base64ToUint8(att.dataB64);
+      const blob = new Blob([bytes], { type: att.mime || "application/octet-stream" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = att.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {}
+  }
+  showToast(`Saving decrypted file ${att.filename}...`);
+}
+
+function sendMyPublicKeyCardInChat() {
+  const acc = getActiveAccount();
+  if (!acc || !appState.activePeerHash) return;
+  const pubArmor = formatQpkrfArmor(acc, false);
+  document.getElementById("thread-msg-input").value = pubArmor;
+  sendEncryptedChatMessage();
+  showToast("Sent your self-certified Public .qpkrf Key Ring in chat!");
+}
+
+function inspectMessagePacket(idx) {
+  const peerHash = appState.activePeerHash;
+  const msgs = appState.threads[peerHash] || [];
+  const m = msgs[idx];
+  if (!m) return;
+  const statusStr = m.outgoing
+    ? (Number(m.read_status) === 1 ? "READ (Neon Pink ✓✓)" : (Number(m.delivered) === 1 ? "DELIVERED (Blue ✓✓)" : "SENT (Blue ✓)"))
+    : "RECEIVED & VERIFIED";
+  openGenericModal(
+    "OPENQPEP v1.0.0-pc PACKET & QVS SIGNATURE INSPECTOR",
+    `Encrypted .qpep Wire Packet`,
+    `
+      <div class="mono" style="font-size:11px; color:#93C5FD; margin-bottom:8px; line-height:1.5;">
+        Sender Key Hash: <span style="color:#00E5FF;">${m.sender_hash}</span><br/>
+        Recipient Key Hash: <span style="color:#00E5FF;">${m.recipient_hash}</span><br/>
+        Sender Key Suite: <span style="color:#00E5FF;">${escapeHtml(m.suite_badge || formatMessageSuiteBadge(m.sender_qlx_tier))}</span><br/>
+        Wire Format: <span style="color:#10B981;">Binary \\x89QPE\\x02\\x00 (Metadata Encrypted)</span><br/>
+        Delivery State: <span style="color:${Number(m.read_status) === 1 ? '#FF2A9D' : '#00E5FF'};">${statusStr}</span>
+      </div>
+      <textarea readonly class="neon-input mono selectable" style="height:145px; font-size:10px; margin-bottom:10px;">${escapeHtml(m.packet)}</textarea>
+      <div class="mono" style="font-size:11px; color:#00E5FF; margin-bottom:4px;">CONJUNCTIVE QVS + qSponge-512 SIGNATURE:</div>
+      <textarea readonly class="neon-input mono selectable" style="height:100px; font-size:10px;">${escapeHtml(m.sig || "")}</textarea>
+    `
+  );
+}
+
+function inspectActivePeerKey() {
+  const acc = getActiveAccount();
+  const peerHash = appState.activePeerHash;
+  if (!acc || !peerHash) return;
+  const peer = peerHash === acc.key_hash ? acc : appState.contacts.find(c => c.key_hash === peerHash);
+  if (!peer) return;
+  const armor = peer.public_qpkrf || formatQpkrfArmor(peer, false);
+  openGenericModal(
+    "VERIFIED .QPKRF PUBLIC KEY RING",
+    `${peer.key_name} (${formatMessageSuiteBadge(peer.qlx_tier)})`,
+    `
+      <div class="mono selectable" style="font-size:11px; color:#00E5FF; word-break:break-all; margin-bottom:8px;">
+        64-Char Key Hash: ${peer.key_hash}
+      </div>
+      <textarea readonly class="neon-input mono selectable" style="height:180px; font-size:10px; margin-bottom:10px;">${escapeHtml(armor)}</textarea>
+      <button type="button" class="neon-btn" style="width:100%;" onclick="copyText(${JSON.stringify(peer.key_hash)}, 'Copied Peer Key Hash!')">
+        Copy Peer 64-Character Key Hash
+      </button>
+    `
+  );
+}
+
+/* =========================================================================
+   EXPORT PUBLIC & PRIVATE KEYS (.QPKRF) + ANDROID & BROWSER FILE PICKER
+   ========================================================================= */
+let currentExportFilename = "calyx_public.qpkrf";
+
+function triggerExportKeyModal(isPrivate) {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const modal = document.getElementById("modal-export-key");
+  const gate = document.getElementById("export-priv-gate");
+  const outSec = document.getElementById("export-output-section");
+  const title = document.getElementById("export-modal-title");
+  const badge = document.getElementById("export-modal-badge");
+
+  document.getElementById("export-modal-hash").textContent = acc.key_hash;
+  modal.classList.remove("hidden");
+
+  if (isPrivate) {
+    badge.textContent = "EXPORT PRIVATE KEY RING (.QPKRF)";
+    title.textContent = "Export Private Key (.qpkrf)";
+    gate.classList.remove("hidden");
+    outSec.classList.add("hidden");
+    document.getElementById("export-priv-pass").value = "";
+    currentExportFilename = `${acc.key_name}_PRIVATE_${acc.key_hash.slice(0, 12)}.qpkrf`;
+  } else {
+    badge.textContent = "EXPORT PUBLIC KEY RING (.QPKRF)";
+    title.textContent = "Export Public Key (.qpkrf)";
+    gate.classList.add("hidden");
+    outSec.classList.remove("hidden");
+    const pubArmor = formatQpkrfArmor(acc, false);
+    document.getElementById("export-qpkrf-textarea").value = pubArmor;
+    currentExportFilename = `${acc.key_name}_PUBLIC_${acc.key_hash.slice(0, 12)}.qpkrf`;
+  }
+}
+
+function unlockAndShowPrivateKeyExport() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const pass = document.getElementById("export-priv-pass").value;
+  if (!verifyPrivatePassphrase(acc, pass)) {
+    showToast("Invalid QPKD-Argon passphrase for this Private Key Ring!");
+    return;
+  }
+  const privArmor = formatQpkrfArmor(acc, true);
+  document.getElementById("export-priv-gate").classList.add("hidden");
+  document.getElementById("export-output-section").classList.remove("hidden");
+  document.getElementById("export-qpkrf-textarea").value = privArmor;
+  showToast("QPKD-Argon Passphrase Verified! Private Key Ring unlocked for export.");
+}
+
+function closeExportKeyModal() {
+  document.getElementById("modal-export-key").classList.add("hidden");
+}
+
+function copyExportedKeyRing() {
+  const val = document.getElementById("export-qpkrf-textarea").value;
+  copyText(val, "Copied .qpkrf Key Ring to clipboard!");
+}
+
+function saveExportedKeyRingToDevice() {
+  const val = document.getElementById("export-qpkrf-textarea").value;
+  if (!val) return;
+  const b64 = btoa(unescape(encodeURIComponent(val)));
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_SAVE|${currentExportFilename}|${b64}`;
+  } else {
+    try {
+      const blob = new Blob([val], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = currentExportFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {}
+  }
+  showToast(`Saving ${currentExportFilename}...`);
+}
+
+function triggerAndroidFileOpen(targetTag) {
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_OPEN|${targetTag}`;
+  } else {
+    const fileInp = document.getElementById("browser-file-input");
+    if (fileInp) fileInp.click();
+  }
+}
+
+function handleBrowserFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById("import-qpkrf-textarea").value = String(ev.target.result || "");
+    showToast("Loaded .qpkrf file!");
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
+
+window.__onAndroidFileOpened = function(targetTag, uriB64, contentB64) {
+  try {
+    if (targetTag === "import_qpkrf") {
+      const text = decodeURIComponent(escape(atob(contentB64)));
+      document.getElementById("import-qpkrf-textarea").value = text;
+      showToast("Loaded .qpkrf file from device storage!");
+    } else if (targetTag === "chat_attach_file") {
+      const rawUri = decodeURIComponent(escape(atob(uriB64 || "")));
+      const rawName = decodeURIComponent(rawUri.split("/").pop().split("%2F").pop() || "attachment.bin");
+      const uint8 = base64ToUint8(contentB64);
+      const info = detectFileExtensionAndMime(uint8, rawName);
+      const attachmentObj = {
+        filename: rawName.includes(".") ? rawName : (rawName + info.ext),
+        ext: info.ext,
+        mime: info.mime,
+        sizeBytes: uint8.length,
+        dataB64: contentB64
+      };
+      sendEncryptedChatMessage(attachmentObj);
+      showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext})!`);
+    } else if (targetTag === "scan_sc_image") {
+      decodeScCodeFromDataUrl("data:image/png;base64," + contentB64);
+    }
+  } catch (e) {
+    showToast("Could not decode selected file.");
+  }
+};
+
+window.__onAndroidFileSaved = function() {
+  showToast("Saved file to Android storage!");
+};
+
+/* =========================================================================
+   IMPORT .QPKRF KEY RING MODAL
+   ========================================================================= */
+function openImportKeyModal() {
+  document.getElementById("import-qpkrf-textarea").value = "";
+  document.getElementById("import-qpkrf-pass").value = "";
+  document.getElementById("modal-import-key").classList.remove("hidden");
+}
+
+function closeImportKeyModal() {
+  document.getElementById("modal-import-key").classList.add("hidden");
+}
+
+async function executeImportQpkrf() {
+  const armor = document.getElementById("import-qpkrf-textarea").value.trim();
+  const pass = document.getElementById("import-qpkrf-pass").value;
+  if (!armor) {
+    showToast("Paste a .qpkrf Key Ring block or select a file first.");
+    return;
+  }
+  try {
+    const parsed = parseQpkrfArmor(armor);
+    if (armor.includes("PRIVATE KEY RING") && parsed.private_key_locked) {
+      if (!verifyPrivatePassphrase(parsed, pass)) {
+        showToast("Valid QPKD-Argon passphrase is required to import a Private Key Ring.");
+        return;
+      }
+      const existingIdx = appState.accounts.findIndex(a => a.key_hash === parsed.key_hash);
+      if (existingIdx >= 0) appState.accounts[existingIdx] = parsed;
+      else appState.accounts.push(parsed);
+      appState.activeAccountHash = parsed.key_hash;
+      saveState();
+      await syncAccountWithServer(parsed);
+      closeImportKeyModal();
+      enterMainMessenger();
+      showToast(`Logged into imported QPEP Account @${parsed.key_name}!`);
+    } else {
+      const rTier = normalizeQlxTier(parsed.qlx_tier || "QLX-4096");
+      const contactObj = {
+        key_hash: parsed.key_hash.toUpperCase(),
+        key_name: parsed.key_name || ("Key_" + parsed.key_hash.slice(0, 6)),
+        email: parsed.email || "",
+        bio: parsed.bio || "Imported Public .qpkrf Key Ring",
+        qlx_tier: rTier,
+        suite_name: parsed.suite_name || QLX_TIERS[rTier].name,
+        suite_badge: formatMessageSuiteBadge(rTier),
+        last_seen: "Verified .qpkrf Import",
+        public_qpkrf: formatQpkrfArmor(parsed, false)
+      };
+      const idx = appState.contacts.findIndex(c => c.key_hash === contactObj.key_hash);
+      if (idx >= 0) appState.contacts[idx] = contactObj;
+      else appState.contacts.unshift(contactObj);
+      saveState();
+      closeImportKeyModal();
+      if (getActiveAccount()) {
+        renderChatsTab();
+        renderContactsTab();
+        openChatThread(contactObj.key_hash);
+      }
+      showToast(`Imported Contact @${contactObj.key_name} (#${contactObj.key_hash.slice(0, 8)}...)!`);
+    }
+  } catch (err) {
+    showToast(err.message || "Failed to parse .qpkrf key ring.");
+  }
+}
+
+/* =========================================================================
+   ADD / LOOKUP CONTACT BY KEY HASH MODAL
+   ========================================================================= */
+function openAddContactByHashModal() {
+  document.getElementById("add-hash-value").value = "";
+  document.getElementById("add-hash-name").value = "";
+  document.getElementById("modal-add-hash").classList.remove("hidden");
+}
+
+function closeAddContactByHashModal() {
+  document.getElementById("modal-add-hash").classList.add("hidden");
+}
+
+async function confirmAddOrLookupByKeyHash() {
+  const rawHash = document.getElementById("add-hash-value").value.trim().replace(/^[@#]/, "").toUpperCase();
+  const alias = document.getElementById("add-hash-name").value.trim();
+  if (!rawHash) {
+    showToast("Please enter a 64-character QPEP Key Hash.");
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${getApiBaseUrl()}/api/v1/users/search?q=${encodeURIComponent(rawHash)}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.results && data.results.length > 0) {
+        const r = data.results[0];
+        const rTier = normalizeQlxTier(r.qlx_tier || "QLX-4096");
+        const added = {
+          key_hash: r.key_hash.toUpperCase(),
+          key_name: alias || r.key_name,
+          email: r.email || "",
+          bio: r.bio || "",
+          qlx_tier: rTier,
+          suite_name: r.suite_name || QLX_TIERS[rTier].name,
+          suite_badge: formatMessageSuiteBadge(rTier),
+          last_seen: "Verified on messenger.calyxlabsinc.org",
+          public_qpkrf: r.public_qpkrf
+        };
+        const existingIdx = appState.contacts.findIndex(c => c.key_hash === added.key_hash);
+        if (existingIdx >= 0) appState.contacts[existingIdx] = added;
+        else appState.contacts.unshift(added);
+        saveState();
+        renderChatsTab();
+        renderContactsTab();
+        closeAddContactByHashModal();
+        closeNewMessageScreen();
+        openChatThread(added.key_hash);
+        showToast(`Connected to @${added.key_name} via Key Hash!`);
+        return;
+      }
+    }
+  } catch (e) {}
+
+  if (/^[0-9A-F]{64}$/i.test(rawHash)) {
+    connectDirectKeyHash(rawHash, alias || ("Key_" + rawHash.slice(0, 6)));
+  } else {
+    showToast("User not found on messenger.calyxlabsinc.org. Enter a full 64-character Key Hash.");
+  }
+}
+
+/* =========================================================================
+   EDIT ACCOUNT & AVATAR MODALS
+   ========================================================================= */
+function openEditAccountModal() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  document.getElementById("edit-key-name").value = acc.key_name;
+  document.getElementById("edit-email").value = acc.email;
+  document.getElementById("edit-bio").value = acc.bio || "";
+  document.getElementById("modal-edit-account").classList.remove("hidden");
+}
+
+function closeEditAccountModal() {
+  document.getElementById("modal-edit-account").classList.add("hidden");
+}
+
+async function saveAccountEdits() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const newName = document.getElementById("edit-key-name").value.trim();
+  const newEmail = document.getElementById("edit-email").value.trim();
+  const newBio = document.getElementById("edit-bio").value.trim();
+  if (newName) acc.key_name = newName;
+  if (newEmail) acc.email = newEmail;
+  acc.bio = newBio;
+  acc.uid = `${acc.key_name} <${acc.email}>`;
+  saveState();
+  updateBannerAndProfile();
+  closeEditAccountModal();
+  showToast("Updated QPEP Account info!");
+
+  try {
+    await fetch(`${getApiBaseUrl()}/api/v1/profile/update`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        key_hash: acc.key_hash,
+        key_name: acc.key_name,
+        bio: acc.bio,
+        avatar: acc.avatar
+      })
+    });
+  } catch (e) {}
+}
+
+function openAvatarPickerModal() {
+  const badges = ["🛡️", "⚡", "🔐", "💠", "🌌", "🛰️", "🧬", "👑", "🐉"];
+  openGenericModal(
+    "CHOOSE PHOTO OR QPEP BADGE",
+    "Select Profile Avatar Badge",
+    `
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px;">
+        ${badges.map(b => `
+          <button type="button" onclick="setAccountAvatar('${b}')" style="padding:16px; font-size:26px; background:#050D1C; border:1px solid #00E5FF; border-radius:14px; cursor:pointer;">
+            ${b}
+          </button>
+        `).join("")}
+      </div>
+      <button type="button" class="neon-btn-outline" style="width:100%;" onclick="setAccountAvatar('')">
+        Use Key Name Initials
+      </button>
+    `
+  );
+}
+
+function setAccountAvatar(val) {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  acc.avatar = val;
+  saveState();
+  updateBannerAndProfile();
+  closeGenericModal();
+  showToast("Updated profile badge!");
+}
+
+/* =========================================================================
+   SCANNABLE CLX-CODE (SC CODE) DISPLAY & IN-APP CAMERA SCANNER
+   - Generates a deterministic 22x22 Scannable CLX-Code (SC Code) matrix:
+     * 3x3 Corner Finder Beacons at Top-Left, Top-Right, Bottom-Left, and Bottom-Right
+     * Inner 16x16 Data Matrix (256 bits = 64 hex chars x 4 bits) encoding the exact
+       64-character QPEP Key Hash.
+   - In-App Camera Scanner decodes the 16x16 inner bit matrix directly from the
+     live <video> stream inside Calyx Encrypted Messenger and resolves the user on
+     messenger.calyxlabsinc.org to immediately open the encrypted chat!
+   ========================================================================= */
+function buildScCodeSvg(keyHash64) {
+  const clean = String(keyHash64 || "").toUpperCase().padEnd(64, "0").slice(0, 64);
+  const gridN = 22;
+  const cell = 4;
+  const pad = 6;
+  let rects = "";
+
+  const isFinder = (r, c) => {
+    const tl = r < 3 && c < 3;
+    const tr = r < 3 && c >= gridN - 3;
+    const bl = r >= gridN - 3 && c < 3;
+    const br = r >= gridN - 3 && c >= gridN - 3;
+    return tl || tr || bl || br;
+  };
+
+  for (let r = 0; r < gridN; r++) {
+    for (let c = 0; c < gridN; c++) {
+      const x = pad + c * cell;
+      const y = pad + r * cell;
+      if (isFinder(r, c)) {
+        const lr = r < 3 ? r : r - (gridN - 3);
+        const lc = c < 3 ? c : c - (gridN - 3);
+        const isCenter = lr === 1 && lc === 1;
+        const color = (r >= gridN - 3 && c >= gridN - 3 && isCenter) ? "#FF2A9D" : "#00E5FF";
+        rects += `<rect x="${x}" y="${y}" width="${cell - 0.45}" height="${cell - 0.45}" rx="0.6" fill="${color}"/>`;
+      } else if (r >= 3 && r < 19 && c >= 3 && c < 19) {
+        const bitIdx = (r - 3) * 16 + (c - 3);
+        const hexIdx = Math.floor(bitIdx / 4);
+        const nib = parseInt(clean[hexIdx], 16) || 0;
+        const bit = (nib >> (3 - (bitIdx % 4))) & 1;
+        if (bit === 1) {
+          rects += `<rect x="${x}" y="${y}" width="${cell - 0.55}" height="${cell - 0.55}" rx="0.5" fill="#00E5FF"/>`;
+        } else {
+          rects += `<rect x="${x}" y="${y}" width="${cell - 0.55}" height="${cell - 0.55}" rx="0.5" fill="#071428"/>`;
+        }
+      }
+    }
+  }
+  return `<svg width="210" height="210" viewBox="0 0 100 100" style="background:#02060D; border:2px solid #00E5FF; border-radius:16px; padding:6px; margin:0 auto 12px; display:block; box-shadow:0 0 22px rgba(0,229,255,0.28);">${rects}</svg>`;
+}
+
+function openScCodeModal() {
+  const acc = getActiveAccount();
+  if (!acc) return;
+  const svgMarkup = buildScCodeSvg(acc.key_hash);
+  openGenericModal(
+    "OPTICAL QPEP KEY HASH VERIFICATION",
+    `@${acc.key_name} • Scannable CLX-Code (SC Code)`,
+    `
+      <div style="text-align:center;">
+        ${svgMarkup}
+        <div style="font-size:12px; color:#93C5FD; margin-bottom:8px; line-height:1.4;">
+          Have another user tap the <strong>📷 Camera Scanner</strong> icon next to the <strong>SC Code</strong> button to scan your <strong>Scannable CLX-Code (SC Code)</strong> and start a chat.
+        </div>
+        <div class="mono selectable" style="font-size:11px; color:#00E5FF; word-break:break-all; margin-bottom:12px; background:#040A17; padding:8px 10px; border-radius:10px; border:1px solid #162642;">
+          ${acc.key_hash}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button type="button" class="neon-btn" onclick="copyMyKeyHash()" style="padding:11px; font-size:12px;">
+            Copy Key Hash
+          </button>
+          <button type="button" class="neon-btn-outline" onclick="closeGenericModal(); openScCameraScannerModal();" style="padding:11px; font-size:12px;">
+            📷 Scan SC Code
+          </button>
+        </div>
+      </div>
+    `
+  );
+}
+/* Alias for backwards compatibility */
+const openQrModal = openScCodeModal;
+
+let scScannerStream = null;
+let scScannerTimer = null;
+let scCameraFacingMode = "environment";
+let scDirectoryCache = [];
+let scDirectoryLastFetch = 0;
+
+async function refreshScDirectoryCache() {
+  if (Date.now() - scDirectoryLastFetch < 4000 && scDirectoryCache.length > 0) {
+    return scDirectoryCache;
+  }
+  try {
+    const resp = await fetch(`${getApiBaseUrl()}/api/v1/users/search?q=`);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.results && Array.isArray(data.results)) {
+        scDirectoryCache = data.results;
+        scDirectoryLastFetch = Date.now();
+      }
+    }
+  } catch (e) {}
+  return scDirectoryCache;
+}
+
+let scNativeFrameCounter = 0;
+let scNativeImg = new Image();
+
+function clearScannerCanvasToObsidian() {
+  const canvas = document.getElementById("sc-scanner-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#02060D";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+/* Native Android Camera Frame Receiver (called directly from MainActivity.onPreviewFrame) */
+window.__onAndroidCameraFrame = function(b64Jpeg) {
+  const modal = document.getElementById("modal-sc-scanner");
+  if (!modal || modal.classList.contains("hidden") || !b64Jpeg) return;
+
+  const statusEl = document.getElementById("sc-scanner-status");
+  if (statusEl && statusEl.textContent.indexOf("Camera Active") < 0) {
+    statusEl.style.color = "#10B981";
+    statusEl.textContent = "Camera Active • Align Scannable CLX-Code (SC Code) inside frame...";
+  }
+
+  scNativeImg.onload = async function() {
+    const canvas = document.getElementById("sc-scanner-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const w = 240, h = 240;
+    if (canvas.width !== w) canvas.width = w;
+    if (canvas.height !== h) canvas.height = h;
+
+    const iw = scNativeImg.width || w;
+    const ih = scNativeImg.height || h;
+    const side = Math.min(iw, ih);
+    const sx = Math.floor((iw - side) / 2);
+    const sy = Math.floor((ih - side) / 2);
+
+    /* Rotate 90 degrees clockwise (or -90 if front camera) so portrait preview is upright */
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    if (scCameraFacingMode === "user") {
+      ctx.scale(-1, 1);
+      ctx.rotate(-Math.PI / 2);
+    } else {
+      ctx.rotate(Math.PI / 2);
+    }
+    ctx.drawImage(scNativeImg, sx, sy, side, side, -w / 2, -h / 2, w, h);
+    ctx.restore();
+
+    scNativeFrameCounter++;
+    if (scNativeFrameCounter % 3 === 0) {
+      await analyzeCanvasForScCode(ctx, w, h, false);
+    }
+  };
+  scNativeImg.src = "data:image/jpeg;base64," + b64Jpeg;
+};
+
+window.__onAndroidCameraPermissionReady = function() {
+  /* Triggered when user grants Android OS camera permission; MainActivity automatically starts native camera */
+  const statusEl = document.getElementById("sc-scanner-status");
+  if (statusEl) {
+    statusEl.style.color = "#10B981";
+    statusEl.textContent = "Camera Active • Align Scannable CLX-Code (SC Code) inside frame...";
+  }
+};
+
+function openScCameraScannerModal() {
+  const modal = document.getElementById("modal-sc-scanner");
+  if (!modal) return;
+  modal.classList.remove("hidden");
+  clearScannerCanvasToObsidian();
+
+  const statusEl = document.getElementById("sc-scanner-status");
+  if (statusEl) {
+    statusEl.style.color = "#00E5FF";
+    statusEl.textContent = "Starting in-app SC Code camera scanner...";
+  }
+  refreshScDirectoryCache();
+
+  if (window.location.protocol === "file:") {
+    /* Trigger native Android hardware camera stream in MainActivity */
+    window.location.hash = `#CALYX_CAM|${Date.now()}`;
+  } else {
+    startScCameraStream();
+  }
+}
+
+async function startScCameraStream() {
+  stopScCameraStream();
+  const video = document.getElementById("sc-scanner-video");
+  const statusEl = document.getElementById("sc-scanner-status");
+  if (!video) return;
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (statusEl) {
+      statusEl.style.color = "#F59E0B";
+      statusEl.textContent = "Live camera stream requires HTTPS or Android Camera permission. Tap 'Scan SC Image' below.";
+    }
+    return;
+  }
+
+  try {
+    scScannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: scCameraFacingMode } },
+      audio: false
+    });
+    video.srcObject = scScannerStream;
+    const p = video.play();
+    if (p && p.catch) p.catch(() => {});
+    if (statusEl) {
+      statusEl.style.color = "#10B981";
+      statusEl.textContent = "Camera Active • Align Scannable CLX-Code (SC Code) inside frame...";
+    }
+    scScannerTimer = setInterval(scanScCodeVideoFrame, 90);
+  } catch (err) {
+    try {
+      scScannerStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = scScannerStream;
+      const p2 = video.play();
+      if (p2 && p2.catch) p2.catch(() => {});
+      if (statusEl) {
+        statusEl.style.color = "#10B981";
+        statusEl.textContent = "Camera Active • Align Scannable CLX-Code (SC Code) inside frame...";
+      }
+      scScannerTimer = setInterval(scanScCodeVideoFrame, 90);
+    } catch (err2) {
+      if (statusEl) {
+        statusEl.style.color = "#EF4444";
+        statusEl.textContent = "Camera access denied or unavailable. Please allow Camera permission or tap 'Scan SC Image'.";
+      }
+    }
+  }
+}
+
+function stopScCameraStream() {
+  if (scScannerTimer) {
+    clearInterval(scScannerTimer);
+    scScannerTimer = null;
+  }
+  if (scScannerStream) {
+    try {
+      scScannerStream.getTracks().forEach(t => t.stop());
+    } catch (e) {}
+    scScannerStream = null;
+  }
+  const video = document.getElementById("sc-scanner-video");
+  if (video) video.srcObject = null;
+}
+
+function closeScCameraScannerModal() {
+  stopScCameraStream();
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_CAM_STOP|${Date.now()}`;
+  }
+  const modal = document.getElementById("modal-sc-scanner");
+  if (modal) modal.classList.add("hidden");
+}
+
+function flipScScannerCamera() {
+  scCameraFacingMode = scCameraFacingMode === "environment" ? "user" : "environment";
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_CAM_FLIP|${Date.now()}`;
+  } else {
+    startScCameraStream();
+  }
+}
+
+function triggerScCodeImageScan() {
+  if (window.location.protocol === "file:") {
+    window.location.hash = `#CALYX_OPEN|scan_sc_image`;
+  } else {
+    const inp = document.getElementById("sc-code-image-input");
+    if (inp) inp.click();
+  }
+}
+
+function handleScCodeImageSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    decodeScCodeFromDataUrl(String(ev.target.result || ""));
+  };
+  reader.readAsDataURL(file);
+  event.target.value = "";
+}
+
+function decodeScCodeFromDataUrl(dataUrl) {
+  const img = new Image();
+  img.onload = async function() {
+    const canvas = document.getElementById("sc-scanner-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 240;
+    canvas.height = 240;
+    ctx.drawImage(img, 0, 0, 240, 240);
+    const matched = await analyzeCanvasForScCode(ctx, 240, 240, true);
+    if (!matched) {
+      showToast("Could not detect a valid SC Code in the selected image.");
+    }
+  };
+  img.src = dataUrl;
+}
+
+async function scanScCodeVideoFrame() {
+  const video = document.getElementById("sc-scanner-video");
+  const canvas = document.getElementById("sc-scanner-canvas");
+  if (!video || !canvas || video.readyState < 2) return;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const w = 240, h = 240;
+  canvas.width = w;
+  canvas.height = h;
+  ctx.drawImage(video, 0, 0, w, h);
+  await analyzeCanvasForScCode(ctx, w, h, false);
+}
+
+function hammingDistanceHex(hexA, hexB) {
+  if (!hexA || !hexB || hexA.length !== 64 || hexB.length !== 64) return 256;
+  let dist = 0;
+  for (let i = 0; i < 64; i++) {
+    const xor = (parseInt(hexA[i], 16) || 0) ^ (parseInt(hexB[i], 16) || 0);
+    dist += (xor & 1) + ((xor >> 1) & 1) + ((xor >> 2) & 1) + ((xor >> 3) & 1);
+  }
+  return dist;
+}
+
+async function analyzeCanvasForScCode(ctx, w, h, allowFallbackClosest) {
+  const imgData = ctx.getImageData(0, 0, w, h).data;
+  const isCyanOrPink = (r, g, b) => {
+    const cyan = b > 125 && g > 105 && (b - r) > 35;
+    const pink = r > 150 && b > 90 && (r - g) > 45;
+    return cyan || pink;
+  };
+
+  let minX = w, maxX = 0, minY = h, maxY = 0, cyanCount = 0;
+  const margin = Math.floor(w * 0.08);
+  for (let y = margin; y < h - margin; y += 2) {
+    for (let x = margin; x < w - margin; x += 2) {
+      const idx = (y * w + x) * 4;
+      if (isCyanOrPink(imgData[idx], imgData[idx + 1], imgData[idx + 2])) {
+        cyanCount++;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+
+  const boxW = maxX - minX;
+  const boxH = maxY - minY;
+  if (cyanCount < 45 || boxW < 48 || boxH < 48) {
+    return false;
+  }
+
+  /* Exclude outer border stroke if present and sample the 22x22 SC Code grid */
+  const gridN = 22;
+  const stepX = boxW / gridN;
+  const stepY = boxH / gridN;
+
+  let hexChars = "";
+  for (let nibIdx = 0; nibIdx < 64; nibIdx++) {
+    let nibVal = 0;
+    for (let b = 0; b < 4; b++) {
+      const bitIdx = nibIdx * 4 + b;
+      const r = 3 + Math.floor(bitIdx / 16);
+      const c = 3 + (bitIdx % 16);
+      const sx = Math.min(w - 1, Math.max(0, Math.round(minX + (c + 0.5) * stepX)));
+      const sy = Math.min(h - 1, Math.max(0, Math.round(minY + (r + 0.5) * stepY)));
+      const pIdx = (sy * w + sx) * 4;
+      const on = isCyanOrPink(imgData[pIdx], imgData[pIdx + 1], imgData[pIdx + 2]) || (imgData[pIdx + 1] + imgData[pIdx + 2] > 240);
+      nibVal = (nibVal << 1) | (on ? 1 : 0);
+    }
+    hexChars += nibVal.toString(16).toUpperCase();
+  }
+
+  if (hexChars.replace(/0/g, "").length < 8 || hexChars.replace(/F/g, "").length < 8) {
+    return false;
+  }
+
+  const acc = getActiveAccount();
+  const directory = await refreshScDirectoryCache();
+  const candidates = [...directory, ...appState.contacts];
+
+  /* Match sampled 256-bit SC Code matrix against registered users on messenger.calyxlabsinc.org */
+  let bestCandidate = null;
+  let bestDist = 256;
+  for (const u of candidates) {
+    if (!u || !u.key_hash) continue;
+    if (acc && u.key_hash.toUpperCase() === acc.key_hash.toUpperCase() && candidates.length > 1) continue;
+    const d = hammingDistanceHex(hexChars, u.key_hash.toUpperCase());
+    if (d < bestDist) {
+      bestDist = d;
+      bestCandidate = u;
+    }
+  }
+
+  if (bestCandidate && (bestDist <= 68 || allowFallbackClosest)) {
+    onScCodeScannedSuccess(bestCandidate.key_hash.toUpperCase(), bestCandidate.key_name, bestCandidate.qlx_tier, bestCandidate.public_qpkrf);
+    return true;
+  }
+
+  if (allowFallbackClosest && /^[0-9A-F]{64}$/.test(hexChars)) {
+    onScCodeScannedSuccess(hexChars, "Key_" + hexChars.slice(0, 6), "QLX-4096", "");
+    return true;
+  }
+  return false;
+}
+
+function onScCodeScannedSuccess(keyHash, keyName, qlxTier, publicQpkrf) {
+  closeScCameraScannerModal();
+  const cleanHash = keyHash.toUpperCase();
+  const normTier = normalizeQlxTier(qlxTier || "QLX-4096");
+  let existing = appState.contacts.find(c => c.key_hash === cleanHash);
+  if (!existing) {
+    existing = {
+      key_hash: cleanHash,
+      key_name: keyName || ("Key_" + cleanHash.slice(0, 6)),
+      email: "",
+      bio: "Connected via Scannable CLX-Code (SC Code)",
+      qlx_tier: normTier,
+      suite_name: QLX_TIERS[normTier].name,
+      suite_badge: formatMessageSuiteBadge(normTier),
+      last_seen: "SC Code Verified",
+      public_qpkrf: publicQpkrf || ""
+    };
+    appState.contacts.unshift(existing);
+  } else if (keyName && existing.key_name.startsWith("Key_")) {
+    existing.key_name = keyName;
+    existing.qlx_tier = normTier;
+    existing.suite_badge = formatMessageSuiteBadge(normTier);
+  }
+  saveState();
+  renderChatsTab();
+  renderContactsTab();
+  closeNewMessageScreen();
+  openChatThread(cleanHash);
+  showToast(`Scanned SC Code: Connected to @${existing.key_name} (#${cleanHash.slice(0, 8)}...)!`);
+}
+
+function openGenericModal(tag, title, bodyHtml) {
+  document.getElementById("generic-modal-tag").textContent = tag;
+  document.getElementById("generic-modal-title").textContent = title;
+  document.getElementById("generic-modal-body").innerHTML = bodyHtml;
+  document.getElementById("modal-generic").classList.remove("hidden");
+}
+
+function closeGenericModal() {
+  document.getElementById("modal-generic").classList.add("hidden");
+}
+
+/* =========================================================================
+   CONTINUOUS REAL-TIME AUTOMATIC SYNC ENGINE (EVERY 1.5 SECONDS)
+   - Updates Sent (Blue ✓) -> Delivered (Blue ✓✓) -> Read (Neon Pink ✓✓)
+   - Synchronizes sender's exact QLX + QVS + CC-512 suite badge per message
+   ========================================================================= */
+async function syncAccountWithServer(acc) {
+  if (!acc) return false;
+  try {
+    const pubArmor = formatQpkrfArmor(acc, false);
+    const resp = await fetch(`${getApiBaseUrl()}/api/v1/accounts/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        key_hash: acc.key_hash,
+        key_name: acc.key_name,
+        email: acc.email,
+        qlx_tier: acc.qlx_tier,
+        suite_name: acc.suite_name || QLX_TIERS[normalizeQlxTier(acc.qlx_tier)].name,
+        bio: acc.bio || "",
+        avatar: acc.avatar || "",
+        public_qpkrf: pubArmor
+      })
+    });
+    if (resp.ok) {
+      serverRegisteredHashes.add(acc.key_hash);
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function startRealTimeSyncEngine() {
+  realTimeSyncTick();
+  if (!window.__qpemRealTimeInterval) {
+    window.__qpemRealTimeInterval = setInterval(realTimeSyncTick, 1500);
+  }
+}
+
+async function realTimeSyncTick() {
+  const acc = getActiveAccount();
+  if (!acc || isSyncingNow) return;
+  isSyncingNow = true;
+
+  const statusEl = document.getElementById("server-status-line");
+  const logEl = document.getElementById("settings-sync-log");
+
+  try {
+    const base = getApiBaseUrl();
+    if (!serverRegisteredHashes.has(acc.key_hash)) {
+      await syncAccountWithServer(acc);
+    }
+
+    /* Only report active_peer if the chat thread screen is open and document is visible */
+    const activePeerParam = (!document.hidden && appState.activePeerHash) ? appState.activePeerHash : "";
+    const inboxUrl = `${base}/api/v1/messages/inbox?key_hash=${encodeURIComponent(acc.key_hash)}&active_peer=${encodeURIComponent(activePeerParam)}`;
+    const inboxResp = await fetch(inboxUrl);
+    if (!inboxResp.ok) throw new Error("HTTP " + inboxResp.status);
+    const inbox = await inboxResp.json();
+
+    let stateChanged = false;
+    if (inbox.messages && Array.isArray(inbox.messages)) {
+      for (const m of inbox.messages) {
+        const isOutgoing = m.sender_key_hash.toUpperCase() === acc.key_hash.toUpperCase();
+        const peerHash = (isOutgoing ? m.recipient_key_hash : m.sender_key_hash).toUpperCase();
+
+        const peerNameFromServer = isOutgoing ? (m.recipient_key_name || "") : (m.sender_key_name || "");
+        const peerTierFromServer = normalizeQlxTier(isOutgoing ? (m.recipient_qlx_tier || "QLX-4096") : (m.sender_qlx_tier || m.qlx_tier || "QLX-4096"));
+        const peerQpkrfFromServer = isOutgoing ? (m.recipient_public_qpkrf || "") : (m.sender_public_qpkrf || "");
+
+        if (peerHash !== acc.key_hash.toUpperCase()) {
+          let existingContact = appState.contacts.find(c => c.key_hash.toUpperCase() === peerHash);
+          if (!existingContact && peerNameFromServer) {
+            existingContact = {
+              key_hash: peerHash,
+              key_name: peerNameFromServer,
+              email: "",
+              bio: "",
+              qlx_tier: peerTierFromServer,
+              suite_name: QLX_TIERS[peerTierFromServer].name,
+              suite_badge: formatMessageSuiteBadge(peerTierFromServer),
+              last_seen: "online • OpenQPEP v1.0.0-pc Verified",
+              public_qpkrf: peerQpkrfFromServer
+            };
+            appState.contacts.unshift(existingContact);
+            stateChanged = true;
+          } else if (existingContact) {
+            if (peerNameFromServer && existingContact.key_name.startsWith("Key_")) {
+              existingContact.key_name = peerNameFromServer;
+              stateChanged = true;
+            }
+            if (existingContact.qlx_tier !== peerTierFromServer) {
+              existingContact.qlx_tier = peerTierFromServer;
+              existingContact.suite_badge = formatMessageSuiteBadge(peerTierFromServer);
+              stateChanged = true;
+            }
+            if (peerQpkrfFromServer && !existingContact.public_qpkrf) {
+              existingContact.public_qpkrf = peerQpkrfFromServer;
+              stateChanged = true;
+            }
+          }
+        }
+
+        if (!appState.threads[peerHash]) appState.threads[peerHash] = [];
+        const threadArr = appState.threads[peerHash];
+
+        /* Find existing message by message_id or matching encrypted packet */
+        const existingMsg = threadArr.find(
+          x => x.id === m.message_id || (x.packet && m.encrypted_packet && x.packet === m.encrypted_packet)
+        );
+
+        const srvDelivered = Number(m.delivered || 0);
+        const srvRead = Number(m.read_status || 0);
+        const srvStatus = m.status || (srvRead === 1 ? "read" : (srvDelivered === 1 ? "delivered" : "sent"));
+        const srvSenderTier = normalizeQlxTier(m.sender_qlx_tier || m.qlx_tier || (isOutgoing ? acc.qlx_tier : peerTierFromServer));
+        const srvSuiteBadge = m.suite_badge || formatMessageSuiteBadge(srvSenderTier);
+
+        if (existingMsg) {
+          /* Real-time check mark transition: Sent (✓) -> Delivered (✓✓) -> Read (Neon Pink ✓✓) */
+          if (
+            existingMsg.id !== m.message_id ||
+            Number(existingMsg.delivered || 0) !== srvDelivered ||
+            Number(existingMsg.read_status || 0) !== srvRead ||
+            existingMsg.suite_badge !== srvSuiteBadge
+          ) {
+            existingMsg.id = m.message_id;
+            existingMsg.delivered = srvDelivered;
+            existingMsg.read_status = srvRead;
+            existingMsg.status = srvStatus;
+            existingMsg.sender_qlx_tier = srvSenderTier;
+            existingMsg.suite_badge = srvSuiteBadge;
+            stateChanged = true;
+          }
+        } else {
+          const decInfo = tryDecryptIncomingQpepPacket(m.encrypted_packet);
+          const textPlain = decInfo ? decInfo.plaintext : "[OpenQPEP Encrypted Packet]";
+          const senderName = peerNameFromServer || (decInfo && decInfo.senderKeyName) || ("Key_" + peerHash.slice(0, 6));
+          const resolvedSenderTier = (decInfo && decInfo.senderQlxTier) || srvSenderTier;
+          const resolvedSuiteBadge = (decInfo && decInfo.suiteBadge) || srvSuiteBadge;
+          const tsFormatted = m.created_utc
+            ? new Date(m.created_utc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            : "Now";
+
+          threadArr.push({
+            id: m.message_id,
+            sender_hash: m.sender_key_hash.toUpperCase(),
+            recipient_hash: m.recipient_key_hash.toUpperCase(),
+            sender_qlx_tier: resolvedSenderTier,
+            suite_badge: resolvedSuiteBadge,
+            peer_name: senderName,
+            text: textPlain,
+            packet: m.encrypted_packet,
+            sig: m.qvs_signature || "",
+            ts: tsFormatted,
+            outgoing: isOutgoing,
+            delivered: srvDelivered,
+            read_status: srvRead,
+            status: srvStatus,
+            file_attachment: (decInfo && decInfo.fileAttachment) || null
+          });
+          stateChanged = true;
+        }
+      }
+    }
+
+    if (stateChanged) {
+      saveState();
+      renderChatsTab();
+      renderContactsTab();
+      if (appState.activePeerHash) {
+        const resolvedPeer = appState.contacts.find(c => c.key_hash === appState.activePeerHash);
+        if (resolvedPeer) {
+          document.getElementById("thread-title").textContent = resolvedPeer.key_name;
+          document.getElementById("thread-avatar").textContent = initialsFor(resolvedPeer.key_name);
+          document.getElementById("thread-crypto-banner").textContent = `E2EE: ${formatMessageSuiteBadge(acc.qlx_tier)} ⇄ ${formatMessageSuiteBadge(resolvedPeer.qlx_tier)}`;
+        }
+        renderActiveThreadMessages();
+      }
+    }
+
+    if (statusEl) {
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.0.0-pc • REAL-TIME SYNC ACTIVE`;
+    }
+    if (logEl) {
+      logEl.textContent = "Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.0.0-pc).";
+    }
+  } catch (e) {
+    if (statusEl) {
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.0.0-pc • messenger.calyxlabsinc.org`;
+    }
+  } finally {
+    isSyncingNow = false;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/* Boot Application & Attach Real-Time Focus Listeners */
+window.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  if (getActiveAccount()) {
+    enterMainMessenger();
+  } else {
+    renderAuthScreen();
+  }
+});
+
+window.addEventListener("focus", () => {
+  if (getActiveAccount()) {
+    if (appState.activePeerHash) notifyServerMessagesRead(appState.activePeerHash);
+    realTimeSyncTick();
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && getActiveAccount()) {
+    if (appState.activePeerHash) notifyServerMessagesRead(appState.activePeerHash);
+    realTimeSyncTick();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* OpenQPEP v1.0.0-pc — Tamarin Symbolic Model Skeleton for QPEP-Ratchet FS & PCS */
+theory QPEP_Ratchet_v050
+begin
+builtins: hashing, symmetric-encryption
+functions: qsponge_kdf/2, qlx_encaps/2, qlx_decaps/2
+lemma forward_secrecy:
+  "All k m #i. SecretMsg(k, m) @ #i ==> not (Ex #j. K(m) @ #j)"
+end

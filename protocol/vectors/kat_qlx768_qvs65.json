@@ -1,0 +1,44 @@
+{
+  "schema": "openqpep-kat-v1",
+  "protocol_version": "OpenQPEP/PC-1.0.0",
+  "universal_version": "1.0.0-pc",
+  "suite_name": "QLX-768 + QVS-65",
+  "qlx_tier": "QLX-768",
+  "qvs_tier": "QVS-65",
+  "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0-pc|)",
+  "drbg_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "message_utf8": "OpenQPEP PC 1.0.0 Deterministic Known Answer Test Vector",
+  "message_hex": "4f70656e5150455020504320312e302e302044657465726d696e6973746963204b6e6f776e20416e73776572205465737420566563746f72",
+  "qlx": {
+    "spec_pk_bytes": 1184,
+    "spec_sk_bytes": 2400,
+    "spec_ct_bytes": 1088,
+    "actual_pk_bytes": 1184,
+    "actual_sk_bytes": 2400,
+    "actual_ct_qlx_bytes": 1088,
+    "pk_sha3_512": "7c7f6e19ecc24bdd1002f23b6eb50f7582397a2368ceeb7d1aa28db2776986587da6780c0745bd91c5ee10e0587381100bfd845458d6b27f964e6ba72fada653",
+    "sk_sha3_512": "21be9918bc6c0594e1d2ce974b7b75f31f5c0e75bfccff13d6d820b3d25af903f01be5698b30d851466eb14d8ed08e6bdc800a53d4300111b3983328c36aada1",
+    "ct_qlx_sha3_512": "f549fc4cfbf426f702501a665251ae1852d577e96f804ad1c8fdb7920829cc923905e2182576c00437fbab88520783ed913e34dbd251600b28a29d53e2676424",
+    "shared_secret_hex": "86e35f9106710a3b15cc8e41cbe4d329f291228cadeb97e9446c77d0b6652572",
+    "fo_implicit_rejection_hex": "b803603aaf402af63f3d19fad7e833dea25a8ff75b8bbd9117a388613d5bbc99"
+  },
+  "qvs": {
+    "spec_pk_bytes": 2336,
+    "spec_sk_bytes": 3712,
+    "spec_sig_bytes": 1600,
+    "actual_pk_bytes": 2336,
+    "actual_sk_bytes": 3712,
+    "actual_sig_bytes": 1600,
+    "pk_sha3_512": "669e47084edcc94054ebdc1943ca87ec8be47ffa3b64645f4f33c97bed862ad72acb2e82f13e3263366658ba0bdee13fe799ababb2ac3ec26715cfd52c32d546",
+    "sig_sha3_512": "f41efca89ae759dc2b2150d4b9d0406c27d620237a5fbaad8c92629743815627ec7762b318a5ec136eb77334f15de799e8f587d6d594a72af8051a00f03ee847",
+    "verified": true
+  },
+  "wire_packet": {
+    "key_hash": "146D1935C6339916542E565499902DE4342EDA911159E555A1D18E295EA311E6",
+    "wire_magic_hex": "895150450300",
+    "wire_frame_bytes": 8924,
+    "wire_frame_sha3_512": "1b321de4107c2951ce823f4954142fc77087551a6b17f6d977a0827e1ab33b1fc2f2d8d5c62f68ef661d1ba3384863a32f6fe006413c8ced0077c3e7d084fb31",
+    "wire_frame_prefix_hex": "89515045030001007553b23f463393b2884d6a9c993afe4ba13789ce057cf439cf40fed7e42721647c0f39846de8ce6c0f6e5989508e842a517bee79d7c1cab5",
+    "cleartext_identity_headers_present": false
+  }
+}
