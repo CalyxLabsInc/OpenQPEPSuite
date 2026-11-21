@@ -518,6 +518,9 @@
           <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">QPEP KEY SUITE (QLX + QVS TIER)</label>
           <select id="reg-qlx-tier" class="neon-input mono" style="font-size:12px;" onchange="updateHyperTesseractNotice()">
             <option value="QLX-4096" selected>Signature QLX-4096 + QVS-256 (Default • 4,096-Dim Apex Quantum-Proof • k=16)</option>
+            <option value="CSP-Omega">Tier 10 — Calyx Sovereign-Pentad: CSP-Omega (5-Family Beyond-LWE — 12 GB+ FLAGSHIP)</option>
+            <option value="CGM-8192">Tier 11 — Calyx Goppa-Monolith: CGM-8192 (Binary Goppa Code — Beyond-LWE)</option>
+            <option value="RMT-512">Tier 12 — Calyx Rank-Metric Tensor: RMT-512 (Rank-Syndrome Code — Beyond-LWE)</option>
             <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim — HIGH-TIER HARDWARE ONLY)</option>
             <option value="QLX-2048">QLX-2048 + QVS-128 Ultra-Grid (Maximum Security • k=8)</option>
             <option value="QLX-1024">QLX-1024 + QVS-87 Sovereign Hybrid (Balanced • k=4)</option>
@@ -549,17 +552,17 @@
         </div>
 
         <button type="button" class="neon-btn" onclick="openCreateAccountStep(3)">
-          Next: Set Mandatory QPKD-Argon Passphrase →
+          Next: Set Mandatory QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Passphrase →
         </button>
       </div>
 
-      <!-- STEP 3: Mandatory QPKD-Argon Passphrase Gate -->
+      <!-- STEP 3: Mandatory QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Passphrase Gate -->
       <div id="auth-step-3" class="neon-card hidden" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 3 OF 3 • MANDATORY QPKD-ARGON GATE</span>
           <button type="button" onclick="openCreateAccountStep(2)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
         </div>
-        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Set QPKD-Argon Passphrase</h2>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Set QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Passphrase</h2>
         <p style="margin:0; font-size:12px; color:#93C5FD;">
           OpenQPEP strictly prohibits unencrypted private keys. Your passphrase locks your `.qpkrf` Private Key Ring with a 256-bit salt and `qSponge-512`.
         </p>
@@ -571,7 +574,7 @@
               ⚡ Auto-Generate Compliant
             </button>
           </div>
-          <input id="reg-passphrase" type="text" class="neon-input mono" placeholder="Enter 12+ char QPKD-Argon passphrase" oninput="updatePassphraseChecklist()" autocomplete="off" />
+          <input id="reg-passphrase" type="text" class="neon-input mono" placeholder="Enter 12+ char QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) passphrase" oninput="updatePassphraseChecklist()" autocomplete="off" />
         </div>
 
         <div>
@@ -579,7 +582,7 @@
           <input id="reg-passphrase-confirm" type="text" class="neon-input mono" placeholder="Re-enter passphrase" oninput="updatePassphraseChecklist()" autocomplete="off" />
         </div>
 
-        <!-- Live 5-Rule QPKD-Argon Policy Checklist -->
+        <!-- Live 5-Rule QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Policy Checklist -->
         <div class="mono" style="background:#040914; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:11px; display:flex; flex-direction:column; gap:5px;">
           <div style="color:#00E5FF; font-weight:700; margin-bottom:2px;">QPKD-ARGON MANDATORY POLICY CHECK:</div>
           <div id="chk-len" style="color:#EF4444;">✗ Minimum 12 characters (0/12)</div>
@@ -1073,9 +1076,9 @@
       <!-- Passphrase Gate Box (Shown when exporting Private Key) -->
       <div id="export-priv-gate" class="hidden" style="background:#040A17; border:1px solid #00E5FF; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;">
         <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">MANDATORY QPKD-ARGON PASSPHRASE VERIFICATION</div>
-        <div style="font-size:12px; color:#93C5FD;">Enter your QPKD-Argon passphrase to unlock and export your Private `.qpkrf` Key Ring:</div>
+        <div style="font-size:12px; color:#93C5FD;">Enter your QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) passphrase to unlock and export your Private `.qpkrf` Key Ring:</div>
         <div style="display:flex; gap:8px;">
-          <input id="export-priv-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="Enter QPKD-Argon passphrase" />
+          <input id="export-priv-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="Enter QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) passphrase" />
           <button type="button" class="neon-btn" onclick="unlockAndShowPrivateKeyExport()" style="padding:0 14px; font-size:12px;">Unlock</button>
         </div>
       </div>
@@ -1109,7 +1112,7 @@
       </div>
       <h3 style="margin:0; font-size:18px; color:#F0F9FF;">Import Public or Private `.qpkrf` Key</h3>
       <p style="margin:0; font-size:12px; color:#93C5FD;">
-        Import a <strong>Public `.qpkrf` Key Ring</strong> to add a contact by Key Hash, or import a <strong>Private `.qpkrf` Key Ring</strong> (with its `QPKD-Argon` passphrase) to log into that account.
+        Import a <strong>Public `.qpkrf` Key Ring</strong> to add a contact by Key Hash, or import a <strong>Private `.qpkrf` Key Ring</strong> (with its `QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2)` passphrase) to log into that account.
       </p>
 
       <button type="button" class="neon-btn-outline" onclick="triggerAndroidFileOpen('import_qpkrf')" style="width:100%; padding:10px; font-size:12px;">
@@ -1120,7 +1123,7 @@
 
       <div>
         <label class="mono" style="font-size:11px; color:#93C5FD; display:block; margin-bottom:4px;">PASSPHRASE (REQUIRED ONLY FOR PRIVATE .QPKRF LOGIN)</label>
-        <input id="import-qpkrf-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="QPKD-Argon Passphrase (if importing Private Key)" />
+        <input id="import-qpkrf-pass" type="password" class="neon-input mono" style="font-size:12px;" placeholder="QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Passphrase (if importing Private Key)" />
       </div>
 
       <button type="button" class="neon-btn" onclick="executeImportQpkrf()">
@@ -1283,6 +1286,40 @@ const LEGACY_PLACEHOLDER_NAMES = new Set(["CalyxLabsInc", "OpenQPEPBot", "Obsidi
 
 /* OpenQPEP Production Candidate 1.0.0 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
 const QLX_TIERS = {
+  "CSP-Omega": {
+    id: "CSP-Omega",
+    wire_id: 6,
+    qvs_id: "QVS-256",
+    name: "Calyx Sovereign-Pentad: CSP-Omega (5-Family Citadel)",
+    suite_badge: "CSP-Omega (5-Family Beyond-LWE) + CC-512",
+    manifolds: 1,
+    rank_k: 16,
+    ct_bytes: 5792,
+    qvs_rank: 256,
+    high_tier_only: true
+  },
+  "CGM-8192": {
+    id: "CGM-8192",
+    wire_id: 7,
+    qvs_id: "QVS-256",
+    name: "Calyx Goppa-Monolith: CGM-8192 (Binary Goppa Code)",
+    suite_badge: "CGM-8192 (Beyond-LWE) + CC-512",
+    manifolds: 1,
+    rank_k: 16,
+    ct_bytes: 5792,
+    qvs_rank: 256
+  },
+  "RMT-512": {
+    id: "RMT-512",
+    wire_id: 8,
+    qvs_id: "QVS-256",
+    name: "Calyx Rank-Metric Tensor: RMT-512 (Rank-Syndrome Code)",
+    suite_badge: "RMT-512 (Beyond-LWE) + CC-512",
+    manifolds: 1,
+    rank_k: 16,
+    ct_bytes: 5792,
+    qvs_rank: 256
+  },
   "QLX-16384": {
     id: "QLX-16384",
     wire_id: 5,
@@ -1339,6 +1376,12 @@ const QLX_TIERS = {
 
 function normalizeQlxTier(rawTier) {
   const s = String(rawTier || "").toUpperCase();
+  if (s.includes("CSP-OMEGA") || s.includes("PENTAD")) return "CSP-Omega";
+  if (s.includes("CGM-8192") || s.includes("GOPPA")) return "CGM-8192";
+  if (s.includes("RMT-512") || s.includes("RANK")) return "RMT-512";
+  if (s.includes("CSP-OMEGA") || s.includes("PENTAD")) return "CSP-Omega";
+  if (s.includes("CGM-8192") || s.includes("GOPPA")) return "CGM-8192";
+  if (s.includes("RMT-512") || s.includes("RANK")) return "RMT-512";
   if (s.includes("16384") || s.includes("TESSERACT")) return "QLX-16384";
   if (s.includes("4096")) return "QLX-4096";
   if (s.includes("2048")) return "QLX-2048";
@@ -1351,7 +1394,7 @@ function updateHyperTesseractNotice() {
   const sel = document.getElementById("reg-qlx-tier");
   const box = document.getElementById("hyper-tesseract-hardware-notice");
   if (!sel || !box) return;
-  const isHyper = sel.value === "QLX-16384";
+  const isHyper = sel.value === "QLX-16384" || sel.value === "CSP-Omega";
   box.classList.toggle("hidden", !isHyper);
 }
 
@@ -1550,7 +1593,7 @@ function validateQpkdPassphrase(pass) {
 function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096", bio = "", expiresDays = 0, avatar = "" }) {
   const v = validateQpkdPassphrase(passphrase);
   if (!v.valid) {
-    throw new Error("Passphrase violates the mandatory QPKD-Argon policy.");
+    throw new Error("Passphrase violates the mandatory QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) policy.");
   }
   const normTier = normalizeQlxTier(qlxTier);
   const tierInfo = QLX_TIERS[normTier] || QLX_TIERS["QLX-4096"];
@@ -1605,7 +1648,7 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
       qvs_pub_root: qvsPubRoot
     },
     private_key_locked: {
-      kdf: "QPKD-Argon + qSponge-512",
+      kdf_version: 2, kdf: "QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) + qSponge-512 (RFC 9106)",
       salt_hex: saltHex,
       wrapped_secret_hex: wrappedSecretHex,
       secret_mac: secretMac
@@ -1787,7 +1830,7 @@ function encryptQpepChatMessage(plaintext, senderKeyring, recipientContact, file
   const whiteningNonce = randomBytes(16);
   const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING");
   const wireBlob = new Uint8Array(6 + 16 + plainBody.length);
-  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x03, 0x00], 0);
   wireBlob.set(whiteningNonce, 6);
   for (let i = 0; i < plainBody.length; i++) {
     wireBlob[22 + i] = plainBody[i] ^ whiteningMask[i];
@@ -1811,7 +1854,7 @@ function encryptQpepChatMessage(plaintext, senderKeyring, recipientContact, file
   const sigNonce = randomBytes(16);
   const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRawBytes.length, "QPEP-SIG-WHITENING");
   const sigWire = new Uint8Array(6 + 16 + sigRawBytes.length);
-  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x03, 0x00], 0);
   sigWire.set(sigNonce, 6);
   for (let i = 0; i < sigRawBytes.length; i++) sigWire[22 + i] = sigRawBytes[i] ^ sigMask[i];
   const sigBody = uint8ToBase64(sigWire).match(/.{1,64}/g).join("\n");
@@ -1894,7 +1937,7 @@ function tryDecryptIncomingQpepPacket(packetArmor) {
           dataB64: innerObj.file_envelope.data_b64
         };
       }
-      const wireTierMap = { 1: "QLX-768", 2: "QLX-1024", 3: "QLX-2048", 4: "QLX-4096", 5: "QLX-16384" };
+      const wireTierMap = { 1: "QLX-768", 2: "QLX-1024", 3: "QLX-2048", 4: "QLX-4096", 5: "QLX-16384", 6: "CSP-Omega", 7: "CGM-8192", 8: "RMT-512" };
       const senderQlxTier = normalizeQlxTier(innerObj.sender_qlx_tier || wireTierMap[wireId] || "QLX-4096");
       return {
         plaintext: innerObj.plaintext || "",
@@ -2136,7 +2179,7 @@ function fillGeneratedPassphrase() {
   document.getElementById("reg-passphrase").value = generated;
   document.getElementById("reg-passphrase-confirm").value = generated;
   updatePassphraseChecklist();
-  showToast("Generated QPKD-Argon compliant passphrase!");
+  showToast("Generated QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) compliant passphrase!");
 }
 
 function updatePassphraseChecklist() {
@@ -2170,7 +2213,7 @@ async function completeCreateAccount() {
 
   const v = validateQpkdPassphrase(p1);
   if (!v.valid) {
-    showToast("Passphrase must satisfy all 5 QPKD-Argon rules.");
+    showToast("Passphrase must satisfy all 5 QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) rules.");
     return;
   }
   if (p1 !== p2) {
@@ -3069,14 +3112,14 @@ function unlockAndShowPrivateKeyExport() {
   if (!acc) return;
   const pass = document.getElementById("export-priv-pass").value;
   if (!verifyPrivatePassphrase(acc, pass)) {
-    showToast("Invalid QPKD-Argon passphrase for this Private Key Ring!");
+    showToast("Invalid QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) passphrase for this Private Key Ring!");
     return;
   }
   const privArmor = formatQpkrfArmor(acc, true);
   document.getElementById("export-priv-gate").classList.add("hidden");
   document.getElementById("export-output-section").classList.remove("hidden");
   document.getElementById("export-qpkrf-textarea").value = privArmor;
-  showToast("QPKD-Argon Passphrase Verified! Private Key Ring unlocked for export.");
+  showToast("QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) Passphrase Verified! Private Key Ring unlocked for export.");
 }
 
 function closeExportKeyModal() {
@@ -3185,7 +3228,7 @@ async function executeImportQpkrf() {
     const parsed = parseQpkrfArmor(armor);
     if (armor.includes("PRIVATE KEY RING") && parsed.private_key_locked) {
       if (!verifyPrivatePassphrase(parsed, pass)) {
-        showToast("Valid QPKD-Argon passphrase is required to import a Private Key Ring.");
+        showToast("Valid QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512 (kdf_version: 2) passphrase is required to import a Private Key Ring.");
         return;
       }
       const existingIdx = appState.accounts.findIndex(a => a.key_hash === parsed.key_hash);

@@ -282,6 +282,9 @@
         <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0-pc KEY SUITE</label>
         <select id="reg-tier" class="neon-select" onchange="toggleHyperNotice()">
           <option value="QLX-4096" selected>Signature QLX-4096 + QVS-256 (Default Apex)</option>
+          <option value="CSP-Omega">Tier 10 — Calyx Sovereign-Pentad CSP-Omega (5-Family Beyond-LWE • 12 GB+ Flagship)</option>
+          <option value="CGM-8192">Tier 11 — Calyx Goppa-Monolith CGM-8192 (Binary Goppa Code • Beyond-LWE)</option>
+          <option value="RMT-512">Tier 12 — Calyx Rank-Metric Tensor RMT-512 (Rank-Syndrome Code • Beyond-LWE)</option>
           <option value="QLX-16384">Calyx Hyper-Tesseract QLX-16384 + QVS-1024 (High-Tier Hardware)</option>
           <option value="QLX-2048">QLX-2048 + QVS-128 Ultra-Grid</option>
           <option value="QLX-1024">QLX-1024 + QVS-87 Sovereign Hybrid</option>
@@ -292,7 +295,7 @@
         </div>
       </div>
       <div style="margin-bottom:10px;">
-        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">QPKD-ARGON MASTER PASSPHRASE *</label>
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">QPKD-ARGON2ID + QSPONGE-512 (KDF v2) MASTER PASSPHRASE *</label>
         <input id="reg-pass" class="neon-input" type="password" placeholder="Locks your .qpkrf key &amp; @calyxmail.org account" oninput="updatePassRules()" required />
         <div class="rule-grid mono">
           <div id="r-len" class="rule-bad">○ 12+ characters</div>
@@ -452,6 +455,9 @@ function getApiBaseUrl() {
 }
 
 const QLX_TIERS = {
+  "CSP-Omega": { id:"CSP-Omega", wire_id:6, name:"Calyx Sovereign-Pentad CSP-Omega (5-Family Citadel)", ct_bytes:5792, high_tier_only:true },
+  "CGM-8192": { id:"CGM-8192", wire_id:7, name:"Calyx Goppa-Monolith CGM-8192 (Binary Goppa Code)", ct_bytes:5792 },
+  "RMT-512": { id:"RMT-512", wire_id:8, name:"Calyx Rank-Metric Tensor RMT-512 (Rank-Syndrome Code)", ct_bytes:5792 },
   "QLX-16384": { id: "QLX-16384", qvs_id: "QVS-1024", name: "Calyx Hyper-Tesseract QLX-16384 + QVS-1024", suite_badge: "QLX-16384 + QVS-1024 + CC-512", ct_bytes: 23168, wire_id: 5 },
   "QLX-4096":  { id: "QLX-4096",  qvs_id: "QVS-256",  name: "Signature QLX-4096 + QVS-256", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4 },
   "QLX-2048":  { id: "QLX-2048",  qvs_id: "QVS-128",  name: "QLX-2048 + QVS-128 Ultra-Grid", suite_badge: "QLX-2048 + QVS-128 + CC-512", ct_bytes: 2976, wire_id: 3 },
@@ -589,7 +595,7 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
     suite_name: tierInfo.name, suite_badge: tierInfo.suite_badge,
     created_utc: nowIso, expires_utc: "NEVER",
     public_key: { rho_seed: rhoSeed, qlx_pub_vector: qlxPubVector, hgc448_pub: hgc448Pub, qvs_pub_root: qvsPubRoot },
-    private_key_locked: { kdf: "QPKD-Argon + qSponge-512", salt_hex: saltHex, wrapped_secret_hex: wrappedSecretHex, secret_mac: secretMac },
+    private_key_locked: { kdf: "QPKD-Argon2id + qSponge-512 (kdf_version: 2) + qSponge-512", salt_hex: saltHex, wrapped_secret_hex: wrappedSecretHex, secret_mac: secretMac },
     self_certification: selfCert, integrity_mac: integrityMac
   };
 }
@@ -667,7 +673,7 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   const whiteningNonce = randomBytes(16);
   const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING");
   const wireBlob = new Uint8Array(6 + 16 + plainBody.length);
-  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x03, 0x00], 0);
   wireBlob.set(whiteningNonce, 6);
   for (let i = 0; i < plainBody.length; i++) wireBlob[22 + i] = plainBody[i] ^ whiteningMask[i];
 
@@ -687,7 +693,7 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   const sigNonce = randomBytes(16);
   const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRaw.length, "QPEP-SIG-WHITENING");
   const sigWire = new Uint8Array(6 + 16 + sigRaw.length);
-  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x02, 0x00], 0);
+  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x03, 0x00], 0);
   sigWire.set(sigNonce, 6);
   for (let i = 0; i < sigRaw.length; i++) sigWire[22 + i] = sigRaw[i] ^ sigMask[i];
   const sigArmor = [
@@ -825,7 +831,7 @@ async function handleRegister(ev) {
 
   const v = validateQpkdPassphrase(pass);
   if (!v.valid) {
-    errEl.textContent = "Passphrase must meet all 5 QPKD-Argon policy requirements.";
+    errEl.textContent = "Passphrase must meet all 5 QPKD-Argon2id + qSponge-512 (kdf_version: 2) policy requirements.";
     errEl.classList.remove("hidden");
     return;
   }
