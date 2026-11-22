@@ -3330,7 +3330,7 @@ function inspectMessagePacket(idx) {
         Sender Key Hash: <span style="color:#00E5FF;">${m.sender_hash}</span><br/>
         Recipient Key Hash: <span style="color:#00E5FF;">${m.recipient_hash}</span><br/>
         Sender Key Suite: <span style="color:#00E5FF;">${escapeHtml(m.suite_badge || formatMessageSuiteBadge(m.sender_qlx_tier))}</span><br/>
-        Wire Format: <span style="color:#10B981;">Binary \\x89QPE\\x02\\x00 (Metadata Encrypted)</span><br/>
+        Wire Format: <span style="color:#10B981;">Official Release 1.0.0 Wire Format v5 (\\x89QPE\\x05\\x00) (Metadata Encrypted)</span><br/>
         Delivery State: <span style="color:${Number(m.read_status) === 1 ? '#FF2A9D' : '#00E5FF'};">${statusStr}</span>
       </div>
       <textarea readonly class="neon-input mono selectable" style="height:145px; font-size:10px; margin-bottom:10px;">${escapeHtml(m.packet)}</textarea>
@@ -4381,6 +4381,19 @@ document.addEventListener("visibilitychange", () => {
 /* === OpenQPEP v1.0.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv120HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
