@@ -1,8 +1,8 @@
-# OpenQPEP Suite — Production Candidate 1.2.0 (`v1.0.0`)
+# OpenQPEP Suite — Official Release Version 1.0.0 (`v1.0.0`)
 
 Official unified public repository for the **OpenQPEP Suite** by **Calyx Labs Inc.** (`https://github.com/CalyxLabsInc/OpenQPEPSuite/`), licensed universally under the **Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)**.
 
-> **Proprietary Infrastructure Notice:** All Calyx Labs Inc. backend servers (`website_server`, `directory_server`, `messenger_server`, `calyxmail_backend`) and signing keystores are strictly proprietary and are intentionally excluded from this repository.
+> **Proprietary Infrastructure Notice:** All Calyx Labs Inc. backend servers (`Website_Server`, `Directory_Server`, `Messenger_Server`, `CalyxMail_Backend`) and signing keystores are strictly proprietary and are intentionally excluded from this repository.
 
 ---
 
@@ -10,19 +10,20 @@ Official unified public repository for the **OpenQPEP Suite** by **Calyx Labs In
 
 | Directory | Component | Version | Description |
 | :--- | :--- | :--- | :--- |
-| [`protocol/`](protocol/) | **OpenQPEP Core Protocol** | `1.0.0-pc` | Python reference engine, C99/AVX2/NEON `libopenqpep` source, WASM SIMD128 bridge, Rust `openqpep-core` crate, Go conformance port, formal Tamarin/ProVerif/Cryptol specs, 5 golden KAT suites, and 63 unit/audit tests |
-| [`apps/calyx-qpep-client/`](apps/calyx-qpep-client/) | **Calyx QPEP Client** | `PC 1.2.0` (`vc263`) | Zero-telemetry post-quantum encryption/signing client for Android (`.apk` + source) and iOS (`.mobileconfig` + PWA) |
-| [`apps/calyx-encrypted-messenger/`](apps/calyx-encrypted-messenger/) | **Calyx Encrypted Messenger (QPEM)** | `PC 1.2.0` (`vc26`) | End-to-end post-quantum encrypted messenger for Android (`.apk` + source) and iOS (`.mobileconfig`) |
-| [`apps/calyx-encrypted-email/`](apps/calyx-encrypted-email/) | **Calyx Encrypted Email** | `PC 1.2.0` (`vc10`) | Post-quantum encrypted email client (`@calyxmail.org`) for Android (`.apk` + source) and iOS (`.mobileconfig`) |
-| [`docs/`](docs/) | **Suite Documentation & Theses** | `1.0.0-pc` | Architecture guides, hypothetical beyond-LWE key tier theses, and public compliance documents |
+| [`protocol/`](protocol/) | **OpenQPEP Core Protocol** | `1.0.0` | Python reference engine, C99/AVX2/NEON `libopenqpep` source, WASM SIMD128 bridge, Rust `openqpep-core` crate, Go conformance port, formal Tamarin/ProVerif/Cryptol specs, 10 golden KAT suites, and 89 unit/audit tests |
+| [`apps/calyx-qpep-client/`](apps/calyx-qpep-client/) | **Calyx QPEP Client** | `1.0.0` (`vc226`) | Zero-telemetry post-quantum encryption/signing client for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig` + PWA) |
+| [`apps/calyx-encrypted-messenger/`](apps/calyx-encrypted-messenger/) | **Calyx Encrypted Messenger (QPEM)** | `1.0.0` (`vc26`) | End-to-end post-quantum encrypted messenger for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig`) |
+| [`apps/calyx-encrypted-email/`](apps/calyx-encrypted-email/) | **Calyx Encrypted Email** | `1.0.0` (`vc10`) | Post-quantum encrypted email client (`@calyxmail.org`) for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig`) |
+| [`docs/`](docs/) | **Suite Documentation & Theses** | `1.0.0` | Architecture guides, Beyond-LWE key tier specifications, and public compliance documents |
 
 ---
 
-## Cryptographic Baseline (`OpenQPEP/PC-1.2.0`)
-- **Strict Frozen Wire Format v3 (`\x89QPE\x03\x00`) & Compact TLV v3.1 (`\x89QPE\x03\x01`):** Zero legacy `-beta` backwards compatibility.
-- **Mandatory Memory-Hard KDF (`kdf_version: 2`):** RFC 9106 `QPKD-Argon2id + qSponge-512` cascade.
-- **10 Post-Quantum Suites:** `QLX-768`..`QLX-16384` + `QVS-65`..`QVS-1024`, Calyx Sovereign-Pentad `Calyx Sovereign-Pentad (CSP-Omega)`, Calyx Goppa-Monolith `CGM-8192`, and Calyx Rank-Metric Tensor `CRT-RSD512`.
-- **Full Protocol Stack:** `QPEP-Ratchet`, `QPEP-MLS` TreeKEM, `QPEP-AKE`, `QPEP-KT`, `FIDO2-PRF`, `QVS-Ring`, `BlindSearchVault`, `t`-of-`n` `ThresholdKEM`, `Sphinx-PQ`, `LT-QR` air-gapped fountain transfer, `DeniableVault`, `TimeLockCapsule`, `LatticeZKProof`, and `EncryptedLWWMapCRDT`.
+## Cryptographic Baseline (`OpenQPEP/1.0.0`)
+- **Official Wire Format v5 (`\x89QPE\x05\x00`), Compact Binary TLV v5.1 (`\x89QPE\x05\x01`), & Stream Format v5 (`\x89QPS\x05\x00`):** Clean-slate Official Release 1.0.0 wire framing with zero legacy pre-release backwards compatibility (`QPEPLegacyProtocolError`).
+- **CMT-4 Key-Committing `CC-512` AEAD (`CC512-CMT4-COMMIT-v1.0.0`):** Constant-time 256-bit key+nonce+AAD+ciphertext commitment tag verification before decryption across Python, Rust, and WebView JS.
+- **Mandatory Memory-Hard KDF (`kdf_version: 4`):** RFC 9106 `QPKD-Argon2id + qSponge-512` cascade bound to domain personalization `"OpenQPEP/1.0.0"`.
+- **10 Post-Quantum Suites:** 5 Standard Lattice suites (`QLX-768`..`QLX-16384` + `QVS-65`..`QVS-1024`) and 5 Beyond-LWE suites (`CIF-SQI-512`, `CRT-RSD512`, `CGM-8192`, `CULC-2048`, `CSP-Omega`).
+- **Full Protocol Stack:** `QPEP-Ratchet` (`QPEP-DR` / `PQXDH-v1.0.0`), `QPEP-MLS` TreeKEM, `QPEP-AKE`, `QPEP-KT` Merkle Key Transparency, `FIDO2-PRF`, `QVS-Ring`, `BlindSearchVault`, `t`-of-`n` `ThresholdKEM`, `Sphinx-PQ`, `LT-QR` air-gapped fountain transfer, `DeniableVault`, `TimeLockCapsule`, `LatticeZKProof`, and `EncryptedLWWMapCRDT`.
 
 ---
 
@@ -43,7 +44,7 @@ python3 -m unittest discover -s tests -v
 
 ## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
 
-Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
+Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 Key-Committing `CC-512` AEAD**, **RFC 9106 `QPKD-Argon2id + qSponge-512` (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact Binary TLV v5.1 (`\x89QPE\x05\x01`)**.
 
 | Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
 | :--- | :--- | :--- | :--- | :--- |
