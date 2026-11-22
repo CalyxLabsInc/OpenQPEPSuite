@@ -90,7 +90,7 @@ QLX_TIERS: Dict[str, Dict[str, object]] = {
         "k": 16, "du": 11, "dv": 5, "manifolds": 1, "cbd": 2,
         "qvs_tier": "QVS-256",
         "pk_bytes": 6176, "sk_bytes": 12384, "ct_bytes": 5792,
-        "display_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
+        "display_name": "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
         "hardware_tier": "All Devices",
         "high_tier_only": False,
     },
@@ -127,7 +127,7 @@ QVS_TIERS: Dict[str, Dict[str, int]] = {
 # ---------------------------------------------------------------------------
 ALL_TEN_SUITES: Dict[str, Dict[str, object]] = {
     "QLX-4096": {
-        "display_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
+        "display_name": "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
         "kem": "QLX-4096", "sig": "QVS-256", "family": "Structured Module-LWE + HGC-448",
         "hardware_tier": "All Devices", "high_tier_only": False, "default": True,
     },

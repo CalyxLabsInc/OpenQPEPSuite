@@ -326,7 +326,7 @@
       <div style="margin-bottom:10px;">
         <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0 POST-QUANTUM KEY SUITE</label>
         <select id="reg-tier" class="neon-select" onchange="toggleHyperNotice()">
-          <option value="QLX-4096">Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)</option>
+          <option value="QLX-4096">Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)</option>
           <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
           <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
           <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
@@ -477,7 +477,7 @@
       <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:6px;">ONE-CLICK POST-QUANTUM KEY ROTATION &amp; .QREV REVOCATION</div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <select id="kr-rotate-tier" class="neon-select" style="flex:1; min-width:210px; font-size:12px;">
-          <option value="QLX-4096">Calyx Lattice-4096: QLX-4096 + QVS-256</option>
+          <option value="QLX-4096">Calyx Lattice-Apex: QLX-4096 + QVS-256</option>
           <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65</option>
           <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87</option>
           <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128</option>
@@ -581,7 +581,7 @@ function getApiBaseUrl() {
 }
 
 const QLX_TIERS = {
-  "QLX-4096":    { id: "QLX-4096",    qvs_id: "QVS-256",  name: "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4, high_tier_only: false },
+  "QLX-4096":    { id: "QLX-4096",    qvs_id: "QVS-256",  name: "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4, high_tier_only: false },
   "QLX-768":     { id: "QLX-768",     qvs_id: "QVS-65",   name: "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)", suite_badge: "QLX-768 + QVS-65 + CC-512", ct_bytes: 1088, wire_id: 1, high_tier_only: false },
   "QLX-1024":    { id: "QLX-1024",    qvs_id: "QVS-87",   name: "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", suite_badge: "QLX-1024 + QVS-87 + CC-512", ct_bytes: 1568, wire_id: 2, high_tier_only: false },
   "QLX-2048":    { id: "QLX-2048",    qvs_id: "QVS-128",  name: "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", suite_badge: "QLX-2048 + QVS-128 + CC-512", ct_bytes: 2976, wire_id: 3, high_tier_only: false },
@@ -1918,6 +1918,19 @@ if (state.token && state.account) {
 /* === OpenQPEP Official Release 1.0.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv100HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {

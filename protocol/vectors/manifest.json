@@ -37,7 +37,7 @@
       "file": "kat_qlx4096_qvs256.json",
       "family": "structured_lattice",
       "suite_id": "QLX-4096",
-      "suite_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
+      "suite_name": "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 5792,
       "qvs_sig_bytes": 5440,

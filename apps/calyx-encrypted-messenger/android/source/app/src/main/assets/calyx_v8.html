@@ -518,7 +518,7 @@
         <div>
           <label class="mono" style="font-size:11px; color:#00E5FF; display:block; margin-bottom:5px;">QPEP KEY SUITE (QLX + QVS TIER)</label>
           <select id="reg-qlx-tier" class="neon-input mono" style="font-size:12px;" onchange="updateHyperTesseractNotice()">
-                                                                                                <option value="QLX-4096">Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)</option>
+                                                                                                <option value="QLX-4096">Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)</option>
             <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
             <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
             <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
@@ -823,7 +823,7 @@
         <div style="font-size:12px; color:#93C5FD; line-height:1.55; display:flex; flex-direction:column; gap:8px;">
           <div>
             <strong>ALL 10 OPENQPEP v1.0.0 POST-QUANTUM SUITES:</strong><br/>
-• <strong>Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices):</strong> 4,096-dim structured lattice (k=16) + QVS-256 + Hybrid X448.<br/>
+• <strong>Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices):</strong> 4,096-dim structured lattice (k=16) + QVS-256 + Hybrid X448.<br/>
 • <strong>Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices):</strong> 768-dim mobile-first structured lattice (k=3).<br/>
 • <strong>Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices):</strong> 1,024-dim balanced lattice (k=4).<br/>
 • <strong>Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices):</strong> 2,048-dim elevated lattice (k=8).<br/>
@@ -1367,7 +1367,7 @@ const QLX_TIERS = {
     id: "QLX-4096",
     wire_id: 4,
     qvs_id: "QVS-256",
-    name: "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
+    name: "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
     suite_badge: "QLX-4096 + QVS-256 + CC-512",
     rank_k: 16,
     ct_bytes: 5792,
@@ -3094,7 +3094,7 @@ function openChatThread(peerHash) {
         key_hash: cleanPeerHash,
         key_name: "Key_" + cleanPeerHash.slice(0, 6),
         qlx_tier: "QLX-4096",
-        suite_name: "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)"
+        suite_name: "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)"
       });
 
   closeNewMessageScreen();
@@ -3195,7 +3195,7 @@ async function sendEncryptedChatMessage(optionalFileAttachment = null) {
   const isSelf = peerHash === acc.key_hash;
   const peer = isSelf
     ? acc
-    : (appState.contacts.find(c => c.key_hash === peerHash) || { key_hash: peerHash, qlx_tier: "QLX-4096", suite_name: "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)" });
+    : (appState.contacts.find(c => c.key_hash === peerHash) || { key_hash: peerHash, qlx_tier: "QLX-4096", suite_name: "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)" });
 
   const enc = encryptQpepChatMessage(text, acc, peer, optionalFileAttachment);
   const nowTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -4446,6 +4446,19 @@ document.addEventListener("visibilitychange", () => {
     } catch (e) {}
     return { gb: 0, capped: true };
   }
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamGiB() { return detectDeviceRamInfo().gb; }
   window.openqpepDeviceRamGiB = detectDeviceRamGiB;
   window.openqpepIsHighTierDevice = function () {
@@ -4623,7 +4636,7 @@ document.addEventListener("visibilitychange", () => {
       wire_format: "Official Wire Format v5 (\\x89QPE\\x05\\x00)",
       aead: "CMT-4 Key-Committing CC-512 (CC512-CMT4-COMMIT-v1.0.0)",
       kdf_version: 4,
-      suite: suiteName || "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
+      suite: suiteName || "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
       ratchet_step: Number(chainIndex || 0)
     };
   };

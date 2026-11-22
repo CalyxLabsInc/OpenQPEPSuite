@@ -4,7 +4,7 @@
   "protocol_version": "OpenQPEP/1.0.0",
   "universal_version": "1.0.0",
   "suite_id": "QLX-4096",
-  "suite_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
+  "suite_name": "Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
   "qlx_tier": "QLX-4096",
   "qvs_tier": "QVS-256",
   "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0|)",

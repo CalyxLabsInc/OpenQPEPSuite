@@ -26,7 +26,7 @@ from calyx_qpep.multivariate.qmq_512 import MultivariateQuadraticEngine
 from calyx_qpep.pentad import CalyxSovereignPentad
 
 QLX_SUITES = [
-    ("Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", "QLX-4096", "QVS-256", "All Devices"),
+    ("Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", "QLX-4096", "QVS-256", "All Devices"),
     ("Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)", "QLX-768", "QVS-65", "All Devices"),
     ("Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", "QLX-1024", "QVS-87", "All Devices"),
     ("Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", "QLX-2048", "QVS-128", "All Devices"),
