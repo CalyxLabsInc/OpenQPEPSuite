@@ -4,7 +4,7 @@
   "protocol_version": "OpenQPEP/1.0.0",
   "universal_version": "1.0.0",
   "suite_id": "QLX-4096",
-  "suite_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default \u2014 All Devices)",
+  "suite_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
   "qlx_tier": "QLX-4096",
   "qvs_tier": "QVS-256",
   "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0|)",
@@ -39,7 +39,7 @@
     "key_hash": "2182B288B4246DA2470307EFBE7D7D275875C3D7ACCBE40502FA4F672969B694",
     "wire_magic_hex": "895150450500",
     "wire_frame_bytes": 24682,
-    "wire_frame_sha3_512": "b56eefa6debbf96a0b8ef0c076bfd447fe6c60bba96d73134ab0e4ac6864fdaa68f613748ca07efe0c51f2030193ab9e046570e633d186994ab732ff39a3402d",
+    "wire_frame_sha3_512": "89bcac0b739f7864f544f8ffab27ca0529f6d9a56fc4ff15146fcfa5346c4cbbe9e52d3cf7191f4127ecc0f2205ff22f19b177ddb7bc3913373641db0a7f29c6",
     "wire_frame_prefix_hex": "89515045050001003a91a637a6f7bdfe5c777f41ba1708894c57fd2c36e0be14330823e882dbb14b42c8f69bd723c445b72a30fa6363bae4da597d7bddb03713",
     "cleartext_identity_headers_present": false
   }

@@ -39,7 +39,7 @@
     "key_hash": "D136140853D774CADD6AB5D72A263D1FADA90DC3EFEDB3210828B6BCAC39997F",
     "wire_magic_hex": "895150450500",
     "wire_frame_bytes": 11542,
-    "wire_frame_sha3_512": "735327fad424d1ef5711770564f7ee09e37f9d7a913db8231a5ae863b83d596c3256ebfe87deb0eb1b0f4f9abe3a247327285fbcd959e03d64f1a455ef41dcf3",
+    "wire_frame_sha3_512": "91a8d0095b7a3ae1d4021170b7b6fa7ca0f1cefb9501451359f5dbbd8c40c8487914d1a5e7e4506f8e2e325ed6db8d91103fe7460ab9351e92bf64234ba47690",
     "wire_frame_prefix_hex": "8951504505000100b161b7ef504b19f60d70c55f79ae6e2a92af3e5e15e5462d906572a4595dd1053a3377fd5309276bd5c711cd9edbc9d3bbc6566c43b0c159",
     "cleartext_identity_headers_present": false
   }

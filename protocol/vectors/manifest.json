@@ -11,7 +11,7 @@
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 1088,
       "qvs_sig_bytes": 1600,
-      "sha3_512": "27db01e27546e9bd3487ad9522854d92e0eacebd3f13fd017417f868bc55408b933aec72037f480fc8d6f3e56f1354d1202cf500cb28270c36aee970ab0b6578"
+      "sha3_512": "34c48680fd3c69045f975b5ce3a298ac134048e4fd1a4e1b7c83d16d32f0e86edc82c84c628bf97b65af267ca8e771d927cbcd28ce4b2a7a980336e850330963"
     },
     {
       "file": "kat_qlx1024_qvs87.json",
@@ -21,7 +21,7 @@
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 1568,
       "qvs_sig_bytes": 2368,
-      "sha3_512": "8f5b4b8eac23c145de278584a66c3d4795614f2bbb75c8129a5ad04580be44a3e346b4a98704f46002b809906a7fa913c2d974498f3d2201b4c7528525cdf5b4"
+      "sha3_512": "7e4b4bc6b077ae4ead71415100898da16b965057c777e98f2221a7afa70b6438a39e087acb78b2839471a895daca802593d0f704e9bdff4636a5872fbd0bd07f"
     },
     {
       "file": "kat_qlx2048_qvs128.json",
@@ -31,17 +31,17 @@
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 2976,
       "qvs_sig_bytes": 3904,
-      "sha3_512": "79cb21dee5e6f1404b4c582b4fd198bfa7d6c597f9fec45e741d313195c8646db7d19cd3bc56db275925d8dc70ee5d526bdc689953f1dc89a571251b8411950c"
+      "sha3_512": "5d138d92a4a994b3d0d1abd2af23af7716fb2e811e2ce9b1b65ed4467c732aebf4e8c5c47e93bcb5edcc07407fd224e0b46df50432bb83c40af7918be786a89d"
     },
     {
       "file": "kat_qlx4096_qvs256.json",
       "family": "structured_lattice",
       "suite_id": "QLX-4096",
-      "suite_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default \u2014 All Devices)",
+      "suite_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE \u2014 All Devices)",
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 5792,
       "qvs_sig_bytes": 5440,
-      "sha3_512": "c7bf9760f526ba1c3614ae40a2c842d6c5a3b9d862397cb550576891073555cbd46e784eb7239d187890ea353ec22ff320ab2bb0bb43922a5da580167781ca6a"
+      "sha3_512": "c93e86ea7af4845e8f605f6c0ecbd4031cb9383132afa9ebdcc1a50beeccea8cb752b11e79e48e2b51ff001623474b5d73865cd6b6280e957488d4c45a5ff14c"
     },
     {
       "file": "kat_qlx16384_qvs1024.json",
@@ -51,7 +51,7 @@
       "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 23168,
       "qvs_sig_bytes": 10816,
-      "sha3_512": "376d702aa11bee5befb16e849f229c4e70bb8888b05473e24d2e5a5f7662af2ffaa74ed00d9cf8ae31697d4858c4f47940a30019e2ea64825b6e6a35abf3e1e5"
+      "sha3_512": "d26ac3e07a18af0027c6c9240da7605e903a6ef3bfec2621330a86b4edd2470d9879bcb9ff47d59a1224d76ec59f11ebc11f012fb799a0ebaeb63fe94df117b3"
     },
     {
       "file": "kat_cif_sqi512.json",
@@ -67,11 +67,11 @@
       "file": "kat_crt_rsd512.json",
       "family": "beyond_lwe",
       "suite_id": "CRT-RSD512",
-      "suite_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based \u2014 All Devices)",
+      "suite_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default \u2014 All Devices)",
       "wire_magic_hex": "895150450500",
-      "ct_bytes": 2209,
+      "ct_bytes": 2213,
       "sig_bytes": 700,
-      "sha3_512": "35de326cc0a392587cfe19190af0a03aaed8f4eee8d59ed127d8ca7093d195a490952874869b896bc2e31bde4889489cd98dbdc9f15390384248bf97e81e1952"
+      "sha3_512": "79402a85f6693da516cf3afa693662245981a0148e0a3445b4da3c003d3d5434ecfc8dcfc542c50b49ae211c613b07ef8b9888ece6781bc3b84d6571a1bd3650"
     },
     {
       "file": "kat_cgm8192.json",
@@ -97,11 +97,11 @@
       "file": "kat_csp_omega.json",
       "family": "beyond_lwe",
       "suite_id": "CSP-Omega",
-      "suite_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel \u2014 HIGH-TIER HARDWARE ONLY)",
+      "suite_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default \u2014 HIGH-TIER HARDWARE ONLY)",
       "wire_magic_hex": "895150450500",
       "ct_bytes": 3434,
       "sig_bytes": 5633,
-      "sha3_512": "e4c4f93c7d263cee5c78ef3741d2e408b5781eebeb1c68fab92cd989b613904b3e7b4665a7d1fa8c5640ab1d193c7fe1e5e4fba43a8ce20c7fae0268102bdf6d"
+      "sha3_512": "9f81620549a5c6d24d5dc90f72c7c573a8870e612a6ca6416eafe104e0c098386e502fd2a0fe2f15288321db19106e62a59b3af8426c7ae325121dd10db060f9"
     }
   ]
 }
