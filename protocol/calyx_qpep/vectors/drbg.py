@@ -1,6 +1,7 @@
 """
 Deterministic qSponge-XOF DRBG — STRICTLY FOR KNOWN ANSWER TEST (KAT) GENERATION & VERIFICATION.
 NEVER use deterministic_urandom() in production key generation or encryption.
+Official Release 1.0.0 Domain: CALYX-OPENQPEP-KAT-DRBG-v1.0.0|
 """
 import contextlib
 import os
@@ -16,7 +17,7 @@ class QSpongeDRBG:
     Keccak-f[1600] qSponge-XOF (SHAKE-256). Strictly isolated to KAT test mode.
     """
 
-    DOMAIN_TAG = b"CALYX-OPENQPEP-KAT-DRBG-v1.0.0-rc|"
+    DOMAIN_TAG = b"CALYX-OPENQPEP-KAT-DRBG-v1.0.0|"
 
     def __init__(self, seed: bytes):
         if not isinstance(seed, (bytes, bytearray)) or len(seed) < 16:

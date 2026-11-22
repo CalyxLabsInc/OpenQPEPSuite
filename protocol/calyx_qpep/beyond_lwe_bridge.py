@@ -1,6 +1,6 @@
 """
-OpenQPEP v1.0.0-rc Beyond-LWE Native .qpkrf Persistence & Dispatch Bridge.
-Provides unified keygen, encrypt, decrypt, sign, and verify dispatch for all 5 Beyond-LWE suites:
+OpenQPEP Official Release 1.0.0 (v1.0.0) Beyond-LWE Native .qpkrf Persistence & Dispatch Bridge.
+Provides unified Wire Format v5 keygen, encrypt, decrypt, sign, and verify dispatch for all 5 Beyond-LWE suites:
   - CIF-SQI-512  (Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512)
   - CRT-RSD512   (Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512)
   - CGM-8192     (Calyx Goppa-Monolith: CGM-8192 + QHS-512)
@@ -8,7 +8,16 @@ Provides unified keygen, encrypt, decrypt, sign, and verify dispatch for all 5 B
   - CSP-Omega    (Calyx Sovereign-Pentad: CSP-Omega + QHS-512)
 """
 import base64
+import json
 from typing import Any, Dict, Tuple
+
+from .constants import PACKET_TYPE_SIGNATURE, PROTOCOL_VERSION, UNIVERSAL_VERSION
+from .wire.armor import armor_unwrap, armor_wrap
+
+BEYOND_LWE_SUITES = ("CIF-SQI-512", "CRT-RSD512", "CGM-8192", "CULC-2048", "CSP-Omega")
+CRT_SIG_LABEL = "CALYX QPEP RANK-METRIC SIGNATURE"
+CGM_SIG_LABEL = "CALYX QPEP GOPPA-MONOLITH SIGNATURE"
+
 
 def _engines():
     from .codes.goppa_suite import CalyxGoppaMonolithSuite
@@ -24,8 +33,6 @@ def _engines():
         CalyxSovereignPentad,
     )
 
-BEYOND_LWE_SUITES = ("CIF-SQI-512", "CRT-RSD512", "CGM-8192", "CULC-2048", "CSP-Omega")
-
 
 def _b64e(b: bytes) -> str:
     return base64.b64encode(b).decode("ascii")
@@ -36,8 +43,8 @@ def _b64d(s: str) -> bytes:
 
 
 def generate_beyond_lwe_material(suite_id: str, allow_low_ram_override: bool = True) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
     """Generates JSON-serializable (public_dict, private_dict) for any of the 5 Beyond-LWE suites."""
+    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
     if suite_id == "CIF-SQI-512":
         pub, priv = CalyxIsogenyForgeSuite.keygen()
         return {"suite_id": suite_id, "pub": pub}, {"suite_id": suite_id, "priv": priv}
@@ -65,7 +72,7 @@ def generate_beyond_lwe_material(suite_id: str, allow_low_ram_override: bool = T
 
 
 def encrypt_beyond_lwe(suite_id: str, plaintext: bytes, blwe_pub: Dict[str, Any]) -> str:
-    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
+    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, _QHS, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, _QMQ, CalyxSovereignPentad = _engines()
     if suite_id == "CIF-SQI-512":
         return CalyxIsogenyForgeSuite.encrypt(plaintext, blwe_pub["pub"])
     if suite_id == "CRT-RSD512":
@@ -80,7 +87,7 @@ def encrypt_beyond_lwe(suite_id: str, plaintext: bytes, blwe_pub: Dict[str, Any]
 
 
 def decrypt_beyond_lwe(suite_id: str, armored: str, blwe_priv: Dict[str, Any]) -> bytes:
-    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
+    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, _QHS, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, _QMQ, CalyxSovereignPentad = _engines()
     if suite_id == "CIF-SQI-512":
         return CalyxIsogenyForgeSuite.decrypt(armored, blwe_priv["priv"])
     if suite_id == "CRT-RSD512":
@@ -95,15 +102,31 @@ def decrypt_beyond_lwe(suite_id: str, armored: str, blwe_priv: Dict[str, Any]) -
 
 
 def sign_beyond_lwe(suite_id: str, message: bytes, blwe_pub: Dict[str, Any], blwe_priv: Dict[str, Any]) -> str:
-    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
+    _CGM, _CRT, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
     if suite_id == "CIF-SQI-512":
         return CalyxIsogenyForgeSuite.sign(message, blwe_priv["priv"])
     if suite_id == "CRT-RSD512":
         sig = MultivariateQuadraticEngine.sign(_b64d(blwe_priv["sig_sk_b64"]), message)
-        return f"BLWE-SIG|CRT-RSD512|{_b64e(sig)}|{_b64e(message)}"
+        bundle = {
+            "type": "openqpep-rank-metric-signature",
+            "version": UNIVERSAL_VERSION,
+            "protocol": PROTOCOL_VERSION,
+            "suite_id": "CRT-RSD512",
+            "message_b64": _b64e(message),
+            "sig_qmq_b64": _b64e(sig),
+        }
+        return armor_wrap(CRT_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"), packet_type=PACKET_TYPE_SIGNATURE)
     if suite_id == "CGM-8192":
         sig = QHS512HypertreeEngine.sign(_b64d(blwe_priv["sig_sk_b64"]), message)
-        return f"BLWE-SIG|CGM-8192|{_b64e(sig)}|{_b64e(message)}"
+        bundle = {
+            "type": "openqpep-goppa-monolith-signature",
+            "version": UNIVERSAL_VERSION,
+            "protocol": PROTOCOL_VERSION,
+            "suite_id": "CGM-8192",
+            "message_b64": _b64e(message),
+            "sig_qhs_b64": _b64e(sig),
+        }
+        return armor_wrap(CGM_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"), packet_type=PACKET_TYPE_SIGNATURE)
     if suite_id == "CULC-2048":
         return CalyxUnstructuredCitadelSuite.sign(message, blwe_priv["priv"])
     if suite_id == "CSP-Omega":
@@ -112,23 +135,31 @@ def sign_beyond_lwe(suite_id: str, message: bytes, blwe_pub: Dict[str, Any], blw
 
 
 def verify_beyond_lwe(suite_id: str, armored_sig: str, blwe_pub: Dict[str, Any]) -> Tuple[bool, bytes]:
-    CalyxGoppaMonolithSuite, CalyxRankMetricSuite, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
+    _CGM, _CRT, QHS512HypertreeEngine, CalyxIsogenyForgeSuite, CalyxUnstructuredCitadelSuite, MultivariateQuadraticEngine, CalyxSovereignPentad = _engines()
     if suite_id == "CIF-SQI-512":
         return CalyxIsogenyForgeSuite.verify(armored_sig, blwe_pub["pub"])
     if suite_id == "CRT-RSD512":
-        parts = armored_sig.strip().split("|")
-        if len(parts) != 4 or parts[0] != "BLWE-SIG" or parts[1] != "CRT-RSD512":
+        try:
+            raw, _ = armor_unwrap(armored_sig, CRT_SIG_LABEL)
+            bundle = json.loads(raw.decode("utf-8"))
+            if bundle.get("suite_id") != "CRT-RSD512":
+                return False, b""
+            msg = _b64d(bundle["message_b64"])
+            ok = MultivariateQuadraticEngine.verify(_b64d(blwe_pub["sig_pk_b64"]), msg, _b64d(bundle["sig_qmq_b64"]))
+            return bool(ok), (msg if ok else b"")
+        except Exception:
             return False, b""
-        sig, msg = _b64d(parts[2]), _b64d(parts[3])
-        ok = MultivariateQuadraticEngine.verify(_b64d(blwe_pub["sig_pk_b64"]), msg, sig)
-        return ok, (msg if ok else b"")
     if suite_id == "CGM-8192":
-        parts = armored_sig.strip().split("|")
-        if len(parts) != 4 or parts[0] != "BLWE-SIG" or parts[1] != "CGM-8192":
+        try:
+            raw, _ = armor_unwrap(armored_sig, CGM_SIG_LABEL)
+            bundle = json.loads(raw.decode("utf-8"))
+            if bundle.get("suite_id") != "CGM-8192":
+                return False, b""
+            msg = _b64d(bundle["message_b64"])
+            ok = QHS512HypertreeEngine.verify(_b64d(blwe_pub["sig_pk_b64"]), msg, _b64d(bundle["sig_qhs_b64"]))
+            return bool(ok), (msg if ok else b"")
+        except Exception:
             return False, b""
-        sig, msg = _b64d(parts[2]), _b64d(parts[3])
-        ok = QHS512HypertreeEngine.verify(_b64d(blwe_pub["sig_pk_b64"]), msg, sig)
-        return ok, (msg if ok else b"")
     if suite_id == "CULC-2048":
         return CalyxUnstructuredCitadelSuite.verify(armored_sig, blwe_pub["pub"])
     if suite_id == "CSP-Omega":

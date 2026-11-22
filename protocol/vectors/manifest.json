@@ -1,6 +1,6 @@
 {
-  "protocol_version": "OpenQPEP/RC-1.0.0",
-  "universal_version": "1.0.0-rc",
+  "protocol_version": "OpenQPEP/1.0.0",
+  "universal_version": "1.0.0",
   "suite_count": 10,
   "vectors": [
     {
@@ -8,90 +8,100 @@
       "family": "structured_lattice",
       "suite_id": "QLX-768",
       "suite_name": "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile \u2014 All Devices)",
+      "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 1088,
       "qvs_sig_bytes": 1600,
-      "sha3_512": "a50038b2211f462f84d68a84f4d11bcf4687c7beec69c849e6ede9914025d657e3af227b5869d86a01440ecf16a722dece50e98c40e2df437bbed45a15322118"
+      "sha3_512": "27db01e27546e9bd3487ad9522854d92e0eacebd3f13fd017417f868bc55408b933aec72037f480fc8d6f3e56f1354d1202cf500cb28270c36aee970ab0b6578"
     },
     {
       "file": "kat_qlx1024_qvs87.json",
       "family": "structured_lattice",
       "suite_id": "QLX-1024",
       "suite_name": "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum \u2014 All Devices)",
+      "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 1568,
       "qvs_sig_bytes": 2368,
-      "sha3_512": "a45481777f99426aaa0fd8a8de1ad8dd46d0e5497cdc784b657f8981d6a6205078aa534b6ec2d7006ab2bf6ed832ea78395324aef3e30395ad3f2380de702b22"
+      "sha3_512": "8f5b4b8eac23c145de278584a66c3d4795614f2bbb75c8129a5ad04580be44a3e346b4a98704f46002b809906a7fa913c2d974498f3d2201b4c7528525cdf5b4"
     },
     {
       "file": "kat_qlx2048_qvs128.json",
       "family": "structured_lattice",
       "suite_id": "QLX-2048",
       "suite_name": "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice \u2014 All Devices)",
+      "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 2976,
       "qvs_sig_bytes": 3904,
-      "sha3_512": "bccc86aa1864b902724881a5c3717ea4ad8382a347a812d19431503a4d950dfa2550c5dab9334f8e0924e4b7b59dbe80332d4920d9a7fe3d591d635aceb9d32b"
+      "sha3_512": "79cb21dee5e6f1404b4c582b4fd198bfa7d6c597f9fec45e741d313195c8646db7d19cd3bc56db275925d8dc70ee5d526bdc689953f1dc89a571251b8411950c"
     },
     {
       "file": "kat_qlx4096_qvs256.json",
       "family": "structured_lattice",
       "suite_id": "QLX-4096",
       "suite_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default \u2014 All Devices)",
+      "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 5792,
       "qvs_sig_bytes": 5440,
-      "sha3_512": "368ac858a16201294f839ea03abc63a5699798a565fdf29e99743ae11d23dee384ec78d708b360eaf31f593327d8c89c5e56b307de11c64d943bfdf17548ee86"
+      "sha3_512": "c7bf9760f526ba1c3614ae40a2c842d6c5a3b9d862397cb550576891073555cbd46e784eb7239d187890ea353ec22ff320ab2bb0bb43922a5da580167781ca6a"
     },
     {
       "file": "kat_qlx16384_qvs1024.json",
       "family": "structured_lattice",
       "suite_id": "QLX-16384",
       "suite_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold \u2014 HIGH-TIER HARDWARE ONLY)",
+      "wire_magic_hex": "895150450500",
       "qlx_ct_bytes": 23168,
       "qvs_sig_bytes": 10816,
-      "sha3_512": "b6cdb725b6da309c59e54b214c65d3388df5b5acf7c9187c982b68b8db679b5a6d90e9c172665979984e883aa39908d2cb87a0357d4632d01da2542fec630b9f"
+      "sha3_512": "376d702aa11bee5befb16e849f229c4e70bb8888b05473e24d2e5a5f7662af2ffaa74ed00d9cf8ae31697d4858c4f47940a30019e2ea64825b6e6a35abf3e1e5"
     },
     {
       "file": "kat_cif_sqi512.json",
       "family": "beyond_lwe",
       "suite_id": "CIF-SQI-512",
       "suite_name": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny \u2014 All Devices)",
-      "ct_bytes": 1025,
-      "sig_bytes": 4814,
-      "sha3_512": "448995a4c34c600f4aca7f1ccf193d00caed13f4bea5410edc28c6a3bdbaeb4406232dbf654a11114dd52db90a13409bd1b48bd106eeca53c1e0fba00acc8370"
+      "wire_magic_hex": "895150450500",
+      "ct_bytes": 970,
+      "sig_bytes": 4859,
+      "sha3_512": "2ad0877aa519f7c0f4f1d17f60ce739160cf194d6bdb4a8c1d6a197f32dec13ea89e59402fb86ee7a390c447ced6e20b13ea9e33a8f4921923330fd2cd106ec8"
     },
     {
       "file": "kat_crt_rsd512.json",
       "family": "beyond_lwe",
       "suite_id": "CRT-RSD512",
       "suite_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based \u2014 All Devices)",
-      "ct_bytes": 717,
-      "sig_bytes": 153,
-      "sha3_512": "7cb811e451d7e659bede0abf7b79835712b1e732cdcd2367e6b8bbf9576ae9312f9061509fad5fa46b6b86ba1224369cd50377d330bdea9d58566a73ec5ec79a"
+      "wire_magic_hex": "895150450500",
+      "ct_bytes": 2209,
+      "sig_bytes": 700,
+      "sha3_512": "35de326cc0a392587cfe19190af0a03aaed8f4eee8d59ed127d8ca7093d195a490952874869b896bc2e31bde4889489cd98dbdc9f15390384248bf97e81e1952"
     },
     {
       "file": "kat_cgm8192.json",
       "family": "beyond_lwe",
       "suite_id": "CGM-8192",
       "suite_name": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based \u2014 HIGH-TIER HARDWARE ONLY)",
-      "ct_bytes": 800,
-      "sig_bytes": 3175,
-      "sha3_512": "4f31275da74fd2a05ee41db65569b0fc524409e1803614c85fcca96bf7d84cd9f568c408febde29f6f738e45d8b424f6f499c8a3d28e9ca161976122b06152ff"
+      "wire_magic_hex": "895150450500",
+      "ct_bytes": 996,
+      "sig_bytes": 4756,
+      "sha3_512": "fd39c1fba864b7d08c295de04c546313216aee30db1bf5118b68fecbad58c69cb31f007c9e18717cf139e7452fee4c1f84b36c6257e609384116dab12776645f"
     },
     {
       "file": "kat_culc2048.json",
       "family": "beyond_lwe",
       "suite_id": "CULC-2048",
       "suite_name": "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa \u2014 HIGH-TIER HARDWARE ONLY)",
-      "ct_bytes": 3119,
-      "sig_bytes": 4864,
-      "sha3_512": "ef9c83ee110044279f04f7f846b04e61b941341ba902a44ddd1fe77405a42a15fee6bcd6ce1b9f09020fa4befd418291112057c1d485c0ee6acd8de4541e53eb"
+      "wire_magic_hex": "895150450500",
+      "ct_bytes": 3161,
+      "sig_bytes": 4934,
+      "sha3_512": "34042782a7dc06c9ddb47f638b25d39533e91738c11edde3abdd091bf10b821a729b5d35e94915c9e61541a0e68b1f53ccf07ac3c6a506d00df3a14ebdc72d6d"
     },
     {
       "file": "kat_csp_omega.json",
       "family": "beyond_lwe",
       "suite_id": "CSP-Omega",
       "suite_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel \u2014 HIGH-TIER HARDWARE ONLY)",
-      "ct_bytes": 3461,
-      "sig_bytes": 5413,
-      "sha3_512": "c74205ab2d49337276cd03bdf6c7e639e4ce294aaaefdef3112b652084e4a3ecac4cc7d5f8908a803c34504c6cec0885049030600d98eb3e96dd0fbac62fe8b3"
+      "wire_magic_hex": "895150450500",
+      "ct_bytes": 3434,
+      "sig_bytes": 5633,
+      "sha3_512": "e4c4f93c7d263cee5c78ef3741d2e408b5781eebeb1c68fab92cd989b613904b3e7b4665a7d1fa8c5640ab1d193c7fe1e5e4fba43a8ce20c7fae0268102bdf6d"
     }
   ]
 }

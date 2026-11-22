@@ -1,5 +1,5 @@
 """
-Active Secret Memory Scrubbing with Compiler-Barrier Zeroization (Release Candidate 1.0.0 / v1.0.0-rc).
+Active Secret Memory Scrubbing with Compiler-Barrier Zeroization (Official Release 1.0.0 / v1.0.0).
 Stores unpacked secret lattice vectors, private keys, and CC-512 session keys in mutable
 bytearray buffers and explicitly zeroes RAM via C99 compiler-barrier openqpep_explicit_bzero
 (when libopenqpep is loaded) and ctypes.memset upon exit.

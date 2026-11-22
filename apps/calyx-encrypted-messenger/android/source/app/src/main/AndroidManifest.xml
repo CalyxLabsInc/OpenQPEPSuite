@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) -->
+<!-- OpenQPEP v1.0.0 (Official Release 1.0.0) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.calyxlabs.qpem"
-    android:versionCode="25"
-    android:versionName="RC 1.0.0">
+    android:versionCode="26"
+    android:versionName="1.0.0">
 
     <uses-sdk
         android:minSdkVersion="29"

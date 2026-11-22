@@ -1,33 +1,33 @@
-# Calyx QPEP Client for Android, iOS & Desktop (`Release Candidate 1.0.0`)
+# Calyx QPEP Client for Android, iOS & Desktop (`Official Release 1.0.0`)
 
 **Official Client Application for [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)**  
 **Creator & Lead Architect:** **Tristen Martinez**, Founder & Lead Architect at **Calyx Labs Inc.** (`support@calyxlabsinc.org`)  
 **Core Protocol Repository:** [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)  
 **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)  
-**Package Name:** `com.calyxlabs.qpepclient` (`versionCode 225`, `versionName "RC 1.0.0"`)  
+**Package Name:** `com.calyxlabs.qpepclient` (`versionCode 225`, `versionName "1.0.0"`)  
 **Supported Android Versions:** Android 10 (`API 29`) through Android 17 (`API 37`, compliant with [Android Target SDK Requirements](https://targetsdk.com/))  
-**Universal Version:** `Release Candidate 1.0.0` (`1.0.0-rc`, `OpenQPEP/RC-1.0.0`)  
+**Universal Version:** `Official Release 1.0.0` (`1.0.0`, `OpenQPEP/1.0.0`)  
 **License:** **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**  
 
 ---
 
 ## 1. Overview
 
-**Calyx QPEP Client** (`Release Candidate 1.0.0`) is the official client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
+**Calyx QPEP Client** (`Official Release 1.0.0`) is the official client for **OpenQPEP by Calyx Labs Inc.** (the Open Quantum-Proof Encryption Protocol), engineered by **Tristen Martinez** at **Calyx Labs Inc.** as a clean-slate, post-quantum replacement for legacy OpenPGP (`RFC 4880`) and early post-quantum OpenPGP drafts ([IETF RFC 9980](https://datatracker.ietf.org/doc/html/rfc9980)).
 
-Unlike legacy PGP mobile clients that rely on quantum-vulnerable RSA/ECC keys, optional passphrases, collision-prone 64-bit Key IDs, and detached signatures, **Calyx QPEP Client** executes full on-device hybrid post-quantum lattice and Beyond-LWE cryptography across all 10 OpenQPEP suites, mandatory passphrase-locked key rings (`.qpkrf` with `kdf_version: 3`), dual-stream authenticated encryption (`CC-512` on Frozen Wire Format v4 `\x89QPE\x04\x00`), `QPEP-KT` Key Transparency Merkle inclusion proof verification, `LT-QR` air-gapped animated fountain codes, `FIDO2-PRF` hardware passkey binding, `DeniableVault` dual-volume steganographic containers, $t$-of-$n$ `ThresholdKEM`, and self-contained attached signatures.
+Unlike legacy PGP mobile clients that rely on quantum-vulnerable RSA/ECC keys, optional passphrases, collision-prone 64-bit Key IDs, and detached signatures, **Calyx QPEP Client** executes full on-device hybrid post-quantum lattice and Beyond-LWE cryptography across all 10 OpenQPEP suites, mandatory passphrase-locked key rings (`.qpkrf` with `kdf_version: 4`), dual-stream authenticated encryption (`CC-512` on Frozen Wire Format v5 `\x89QPE\x05\x00`), `QPEP-KT` Key Transparency Merkle inclusion proof verification, `LT-QR` air-gapped animated fountain codes, `FIDO2-PRF` hardware passkey binding, `DeniableVault` dual-volume steganographic containers, $t$-of-$n$ `ThresholdKEM`, and self-contained attached signatures.
 
 ---
 
-## 2. Direct APK Installation (`CalyxQPEPClient-RC-v1.0.0.apk`)
+## 2. Direct APK Installation (`CalyxQPEPClient-v1.0.0.apk`)
 
-1. Download **`CalyxQPEPClient-RC-v1.0.0.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
+1. Download **`CalyxQPEPClient-v1.0.0.apk`** from this repository (or the **Releases** tab) onto your Android device (running Android 10 through Android 17).
 2. Open the downloaded `.apk` file in your Android **Files** app and confirm installation.
 3. On first launch (or whenever your keyring has `0` keys), **Calyx QPEP Client** automatically opens the **Setup Wizard** so you can generate your first personal `.qpkrf` key pair or import an existing `.qpkrf` key ring.
 
 ---
 
-## 3. Core Features of Calyx QPEP Client (`Release Candidate 1.0.0`)
+## 3. Core Features of Calyx QPEP Client (`Official Release 1.0.0`)
 
 ### 3.1 On-Device Post-Quantum Key Generation & Hardware Keyring
 - **Three Selectable `QLX` + `QVS` Cryptographic Suites**:
@@ -50,7 +50,7 @@ Tapping any key card in **Manage My Keys** or **Manage Receiver Keys** opens the
 - **Genuine On-Device Cryptography**:
   - Encapsulates a 256-bit shared secret using the 7-layer Number Theoretic Transform (`NTT`, $\zeta = 17 \bmod 3329$) Module-LWE engine (`qlxEncaps`) with Fujisaki-Okamoto IND-CCA2 decapsulation (`qlxDecaps`).
   - Encrypts every 64 KiB frame twice in cascade through **14-round NIST `AES-256-GCM`** ($\text{GF}(2^{128})$ GHASH) and **20-round RFC 8439 `ChaCha20-Poly1305`** ($\bmod\ 2^{130}-5$), authenticated by a 512-bit `qSponge-512` (24-round `Keccak-f[1600]`) transcript MAC and terminal-frame truncation check (`final == 1`).
-  - Wraps all armored output in a `\x89QPE\x04\x00` (Frozen Wire Format v4) + `qSponge-XOF` whitened binary wire frame so raw Base64 decoding never exposes plaintext or JSON structure. Any legacy `-pc` (`\x89QPE\x03\x00`) or `-beta` packet is rejected with `QPEPLegacyProtocolError`.
+  - Wraps all armored output in a `\x89QPE\x05\x00` (Frozen Wire Format v5) + `qSponge-XOF` whitened binary wire frame so raw Base64 decoding never exposes plaintext or JSON structure. Any legacy `-pc` (`\x89QPE\x03\x00`) or `-beta` packet is rejected with `QPEPLegacyProtocolError`.
 
 ### 3.4 Attached Signatures Only (`QVS` Lattice Fiat-Shamir with Aborts)
 - **Create Attached Signature**: Unlocks your selected **Signing Key** with your passphrase and seals your message directly inside a `CALYX QPEP ATTACHED SIGNATURE` alongside an 8-layer NTT ($\zeta_Q = 1753 \bmod 8380417$) `QVS` lattice signature vector $\mathbf{z} = \mathbf{y} + c\mathbf{s}_1 \pmod{8380417}$ with rejection sampling ($\|\mathbf{z}\|_\infty < \gamma_1 - \beta$). Detached signatures are prohibited across OpenQPEP.
@@ -80,9 +80,9 @@ Tapping any key card in **Manage My Keys** or **Manage Receiver Keys** opens the
 - **OpenQPEP Protocol & CLI Repository**: [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
 - **Public Key Directory**: [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0-rc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
 
-Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 3`)**, and **Frozen Wire Format v4 (`\x89QPE\x04\x00`) / Compact TLV v4.1 (`\x89QPE\x04\x01`)**.
+Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Frozen Wire Format v5 (`\x89QPE\x05\x00`) / Compact Binary TLV v5.1 (`\x89QPE\x05\x01`)**.
 
 | Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
 | :--- | :--- | :--- | :--- | :--- |

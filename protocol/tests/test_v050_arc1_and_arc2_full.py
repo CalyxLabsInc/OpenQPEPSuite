@@ -10,7 +10,7 @@ from calyx_qpep.airgap.lt_fountain import QRFountainDecoder, QRFountainEncoder
 from calyx_qpep.audit.reproducible_build import generate_spdx_sbom
 from calyx_qpep.codes.goppa_suite import CalyxGoppaMonolithSuite
 from calyx_qpep.codes.rank_suite import CalyxRankMetricSuite
-from calyx_qpep.constants import PROTOCOL_VERSION, UNIVERSAL_VERSION, WIRE_MAGIC_V4_1
+from calyx_qpep.constants import PROTOCOL_VERSION, UNIVERSAL_VERSION, WIRE_MAGIC_V5_1
 from calyx_qpep.directory_kt.merkle_log import KeyTransparencyLog, verify_inclusion_proof
 from calyx_qpep.exceptions import QPEPMacVerificationError, QPEPSuiteError
 from calyx_qpep.group.mls_epoch import QPEPGroupMember, QPEPGroupSession
@@ -25,7 +25,7 @@ from calyx_qpep.threshold.tkem import ThresholdKEM
 from calyx_qpep.timelock.hash_chain_vdf import TimeLockCapsule
 from calyx_qpep.transport.ake_handshake import QPEPAKEHandshake, QPEPAKEIdentity
 from calyx_qpep.vault.blind_index import BlindSearchVault
-from calyx_qpep.wire.compact_v41 import pack_compact_v41, unpack_compact_v41
+from calyx_qpep.wire.compact_v51 import pack_compact_v51, unpack_compact_v51
 from calyx_qpep.zkp.lattice_sigma import LatticeZKProof
 
 
@@ -60,7 +60,7 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertTrue((REPO_ROOT / "rust/openqpep-core/Cargo.toml").is_file())
         self.assertTrue((REPO_ROOT / "rust/openqpep-core/src/ntt.rs").is_file())
         info = rust_backend_info()
-        self.assertEqual(info["version"], "1.0.0-rc")
+        self.assertEqual(info["version"], "1.0.0")
 
     def test_03_v033_qpep_mls_group_epoch_add_remove_eviction(self):
         alice = QPEPGroupMember.create("alice")
@@ -140,9 +140,9 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertEqual(len(hits), 1)
         self.assertEqual(hits[0][0], "note-1")
 
-        raw_v41 = pack_compact_v41({1: b"suite-qlx4096", 2: b"compact-payload"}, "CALYX QPEP COMPACT", packet_type=0x01)
-        self.assertTrue(raw_v41.startswith(WIRE_MAGIC_V4_1))
-        fields, ptype, _ = unpack_compact_v41(raw_v41, "CALYX QPEP COMPACT")
+        raw_v51 = pack_compact_v51({1: b"suite-qlx4096", 2: b"compact-payload"}, "CALYX QPEP COMPACT", packet_type=0x01)
+        self.assertTrue(raw_v51.startswith(WIRE_MAGIC_V5_1))
+        fields, ptype, _ = unpack_compact_v51(raw_v51, "CALYX QPEP COMPACT")
         self.assertEqual(ptype, 0x01)
         self.assertEqual(fields[2], b"compact-payload")
 
@@ -208,13 +208,13 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         dev_a.merge_encrypted_op(op2)
         self.assertEqual(dev_a.snapshot(), dev_b.snapshot())
 
-        # v1.0.0-rc Formal models, Go port, Spec freeze, SPDX SBOM
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0-rc")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/RC-1.0.0")
+        # v1.0.0 Formal models, Go port, Spec freeze, SPDX SBOM
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
         self.assertTrue((REPO_ROOT / "formal/qpep_ake.pv").is_file())
-        self.assertTrue((REPO_ROOT / "go/openqpep/wire_v4.go").is_file())
-        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.0.0-rc_RELEASE_CANDIDATE_SPEC.md").is_file())
-        sbom = generate_spdx_sbom(REPO_ROOT, version="1.0.0-rc")
+        self.assertTrue((REPO_ROOT / "go/openqpep/wire_v5.go").is_file())
+        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.0.0_OFFICIAL_RELEASE_SPEC.md").is_file())
+        sbom = generate_spdx_sbom(REPO_ROOT, version="1.0.0")
         self.assertEqual(sbom["dataLicense"], "CPOSLS-1.0")
         self.assertGreater(sbom["filesAnalyzed"], 40)
 

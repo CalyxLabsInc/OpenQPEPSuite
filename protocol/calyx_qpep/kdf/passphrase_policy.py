@@ -1,24 +1,22 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
 """
-Calyx QPEP Hardcoded Cryptographic Passphrase Gate (QPKD-Argon2id).
+Calyx QPEP Hardcoded Cryptographic Passphrase Gate (QPKD-Argon2id — Official Release 1.0.0).
 
-In Calyx QPEP, passphrases are NOT merely an optional UI check: the structural character-class
+In OpenQPEP, passphrases are NOT merely an optional UI check: the structural character-class
 witness of the passphrase (length >= 12, digits >= 2, specials >= 4, uppercase >= 2, lowercase >= 4)
 is mathematically absorbed into the QPKD-Argon2id key-derivation sponge. Without a compliant passphrase,
-the mathematical witness vector is zeroed and no QLX or QVS key material can be derived or unlocked.
+the mathematical witness vector cannot be constructed and no key material can be derived or unlocked.
 """
 import hashlib
 from dataclasses import dataclass
 from typing import List
+
+from ..exceptions import QPEPPassphrasePolicyError
 
 MIN_LENGTH = 12
 MIN_DIGITS = 2
 MIN_SPECIALS = 4
 MIN_UPPERCASE = 2
 MIN_LOWERCASE = 4
-
-
-from ..exceptions import QPEPPassphrasePolicyError
 
 
 @dataclass(frozen=True)
@@ -41,7 +39,7 @@ def analyze_passphrase(passphrase: str) -> PassphraseValidationResult:
             specials=0,
             uppercase=0,
             lowercase=0,
-            errors=["Passphrase is required in Calyx QPEP and cannot be empty."],
+            errors=["Passphrase is required in OpenQPEP and cannot be empty."],
         )
 
     digits = sum(1 for c in passphrase if "0" <= c <= "9")
@@ -79,18 +77,15 @@ def analyze_passphrase(passphrase: str) -> PassphraseValidationResult:
 
 def enforce_passphrase_policy(passphrase: str) -> bytes:
     """
-    Validates the mandatory Calyx QPEP passphrase policy and returns the 64-byte cryptographic
-    policy witness required by all QLX, QVS, and CC-512 key derivation operations.
-    Because the witness embeds the verified character-class sorted partitions, no key operation
-    can mathematically complete without a valid passphrase.
+    Validates the mandatory OpenQPEP passphrase policy and returns the 64-byte cryptographic
+    policy witness required by all QLX, QVS, Beyond-LWE, and CC-512 key derivation operations.
     """
     res = analyze_passphrase(passphrase)
     if not res.is_valid:
         raise QPEPPassphrasePolicyError(
-            "Calyx QPEP Mandatory Passphrase Policy Violation: " + " ".join(res.errors)
+            "OpenQPEP Mandatory Passphrase Policy Violation: " + " ".join(res.errors)
         )
 
-    # Partition characters by class so the cryptographic witness depends on all 4 character classes existing
     d_chars = "".join(c for c in passphrase if "0" <= c <= "9")[:2]
     u_chars = "".join(c for c in passphrase if "A" <= c <= "Z")[:2]
     l_chars = "".join(c for c in passphrase if "a" <= c <= "z")[:4]
@@ -100,7 +95,7 @@ def enforce_passphrase_policy(passphrase: str) -> bytes:
         raise QPEPPassphrasePolicyError("Cryptographic character-class witness construction failed.")
 
     witness_input = (
-        b"CALYX-QPEP-HARDCODED-POLICY-WITNESS-v1|"
+        b"CALYX-QPEP-HARDCODED-POLICY-WITNESS-v1.0.0|"
         + f"L>=12:{len(d_chars)>=2}:{len(s_chars)>=4}:{len(u_chars)>=2}:{len(l_chars)>=4}|".encode("ascii")
         + passphrase.encode("utf-8")
     )

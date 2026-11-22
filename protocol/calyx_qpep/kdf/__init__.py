@@ -1,4 +1,4 @@
-"""OpenQPEP Memory-Hard QPKD-Argon2id Key Derivation & Hardware Auto-Tuner (Release Candidate 1.0.0 / v1.0.0-rc)."""
+"""OpenQPEP Memory-Hard QPKD-Argon2id Key Derivation & Hardware Auto-Tuner (Official Release 1.0.0 / kdf_version: 4)."""
 from .passphrase_policy import (
     MIN_LENGTH, MIN_DIGITS, MIN_SPECIALS, MIN_UPPERCASE, MIN_LOWERCASE,
     QPEPPassphrasePolicyError, PassphraseValidationResult,
@@ -7,7 +7,7 @@ from .passphrase_policy import (
 from .hardware_tuner import KDFHardwareProfile, detect_system_ram_mib, select_kdf_profile, benchmark_kdf
 from .argon2id_cascade import (
     get_active_kdf_backend,
-    derive_qpkrf_keys_v3,
+    derive_qpkrf_keys_v4,
 )
 
 __all__ = [
@@ -15,5 +15,5 @@ __all__ = [
     "QPEPPassphrasePolicyError", "PassphraseValidationResult",
     "analyze_passphrase", "enforce_passphrase_policy",
     "KDFHardwareProfile", "detect_system_ram_mib", "select_kdf_profile", "benchmark_kdf",
-    "get_active_kdf_backend", "derive_qpkrf_keys_v3",
+    "get_active_kdf_backend", "derive_qpkrf_keys_v4",
 ]

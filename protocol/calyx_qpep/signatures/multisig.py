@@ -1,20 +1,20 @@
 """
-OpenQPEP m-of-n Threshold Multi-Party Cosigning Bundles (Release Candidate 1.0.0).
-Allows organizations, release maintainers, or security teams to require m-of-n independent
-conjunctive QVS + Ed448 signatures (e.g., 2-of-3 or 3-of-5) bound to the same canonical
-qSponge-512 payload digest and multisig policy—eliminating single points of compromise.
+OpenQPEP m-of-n Threshold Multi-Party Cosigning Bundles (Official Release 1.0.0 / Wire v5).
+Requires m-of-n independent conjunctive QVS + Ed448 signatures bound to the same canonical
+qSponge-512 payload digest and multisig policy.
 """
 import base64
 import datetime
 import json
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from ..constants import PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import PACKET_TYPE_MULTISIG, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..exceptions import QPEPKeyRingError, QPEPWireFormatError
 from ..lattice.qvs_dsa import QVSEngine
 from ..primitives.consttime import ct_eq
 from ..primitives.hgc448 import ed448_sign, ed448_verify
 from ..primitives.qsponge import qsponge_512
+from ..primitives.zeroize import SecretBuffer
 from ..protocol import OpenQPEPProtocol, QPEPKeyRing
 from ..wire.armor import armor_unwrap, armor_wrap
 from .attached import canonical_payload_digest
@@ -28,7 +28,6 @@ def create_multisig_policy(
     *,
     policy_name: str = "OpenQPEP Threshold Cosigning Policy",
 ) -> Dict[str, Any]:
-    """Creates a canonical m-of-n multisig policy binding threshold m and authorized Key Hashes."""
     hashes = sorted({kr.key_hash for kr in authorized_signers})
     n = len(hashes)
     if threshold < 1 or threshold > n:
@@ -40,7 +39,7 @@ def create_multisig_policy(
         "authorized_key_hashes": hashes,
     }
     policy_id = qsponge_512(
-        b"CALYX-QPEP-MULTISIG-POLICY-v1.0.0-rc|"
+        b"CALYX-QPEP-MULTISIG-POLICY-v1.0.0|"
         + json.dumps(policy_core, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hex()[:32].upper()
     policy_core["policy_id"] = policy_id
@@ -49,7 +48,7 @@ def create_multisig_policy(
 
 def _multisig_transcript(policy_id: str, threshold: int, payload_digest_hex: str) -> bytes:
     return qsponge_512(
-        f"CALYX-QPEP-MULTISIG-SIGN-v1.0.0-rc|{policy_id}|{threshold}|{payload_digest_hex}".encode("ascii")
+        f"CALYX-QPEP-MULTISIG-SIGN-v1.0.0|{policy_id}|{threshold}|{payload_digest_hex}".encode("ascii")
     )
 
 
@@ -61,10 +60,6 @@ def cosign_payload(
     *,
     existing_bundle: Optional[str] = None,
 ) -> str:
-    """
-    Signs `payload` under `policy` with signer_keyring's conjunctive QVS + Ed448 keys,
-    creating a new multisig bundle or appending to an existing bundle.
-    """
     if signer_keyring.key_hash not in policy["authorized_key_hashes"]:
         raise QPEPKeyRingError("Signer key_hash is not authorized under this multisig policy.")
 
@@ -94,8 +89,9 @@ def cosign_payload(
     priv = OpenQPEPProtocol.unlock_private_keys(signer_keyring, passphrase)
     transcript = _multisig_transcript(policy["policy_id"], int(policy["threshold"]), digest_hex)
     qvs_pk = base64.b64decode(signer_keyring.public_bundle["qvs_public_b64"])
-    sig_qvs = QVSEngine.sign(priv["qvs_private"], qvs_pk, transcript, tier=signer_keyring.qvs_tier)
-    sig_ed = ed448_sign(priv["hgc_sig_private"], transcript)
+    with SecretBuffer(priv["qvs_private"]) as qbuf, SecretBuffer(priv["hgc_sig_private"]) as ebuf:
+        sig_qvs = QVSEngine.sign(qbuf.as_bytes(), qvs_pk, transcript, tier=signer_keyring.qvs_tier)
+        sig_ed = ed448_sign(ebuf.as_bytes(), transcript)
 
     bundle["signatures"].append({
         "signer_key_hash": signer_keyring.key_hash,
@@ -105,7 +101,11 @@ def cosign_payload(
         "qvs_sig_b64": base64.b64encode(sig_qvs).decode("ascii"),
         "ed448_sig_b64": base64.b64encode(sig_ed).decode("ascii"),
     })
-    return armor_wrap(MULTISIG_ARMOR_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"))
+    return armor_wrap(
+        MULTISIG_ARMOR_LABEL,
+        json.dumps(bundle, separators=(",", ":")).encode("utf-8"),
+        packet_type=PACKET_TYPE_MULTISIG,
+    )
 
 
 def verify_multisig_bundle(
@@ -114,10 +114,6 @@ def verify_multisig_bundle(
     *,
     expected_payload: Optional[bytes] = None,
 ) -> Tuple[bool, Dict[str, Any]]:
-    """
-    Verifies an m-of-n OpenQPEP multisig bundle against authorized public key rings.
-    Deduplicates signers by key_hash and verifies conjunctive QVS + Ed448 signatures.
-    """
     raw_j, _ = armor_unwrap(armored_bundle, MULTISIG_ARMOR_LABEL)
     bundle = json.loads(raw_j.decode("utf-8"))
     if bundle.get("type") != "openqpep-multisig-bundle":

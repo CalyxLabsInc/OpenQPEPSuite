@@ -43,7 +43,7 @@ class TestOpenQPEPv022KATVectors(unittest.TestCase):
             self.assertEqual(data["qlx"]["actual_ct_qlx_bytes"], ct_len)
             self.assertEqual(data["qvs"]["actual_sig_bytes"], sig_len)
             self.assertFalse(data["wire_packet"]["cleartext_identity_headers_present"])
-            self.assertEqual(data["wire_packet"]["wire_magic_hex"], "895150450400")
+            self.assertEqual(data["wire_packet"]["wire_magic_hex"], "895150450500")
 
     def test_03_bit_exact_kat_verification_all_five_suites(self):
         ok, report = verify_all_kats(self.vectors_dir)

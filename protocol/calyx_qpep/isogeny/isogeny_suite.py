@@ -1,21 +1,20 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
 """
 Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)
-OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc) — Calyx Labs Inc. (CPOSLS-1.0).
+OpenQPEP Official Release 1.0.0 (v1.0.0) — Calyx Labs Inc. (CPOSLS-1.0).
 
-Combines 2D Supersingular Abelian Isogeny KEM (CIF-SQI-512) with Stateless Hash-Based Hypertree
-signatures (QHS-512) and Calyx-Cascade-512 (CC-512) over Frozen Wire Format v3 (\x89QPE\x03\x00).
-Ultra-compact keys & low working RAM (~16 MB) allow safe execution on all devices.
+Combines genuine CSIDH-512 Supersingular Isogeny KEM (CIF-SQI-512) with Stateless Hash-Based
+Hypertree signatures (QHS-512) and CMT-4 Key-Committing CC-512 over Official Wire Format v5 (\\x89QPE\\x05\\x00).
 """
 import base64
 import json
 import os
 from typing import Dict, Tuple
 
-from ..constants import PACKET_TYPE_SINGLE, PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import PACKET_TYPE_SIGNATURE, PACKET_TYPE_SINGLE, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..hashsig.qhs_512_hypertree import QHS512HypertreeEngine
 from ..primitives.cc512_aead import cc512_decrypt, cc512_encrypt
 from ..primitives.qsponge import qsponge_512
+from ..primitives.zeroize import SecretBuffer
 from ..wire.armor import armor_unwrap, armor_wrap
 from .sqi_2d_512 import SupersingularIsogenyEngine
 
@@ -41,7 +40,7 @@ class CalyxIsogenyForgeSuite:
             "qhs_pk_b64": b64(qhs_pk),
         }
         pub["key_hash"] = qsponge_512(
-            b"CALYX-CIF-SQI512-KH|" + json.dumps(pub, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            b"CALYX-CIF-SQI512-KH-v1.0.0|" + json.dumps(pub, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hex()[:64].upper()
         priv = {
             "key_hash": pub["key_hash"],
@@ -53,9 +52,9 @@ class CalyxIsogenyForgeSuite:
     @staticmethod
     def encrypt(plaintext: bytes, recipient_pub: Dict[str, str]) -> str:
         ct_iso, ss = SupersingularIsogenyEngine.encaps(base64.b64decode(recipient_pub["isogeny_pk_b64"]))
-        key64 = qsponge_512(b"CALYX-CIF-SQI512-CC512|" + ss + ct_iso)
-        n24 = os.urandom(24)
-        ct = cc512_encrypt(key64, n24, plaintext, b"CIF-SQI-512")
+        with SecretBuffer(qsponge_512(b"CALYX-CIF-SQI512-CC512-v1.0.0|" + ss + ct_iso)) as key_buf:
+            n24 = os.urandom(24)
+            ct = cc512_encrypt(key_buf.as_bytes(), n24, plaintext, b"CALYX-CIF-SQI-512-v1.0.0")
         pkt = {
             "type": "openqpep-isogeny-forge-packet",
             "version": UNIVERSAL_VERSION,
@@ -73,8 +72,13 @@ class CalyxIsogenyForgeSuite:
         pkt = json.loads(raw.decode("utf-8"))
         ct_iso = base64.b64decode(pkt["ct_iso_b64"])
         ss = SupersingularIsogenyEngine.decaps(base64.b64decode(recipient_priv["isogeny_sk_b64"]), ct_iso)
-        key64 = qsponge_512(b"CALYX-CIF-SQI512-CC512|" + ss + ct_iso)
-        return cc512_decrypt(key64, base64.b64decode(pkt["nonce24_b64"]), base64.b64decode(pkt["ct_b64"]), b"CIF-SQI-512")
+        with SecretBuffer(qsponge_512(b"CALYX-CIF-SQI512-CC512-v1.0.0|" + ss + ct_iso)) as key_buf:
+            return cc512_decrypt(
+                key_buf.as_bytes(),
+                base64.b64decode(pkt["nonce24_b64"]),
+                base64.b64decode(pkt["ct_b64"]),
+                b"CALYX-CIF-SQI-512-v1.0.0",
+            )
 
     @staticmethod
     def sign(message: bytes, signer_priv: Dict[str, str]) -> str:
@@ -82,20 +86,24 @@ class CalyxIsogenyForgeSuite:
         bundle = {
             "type": "openqpep-isogeny-forge-signature",
             "version": UNIVERSAL_VERSION,
+            "protocol": PROTOCOL_VERSION,
             "suite": CalyxIsogenyForgeSuite.SUITE_NAME,
             "message_b64": base64.b64encode(message).decode("ascii"),
             "sig_qhs_b64": base64.b64encode(sig_qhs).decode("ascii"),
         }
-        return armor_wrap(CIF_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"))
+        return armor_wrap(CIF_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"), packet_type=PACKET_TYPE_SIGNATURE)
 
     @staticmethod
     def verify(armored_sig: str, signer_pub: Dict[str, str]) -> Tuple[bool, bytes]:
-        raw, _ = armor_unwrap(armored_sig, CIF_SIG_LABEL)
-        bundle = json.loads(raw.decode("utf-8"))
-        msg = base64.b64decode(bundle["message_b64"])
-        ok = QHS512HypertreeEngine.verify(
-            base64.b64decode(signer_pub["qhs_pk_b64"]),
-            msg,
-            base64.b64decode(bundle["sig_qhs_b64"]),
-        )
-        return bool(ok), msg
+        try:
+            raw, _ = armor_unwrap(armored_sig, CIF_SIG_LABEL)
+            bundle = json.loads(raw.decode("utf-8"))
+            msg = base64.b64decode(bundle["message_b64"])
+            ok = QHS512HypertreeEngine.verify(
+                base64.b64decode(signer_pub["qhs_pk_b64"]),
+                msg,
+                base64.b64decode(bundle["sig_qhs_b64"]),
+            )
+            return bool(ok), (msg if ok else b"")
+        except Exception:
+            return False, b""

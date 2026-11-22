@@ -1,4 +1,4 @@
-> **OpenQPEP `v1.0.0-rc` Release Candidate Mapping Note:** This research thesis documents the original design derivation for the Beyond-LWE suites. In production (`v1.0.0-rc`), all 10 suites are implemented and exposed under their canonical names (`Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512`, `Calyx Unstructured-Citadel: CULC-2048 + CGM-8192`, `Calyx Sovereign-Pentad: CSP-Omega + QHS-512`, `Calyx Goppa-Monolith: CGM-8192 + QHS-512`, `Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512`).
+> **OpenQPEP `v1.2.0-pc` Production Mapping Note:** This research thesis documents the original design derivation for the Beyond-LWE suites. In production (`v1.2.0-pc`), all 10 suites are implemented and exposed under their canonical names (`Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512`, `Calyx Unstructured-Citadel: CULC-2048 + CGM-8192`, `Calyx Sovereign-Pentad: CSP-Omega + QHS-512`, `Calyx Goppa-Monolith: CGM-8192 + QHS-512`, `Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512`).
 
 # OpenQPEP Generation II-B: Implementable Flagship Beyond-LWE Hypothetical Key Tiers (`NextGen_ImplementableHypothetical_KeyTiers_Thesis.md`)
 
@@ -26,17 +26,17 @@ This thesis defines **five brand-new hypothetical OpenQPEP Key Tiers** that sati
 
 | Hypothetical Key Tier | Non-LWE / Beyond-LWE Hardness Family | Public Key / CT / Sig Sizes | Peak RAM on Z Fold 8 | Est. Flagship Latency (Native ARMv9) | Why It Beats Module-LWE (`Hyper-Tesseract`) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Calyx Goppa-Monolith (`CGM-8192 + QHS-512`)** | **NP-Complete Binary Goppa Syndrome Decoding** ($n=8192, t=128$) + **Stateless `qSponge-512` Hypertree** | `1.35 MB` PK / `240 B` CT / `49.8 KB` Sig | `~14 MB` | `~3 ms` Decaps / `~85 ms` Sign | Zero lattice geometry, zero polynomial rings, 48+ years unbroken (since 1978), pure hash-only signature unforgeability |
-| **Calyx Isogeny-Forge (`CIF-SQI-512 + QHS-512`)** | **2D/4D Supersingular Abelian Isogeny Path-Finding & Quaternion `EndRing`** over $\mathbb{F}_{p^2}$ ($\log_2 p = 512$) | `256 B` PK / `512 B` CT / `368 B` Sig | `~16 MB` | `~180 ms` Keygen / `~260 ms` Sign | Non-linear algebraic geometry over quaternion orders; immune to all lattice sieving, BKZ, and linear algebra attacks; ultra-compact keys |
-| **Calyx Rank-Metric Tensor (`CRT-RSD512 + QMQ-512`)** | **Rank-Metric Syndrome Decoding (`RSD`)** over $\mathbb{F}_{2^{127}}$ + **NP-Complete Multivariate Quadratic (`MQ` / `MAYO-512`)** | `18.4 KB` PK / `1.4 KB` CT / `512 B` Sig | `~8 MB` | `~12 ms` Decaps / `~9 ms` Sign | Combines two completely non-lattice NP-hard algebraic families (Rank-Metric codes + MQ systems) with fast ARM64 `PMULL` execution |
-| **Calyx Unstructured-Citadel (`CULC-2048 + CGM-8192`)** | **Zero-Ring Unstructured Plain-LWE** ($\mathbb{Z}_{2^{16}}^{2048 \times 2048}$) $\oplus$ **Binary Goppa Codes** + **`QHS-512` Hypertree** | `1.39 MB` PK / `34.1 KB` CT / `49.8 KB` Sig | `~22 MB` | `~110 ms` Encaps / `~125 ms` Decaps | Erases all cyclotomic ideal/Galois ring symmetries *and* requires breaking both unstructured worst-case SIVP lattices AND NP-complete Goppa codes |
-| **Calyx Sovereign-Pentad (`CSP-Omega` 5-Family Combiner)** | **Simultaneous 5-Family Fusion:** Plain-LWE + Binary Goppa + 2D Isogeny + `MQ` + Stateless `qSponge-512` Hypertree | `1.42 MB` PK / `36.2 KB` CT / `50.7 KB` Sig | `~42 MB` | `~390 ms` Parallel (6–8 ARMv9 Cores) | **Zero Single-Family Failure:** Remains unbroken even if lattices, codes, isogenies, *and* MQ all fall simultaneously (falls back to `qSponge-512` + `CC-512`) |
+| **Tier 6: `Calyx Goppa-Monolith` (`CGM-8192 + QHS-512`)** | **NP-Complete Binary Goppa Syndrome Decoding** ($n=8192, t=128$) + **Stateless `qSponge-512` Hypertree** | `1.35 MB` PK / `240 B` CT / `49.8 KB` Sig | `~14 MB` | `~3 ms` Decaps / `~85 ms` Sign | Zero lattice geometry, zero polynomial rings, 48+ years unbroken (since 1978), pure hash-only signature unforgeability |
+| **Tier 7: `Calyx Isogeny-Forge` (`CIF-SQI-512 + QHS-512`)** | **2D/4D Supersingular Abelian Isogeny Path-Finding & Quaternion `EndRing`** over $\mathbb{F}_{p^2}$ ($\log_2 p = 512$) | `256 B` PK / `512 B` CT / `368 B` Sig | `~16 MB` | `~180 ms` Keygen / `~260 ms` Sign | Non-linear algebraic geometry over quaternion orders; immune to all lattice sieving, BKZ, and linear algebra attacks; ultra-compact keys |
+| **Tier 8: `Calyx Rank-Metric Tensor` (`CRT-RSD512 + QMQ-512`)** | **Rank-Metric Syndrome Decoding (`RSD`)** over $\mathbb{F}_{2^{127}}$ + **NP-Complete Multivariate Quadratic (`MQ` / `MAYO-512`)** | `18.4 KB` PK / `1.4 KB` CT / `512 B` Sig | `~8 MB` | `~12 ms` Decaps / `~9 ms` Sign | Combines two completely non-lattice NP-hard algebraic families (Rank-Metric codes + MQ systems) with fast ARM64 `PMULL` execution |
+| **Tier 9: `Calyx Unstructured-Citadel` (`CULC-2048 + CGM-8192`)** | **Zero-Ring Unstructured Plain-LWE** ($\mathbb{Z}_{2^{16}}^{2048 \times 2048}$) $\oplus$ **Binary Goppa Codes** + **`QHS-512` Hypertree** | `1.39 MB` PK / `34.1 KB` CT / `49.8 KB` Sig | `~22 MB` | `~110 ms` Encaps / `~125 ms` Decaps | Erases all cyclotomic ideal/Galois ring symmetries *and* requires breaking both unstructured worst-case SIVP lattices AND NP-complete Goppa codes |
+| **Tier 10: `Calyx Sovereign-Pentad` (`CSP-Ω` 5-Family Combiner)** | **Simultaneous 5-Family Fusion:** Plain-LWE + Binary Goppa + 2D Isogeny + `MQ` + Stateless `qSponge-512` Hypertree | `1.42 MB` PK / `36.2 KB` CT / `50.7 KB` Sig | `~42 MB` | `~390 ms` Parallel (6–8 ARMv9 Cores) | **Zero Single-Family Failure:** Remains unbroken even if lattices, codes, isogenies, *and* MQ all fall simultaneously (falls back to `qSponge-512` + `CC-512`) |
 
 ---
 
 ## 3. Deep-Dive Mathematical Specifications & Flagship Implementation Blueprints
 
-### Suite A: `Calyx Goppa-Monolith` (`CGM-8192 + QHS-512`)
+### Tier 6: `Calyx Goppa-Monolith` (`CGM-8192 + QHS-512`)
 #### 1. Mathematical Foundation (Beyond LWE)
 `Calyx Goppa-Monolith` removes lattice assumptions entirely, replacing Module-LWE with the **Binary Goppa Syndrome Decoding Problem** (the conservative 1978 McEliece family) and replacing Lattice Fiat-Shamir signatures with a **Stateless Hash-Based Hypertree (`QHS-512`)** over 24-round `qSponge-512` (`SHA3-512`):
 
@@ -54,7 +54,7 @@ This thesis defines **five brand-new hypothetical OpenQPEP Key Tiers** that sati
 
 ---
 
-### Suite B: `Calyx Isogeny-Forge` (`CIF-SQI-512 + QHS-512`)
+### Tier 7: `Calyx Isogeny-Forge` (`CIF-SQI-512 + QHS-512`)
 #### 1. Mathematical Foundation (Beyond LWE)
 `Calyx Isogeny-Forge` moves into **Non-Abelian Algebraic Geometry** over supersingular elliptic curves and higher-dimensional abelian surfaces—completely disjoint from both lattices and error-correcting codes:
 
@@ -71,7 +71,7 @@ This thesis defines **five brand-new hypothetical OpenQPEP Key Tiers** that sati
 
 ---
 
-### Suite C: `Calyx Rank-Metric Tensor` (`CRT-RSD512 + QMQ-512`)
+### Tier 8: `Calyx Rank-Metric Tensor` (`CRT-RSD512 + QMQ-512`)
 #### 1. Mathematical Foundation (Beyond LWE)
 `Calyx Rank-Metric Tensor` fuses two completely independent NP-hard algebraic problems—**Rank-Metric Decoding** (for KEM) and **Multivariate Quadratic Equations** (for Signatures):
 
@@ -90,7 +90,7 @@ This thesis defines **five brand-new hypothetical OpenQPEP Key Tiers** that sati
 
 ---
 
-### Suite D: `Calyx Unstructured-Citadel` (`CULC-2048 + CGM-8192`)
+### Tier 9: `Calyx Unstructured-Citadel` (`CULC-2048 + CGM-8192`)
 #### 1. Mathematical Foundation (Eliminating Ring Symmetry + Dual-Family Lock)
 Even if an attacker finds an algebraic symmetry break against **every** structured polynomial ring (`Ring-LWE`, `Module-LWE`, `NTRU`, `HAWK-256`)—like the July 2026 [Claude Mythos Preview](https://www.anthropic.com/research/discovering-cryptographic-weaknesses) attack—**Unstructured Plain-LWE** has **zero polynomial ring, zero cyclotomic ideal, and zero Galois automorphisms**!
 
@@ -109,7 +109,7 @@ Even if an attacker finds an algebraic symmetry break against **every** structur
 
 ---
 
-### Suite E: `Calyx Sovereign-Pentad` (`CSP-Omega` — Five-Family Cryptographic Citadel)
+### Tier 10: `Calyx Sovereign-Pentad` (`CSP-Ω` — Five-Family Cryptographic Citadel)
 #### 1. Mathematical Foundation (Zero Single-Family Failure)
 `Calyx Sovereign-Pentad` (`CSP-Ω`) is the ultimate flagship-implementable post-quantum key tier: a **simultaneous 5-family conjunctive combiner** engineered so that **no single mathematical breakthrough—or even four simultaneous breakthroughs—can compromise confidentiality or authenticity**:
 

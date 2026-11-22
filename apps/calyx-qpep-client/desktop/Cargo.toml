@@ -1,6 +1,6 @@
 [package]
 name = "calyx-qpep-client-desktop"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 edition = "2021"
 license = "LicenseRef-CPOSLS-1.0"
 description = "Calyx QPEP Client Native Desktop App (Linux .AppImage/.deb, macOS .dmg, Windows .msi) powered by Tauri + openqpep-core"

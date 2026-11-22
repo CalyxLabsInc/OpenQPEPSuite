@@ -1,50 +1,45 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Interactive Blue-Text English-Command CLI (Release Candidate 1.0.0)
+OpenQPEP Interactive Blue-Text English-Command & Production Scriptable CLI (Official Release 1.0.0)
 Project: OpenQPEP by Calyx Labs Inc. (Creator: Tristen Martinez)
 Repository: https://github.com/CalyxLabsInc/OpenQPEP/
 Directory: https://qpepkeys.calyxlabsinc.org
 
 Supports both:
 1. Interactive Blue-Themed English-Command Shell (default when invoked with no arguments
-   or with `--interactive`), allowing users to run natural commands such as:
-   - `Create Key`
-   - `List Keys`
-   - `Key Details <KeyName>`
-   - `Export Public <KeyName>`
-   - `Export Private <KeyName>`
-   - `Import Key` / `Import Key <FilePath.qpkrf>`
-   - `Delete Key <KeyName>`
-   - `Encrypt Text` / `Decrypt Text`
-   - `Encrypt File` / `Decrypt File`
-   - `Create Signature` / `Verify Signature`
-   - `Publish Key <KeyName>` / `Search Directory <Query>`
-   - `Help` / `Exit`
-2. Non-interactive flag subcommands (`check-passphrase`, `keygen`, `--version`) for CI/scripts.
+   or with `--interactive`).
+2. Full scriptable non-interactive PGP-replacement subcommands:
+   `keygen`, `encrypt`, `decrypt`, `sign`, `verify`, `inspect`, `fingerprint`,
+   `revoke`, `verify-vectors`, `check-passphrase`, `audit`, `--version`.
 """
+import argparse
+import base64
+import getpass
+import json
 import os
 import sys
-from .constants import ALL_TEN_SUITES
-import json
-import getpass
-import argparse
-import urllib.request
 import urllib.parse
+import urllib.request
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
-from .protocol import (
-    OpenQPEPProtocol,
-    QPEPKeyRing,
+from .constants import (
+    ALL_TEN_SUITES,
+    LEGACY_BETA_WIRE_MAGICS,
+    LEGACY_PC_WIRE_MAGICS,
+    LEGACY_RC_WIRE_MAGICS,
+    MANDATORY_KDF_VERSION,
     PROJECT_NAME,
-    UNIVERSAL_VERSION,
-    UNIVERSAL_VERSION_LABEL,
     PROTOCOL_VERSION,
     QPKRF_EXTENSION,
+    UNIVERSAL_VERSION,
+    UNIVERSAL_VERSION_LABEL,
+    WIRE_MAGIC_V5,
+    WIRE_MAGIC_V5_1,
 )
-from .passphrase import analyze_passphrase, QPEPPassphrasePolicyError
+from .passphrase import QPEPPassphrasePolicyError, analyze_passphrase
+from .protocol import OpenQPEPProtocol, QPEPKeyRing
 
-# ANSI Blue & Cyan styling for the interactive OpenQPEP terminal shell
 BLUE = "\033[94m"
 CYAN = "\033[96m"
 BOLD_BLUE = "\033[1;94m"
@@ -59,24 +54,21 @@ DIRECTORY_BASE_URL = os.environ.get("OPENQPEP_DIRECTORY_URL", "https://qpepkeys.
 
 
 def bprint(text: str = "") -> None:
-    """Prints text in OpenQPEP signature blue."""
     print(f"{BLUE}{text}{RESET}")
 
 
 def binput(prompt_text: str) -> str:
-    """Prompts user with blue prompt text."""
     return input(f"{BOLD_CYAN}{prompt_text}{RESET} ").strip()
 
 
 def bpass(prompt_text: str, use_stdin_if_piped: bool = True) -> str:
-    """Prompts for passphrase (uses input() when stdin is piped in tests, getpass in TTY)."""
     if use_stdin_if_piped and not sys.stdin.isatty():
         return input(f"{BOLD_CYAN}{prompt_text}{RESET} ").strip()
     return getpass.getpass(f"{BOLD_CYAN}{prompt_text}{RESET} ").strip()
 
 
 class OpenQPEPKeyStore:
-    """Persistent local keyring manager for the OpenQPEP Interactive CLI."""
+    """Persistent local keyring manager with strict 0o700/0o600 filesystem permissions."""
 
     def __init__(self, path: Path = DEFAULT_KEYSTORE_PATH):
         self.path = path
@@ -94,13 +86,23 @@ class OpenQPEPKeyStore:
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.chmod(self.path.parent, 0o700)
+        except OSError:
+            pass
         self.path.write_text(json.dumps(self.keys, indent=2), encoding="utf-8")
+        try:
+            os.chmod(self.path, 0o600)
+        except OSError:
+            pass
 
     def add_or_update(self, kr: QPEPKeyRing, pub_armor: str, priv_armor: Optional[str]) -> None:
+        suite_id = OpenQPEPProtocol.get_keyring_suite_id(kr)
         entry = {
             "key_hash": kr.key_hash,
             "name": kr.name,
             "email": kr.email,
+            "suite_id": suite_id,
             "qlx_tier": kr.qlx_tier,
             "qvs_tier": kr.qvs_tier,
             "comment": kr.comment,
@@ -117,12 +119,10 @@ class OpenQPEPKeyStore:
         q = query.strip().lower()
         if not q:
             return None
-        # Check 1-based numeric index first
         if q.isdigit():
             idx = int(q) - 1
             if 0 <= idx < len(self.keys):
                 return self.keys[idx]
-        # Exact name, email, or key_hash match
         for k in self.keys:
             if (
                 k["name"].lower() == q
@@ -130,7 +130,6 @@ class OpenQPEPKeyStore:
                 or k["key_hash"].lower().startswith(q)
             ):
                 return k
-        # Substring match
         for k in self.keys:
             if q in k["name"].lower() or q in k["email"].lower():
                 return k
@@ -152,7 +151,7 @@ def print_banner(store: OpenQPEPKeyStore) -> None:
     bprint("  • Export Private <KeyName>        -> Unlock & export a private .qpkrf key ring file")
     bprint("  • Import Key <FilePath.qpkrf>     -> Import a public or private .qpkrf file")
     bprint("  • Delete Key <KeyName>            -> Delete a key from your local keyring")
-    bprint("  • Encrypt Text                    -> Encrypt a message using QLX + HGC-448 + CC-512")
+    bprint("  • Encrypt Text                    -> Encrypt a message using CMT-4 CC-512 & Wire v5")
     bprint("  • Decrypt Text                    -> Decrypt an OpenQPEP packet & verify sender")
     bprint("  • Encrypt File                    -> Encrypt any file into a .qpep packet")
     bprint("  • Decrypt File                    -> Decrypt a .qpep file packet")
@@ -162,7 +161,7 @@ def print_banner(store: OpenQPEPKeyStore) -> None:
     bprint("  • Search Directory <Query>        -> Search qpepkeys.calyxlabsinc.org by name/email/hash")
     bprint("  • Switch Suite                    -> Select active suite (1-10) with hardware-tier badges")
     bprint("  • Benchmark All 10                -> Run live benchmark across all 10 canonical suites")
-    bprint("  • Inspect Packet [FilePath]       -> Inspect Wire v3/v3.1 magic, armor headers & size")
+    bprint("  • Inspect Packet [FilePath]       -> Inspect Official Wire v5/v5.1 magic, armor & size")
     bprint("  • Help                            -> Show this command guide again")
     bprint("  • Exit                            -> Close the OpenQPEP CLI")
     bprint("--------------------------------------------------------------------------------")
@@ -195,7 +194,8 @@ def _select_key_interactive(store: OpenQPEPKeyStore, prompt_title: str, require_
     bprint(f"\n{prompt_title}:")
     for idx, k in enumerate(candidates, start=1):
         tag = "Personal Key Pair" if k.get("has_private") else "Receiver Public Key"
-        bprint(f"  {idx}. {k['name']} <{k['email']}> [{k['qlx_tier']} | {tag} | Hash: {k['key_hash'][:16]}...]")
+        sid = k.get("suite_id") or k["qlx_tier"]
+        bprint(f"  {idx}. {k['name']} <{k['email']}> [{sid} | {tag} | Hash: {k['key_hash'][:16]}...]")
     choice = binput("Choose key number or enter Key Name / Email / Hash (press Enter for 1):") or "1"
     if choice.isdigit() and 1 <= int(choice) <= len(candidates):
         return candidates[int(choice) - 1]
@@ -209,28 +209,27 @@ def _select_key_interactive(store: OpenQPEPKeyStore, prompt_title: str, require_
 
 def _publish_entry_to_directory(entry: Dict[str, Any]) -> bool:
     url = f"{DIRECTORY_BASE_URL.rstrip('/')}/api/v1/keys/publish"
-    payload = json.dumps(
-        {
-            "key_hash": entry["key_hash"],
-            "name": entry["name"],
-            "email": entry["email"],
-            "suite": f"{entry['qlx_tier']} + {entry['qvs_tier']}",
-            "public_qpkrf": entry["pub_armor"],
-        }
-    ).encode("utf-8")
+    sid = entry.get("suite_id") or entry["qlx_tier"]
+    payload = json.dumps({
+        "key_hash": entry["key_hash"],
+        "name": entry["name"],
+        "email": entry["email"],
+        "suite": sid if sid in ALL_TEN_SUITES else f"{entry['qlx_tier']} + {entry['qvs_tier']}",
+        "public_qpkrf": entry["pub_armor"],
+    }).encode("utf-8")
     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
             out = json.loads(resp.read().decode("utf-8"))
             print(f"{GREEN}Published to {DIRECTORY_BASE_URL}: {out.get('message', 'OK')}{RESET}")
             return True
-    except Exception as exc:
-        print(f"{YELLOW}Could not reach {DIRECTORY_BASE_URL} right now ({exc}). Your key is saved locally and can be published anytime with 'Publish Key {entry['name']}'.{RESET}")
+    except (OSError, ValueError, RuntimeError) as exc:
+        print(f"{YELLOW}Could not reach {DIRECTORY_BASE_URL} right now ({exc}). Saved locally.{RESET}")
         return False
 
 
 def cmd_create_key(store: OpenQPEPKeyStore) -> None:
-    bprint("\n--- OpenQPEP Guided Key Generation (v1.0.0-rc) ---")
+    bprint(f"\n--- OpenQPEP Guided Key Generation ({UNIVERSAL_VERSION_LABEL}) ---")
     bprint("Specify Key Type:")
     bprint("  1. Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)")
     bprint("  2. Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)")
@@ -244,22 +243,12 @@ def cmd_create_key(store: OpenQPEPKeyStore) -> None:
     bprint(" 10. Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)")
     t_choice = binput("Enter option number (1-10, default 1):") or "1"
     tier_map = {
-        "1": "QLX-4096",
-        "2": "QLX-768",
-        "3": "QLX-1024",
-        "4": "QLX-2048",
-        "5": "CIF-SQI-512",
-        "6": "CRT-RSD512",
-        "7": "QLX-16384",
-        "8": "CGM-8192",
-        "9": "CULC-2048",
-        "10": "CSP-Omega",
+        "1": "QLX-4096", "2": "QLX-768", "3": "QLX-1024", "4": "QLX-2048", "5": "CIF-SQI-512",
+        "6": "CRT-RSD512", "7": "QLX-16384", "8": "CGM-8192", "9": "CULC-2048", "10": "CSP-Omega",
     }
-    qlx_tier = tier_map.get(t_choice.strip(), "QLX-4096")
-    high_tier_suites = {"QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega"}
-    if qlx_tier in high_tier_suites:
-        bprint(f"  [!] HARDWARE NOTICE: {qlx_tier} is classified as HIGH-TIER HARDWARE ONLY (>= 12 GB RAM).")
-        bprint("      Low-RAM devices (<= 6 GB) may experience slow keygen, thermal throttling, or OOM crashes.")
+    selected_suite = tier_map.get(t_choice.strip(), "QLX-4096")
+    if ALL_TEN_SUITES.get(selected_suite, {}).get("high_tier_only"):
+        bprint(f"  [!] HARDWARE NOTICE: {selected_suite} is classified as HIGH-TIER HARDWARE ONLY (>= 12 GB RAM).")
 
     name = ""
     while not name:
@@ -270,13 +259,9 @@ def cmd_create_key(store: OpenQPEPKeyStore) -> None:
     comment = binput("Set Key Comment (optional, press Enter for 'OpenQPEP by Calyx Labs Inc.'):") or PROJECT_NAME
     passphrase = _prompt_valid_passphrase("Set Key Passphrase", confirm=True)
 
-    bprint(f"Generating {qlx_tier} Module-LWE + Fiat-Shamir with Aborts + HGC-448 key pair...")
+    bprint(f"Generating {ALL_TEN_SUITES[selected_suite]['display_name']} key pair...")
     kr = OpenQPEPProtocol.generate_keypair(
-        name=name,
-        email=email,
-        passphrase=passphrase,
-        qlx_tier=qlx_tier,
-        comment=comment,
+        name=name, email=email, passphrase=passphrase, qlx_tier=selected_suite, comment=comment,
     )
     pub_armor = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
     priv_armor = OpenQPEPProtocol.export_qpkrf(kr, passphrase=passphrase, include_private=True)
@@ -284,7 +269,7 @@ def cmd_create_key(store: OpenQPEPKeyStore) -> None:
 
     print(f"{GREEN}Successfully generated OpenQPEP Key Pair!{RESET}")
     bprint(f"  Owner:      {kr.name} <{kr.email}>")
-    bprint(f"  Suite:      {kr.qlx_tier} + {kr.qvs_tier} + HGC-448 / CC-512")
+    bprint(f"  Suite:      {ALL_TEN_SUITES[OpenQPEPProtocol.get_keyring_suite_id(kr)]['display_name']}")
     bprint(f"  Key Hash:   {kr.key_hash}")
 
     pub_ans = binput("Publish Public Key to OpenQPEP Directory (https://qpepkeys.calyxlabsinc.org)? (yes/no, default no):").lower()
@@ -299,8 +284,9 @@ def cmd_list_keys(store: OpenQPEPKeyStore) -> None:
     bprint(f"\n--- OpenQPEP Keyring ({len(store.keys)} key(s)) ---")
     for idx, k in enumerate(store.keys, start=1):
         kind = "Personal Key Pair (Public + Encrypted Private)" if k.get("has_private") else "Receiver Key (Public Only)"
+        sid = k.get("suite_id") or k["qlx_tier"]
         bprint(f"  [{idx}] {k['name']} <{k['email']}>")
-        bprint(f"      Type:     {kind} | Suite: {k['qlx_tier']} + {k['qvs_tier']}")
+        bprint(f"      Type:     {kind} | Suite: {sid}")
         bprint(f"      Key Hash: {k['key_hash']}")
 
 
@@ -310,14 +296,15 @@ def cmd_key_details(store: OpenQPEPKeyStore, arg: str) -> None:
         print(f"{RED}Key '{arg}' not found in keyring.{RESET}")
         return
     grouped_hash = " ".join(entry["key_hash"][i : i + 4] for i in range(0, len(entry["key_hash"]), 4))
+    sid = entry.get("suite_id") or entry["qlx_tier"]
     bprint("\n================================================================================")
     bprint(f"OpenQPEP Key Details — {entry['name']} <{entry['email']}>")
     bprint("================================================================================")
-    bprint(f"  Protocol Version: {UNIVERSAL_VERSION_LABEL} ({PROJECT_NAME})")
-    bprint(f"  Key Status:       Healthy (RFC 9106 QPKD-Argon2id + qSponge-512 [kdf_version: 3] + CC-512 Protected)")
-    bprint(f"  Key Suite:        {entry['qlx_tier']} + {entry['qvs_tier']} + HGC-448")
+    bprint(f"  Protocol Version: {UNIVERSAL_VERSION_LABEL} ({PROTOCOL_VERSION})")
+    bprint(f"  Key Status:       Healthy (RFC 9106 QPKD-Argon2id + qSponge-512 [kdf_version: {MANDATORY_KDF_VERSION}] + CMT-4 CC-512)")
+    bprint(f"  Key Suite:        {ALL_TEN_SUITES.get(sid, {}).get('display_name', sid)}")
     bprint(f"  Created At:       {entry['created_at']}")
-    bprint(f"  Private Key:      {'Present (Locked with RFC 9106 QPKD-Argon2id + qSponge-512 [kdf_version: 3] + CC-512)' if entry.get('has_private') else 'Not Present (Public Key Only)'}")
+    bprint(f"  Private Key:      {'Present (Locked with QPKD-Argon2id [kdf_version: 4] + CMT-4 CC-512)' if entry.get('has_private') else 'Not Present (Public Key Only)'}")
     bprint(f"  Key Hash:         {grouped_hash}")
     bprint("\n--- QPKRF Public Key Block ---")
     bprint(entry["pub_armor"].strip())
@@ -326,20 +313,17 @@ def cmd_key_details(store: OpenQPEPKeyStore, arg: str) -> None:
 
 def cmd_export_key(store: OpenQPEPKeyStore, is_private: bool, key_query: str) -> None:
     entry = store.find_key(key_query) if key_query else _select_key_interactive(
-        store,
-        f"Select Key to Export ({'Private' if is_private else 'Public'} .qpkrf)",
-        require_private=is_private,
+        store, f"Select Key to Export ({'Private' if is_private else 'Public'} .qpkrf)", require_private=is_private,
     )
     if not entry:
         print(f"{RED}Key '{key_query}' not found in keyring.{RESET}")
         return
-
     safe_name = "".join(c if c.isalnum() or c in ("-", "_") else "_" for c in entry["name"]).strip("_") or "openqpep_key"
     default_file = f"{safe_name}_{'private' if is_private else 'public'}.qpkrf"
 
     if is_private:
         if not entry.get("has_private") or not entry.get("priv_armor"):
-            print(f"{RED}Key '{entry['name']}' is a public-only receiver key and has no private key to export.{RESET}")
+            print(f"{RED}Key '{entry['name']}' is a public-only receiver key.{RESET}")
             return
         pw = bpass(f"Enter Passphrase to Unlock and Export Private Key '{entry['name']}':")
         try:
@@ -349,7 +333,7 @@ def cmd_export_key(store: OpenQPEPKeyStore, is_private: bool, key_query: str) ->
                 out_path_str += QPKRF_EXTENSION
             OpenQPEPProtocol.export_qpkrf(kr, passphrase=pw, include_private=True, output_path=out_path_str)
             print(f"{GREEN}Exported Private Key Ring to {out_path_str}{RESET}")
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, RuntimeError) as exc:
             print(f"{RED}Private Key Export Failed: {exc}{RESET}")
     else:
         out_path_str = binput(f"Output file path (press Enter for '{default_file}'):") or default_file
@@ -367,17 +351,14 @@ def cmd_import_key(store: OpenQPEPKeyStore, path_arg: str) -> None:
         return
     raw_text = p.read_text(encoding="utf-8")
     is_priv = "PRIVATE KEY RING" in raw_text
-    pw = None
-    if is_priv:
-        pw = bpass("Enter Mandatory Passphrase for this Private .qpkrf Key Ring:")
+    pw = bpass("Enter Mandatory Passphrase for this Private .qpkrf Key Ring:") if is_priv else None
     try:
         kr = OpenQPEPProtocol.import_qpkrf(raw_text, passphrase=pw)
         pub_armor = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
-        priv_armor = raw_text if is_priv else None
-        store.add_or_update(kr, pub_armor, priv_armor)
+        store.add_or_update(kr, pub_armor, raw_text if is_priv else None)
         kind = "Personal Key Pair" if is_priv else "Receiver Public Key"
         print(f"{GREEN}Imported {kind}: {kr.name} <{kr.email}> (Key Hash: {kr.key_hash}){RESET}")
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}Import Failed: {exc}{RESET}")
 
 
@@ -412,7 +393,7 @@ def cmd_encrypt_text(store: OpenQPEPKeyStore) -> None:
         if save_path:
             Path(save_path).write_text(pkt, encoding="utf-8")
             print(f"{GREEN}Saved encrypted packet to {save_path}{RESET}")
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}Encryption Failed: {exc}{RESET}")
 
 
@@ -434,11 +415,12 @@ def cmd_decrypt_text(store: OpenQPEPKeyStore) -> None:
         dec_kr = OpenQPEPProtocol.import_qpkrf(dec_entry["priv_armor"], passphrase=pw)
         pt_bytes, meta = OpenQPEPProtocol.decrypt_packet(armored, recipient_private_keyring=dec_kr, passphrase=pw)
         print(f"{GREEN}\nDecryption & Integrity Verification Successful!{RESET}")
-        bprint(f"  Encrypting Key Hash: {meta.get('encrypting_key_hash')}")
-        bprint(f"  Plaintext qSponge:   {meta.get('plaintext_qsponge_512')[:32]}...")
+        bprint(f"  Encrypting Key Hash: {meta.get('encrypting_key_hash') or '(Unbound)'}")
+        digest_hex = str(meta.get("plaintext_qsponge_512") or "")
+        bprint(f"  Plaintext qSponge:   {digest_hex[:32]}...")
         bprint("\n--- Decrypted Plaintext ---")
         bprint(pt_bytes.decode("utf-8", errors="replace"))
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}Decryption Failed: {exc}{RESET}")
 
 
@@ -460,15 +442,11 @@ def cmd_encrypt_file(store: OpenQPEPKeyStore) -> None:
         sender_kr = OpenQPEPProtocol.import_qpkrf(sender_entry["priv_armor"], passphrase=pw)
         recip_kr = OpenQPEPProtocol.import_qpkrf(recip_entry["pub_armor"])
         pkt = OpenQPEPProtocol.encrypt_bytes(
-            in_path.read_bytes(),
-            recipient_keyring=recip_kr,
-            encrypting_keyring=sender_kr,
-            passphrase=pw,
-            filename=in_path.name,
+            in_path.read_bytes(), recipient_keyring=recip_kr, encrypting_keyring=sender_kr, passphrase=pw, filename=in_path.name,
         )
         out_path.write_text(pkt, encoding="utf-8")
         print(f"{GREEN}Encrypted '{in_path.name}' -> '{out_path}'{RESET}")
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}File Encryption Failed: {exc}{RESET}")
 
 
@@ -484,15 +462,13 @@ def cmd_decrypt_file(store: OpenQPEPKeyStore) -> None:
     try:
         dec_kr = OpenQPEPProtocol.import_qpkrf(dec_entry["priv_armor"], passphrase=pw)
         pt_bytes, meta = OpenQPEPProtocol.decrypt_packet(
-            in_path.read_text(encoding="utf-8"),
-            recipient_private_keyring=dec_kr,
-            passphrase=pw,
+            in_path.read_text(encoding="utf-8"), recipient_private_keyring=dec_kr, passphrase=pw,
         )
-        default_out = meta.get("filename") or "decrypted_output.bin"
+        default_out = Path(str(meta.get("filename") or "decrypted_output.bin")).name
         out_path = Path(binput(f"Enter Output File Path (default '{default_out}'):") or default_out).expanduser()
         out_path.write_bytes(pt_bytes)
         print(f"{GREEN}Decrypted file saved to '{out_path}' ({len(pt_bytes)} bytes){RESET}")
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}File Decryption Failed: {exc}{RESET}")
 
 
@@ -507,7 +483,7 @@ def cmd_create_signature(store: OpenQPEPKeyStore) -> None:
         sig_armor = OpenQPEPProtocol.sign_text(msg, signer_private_keyring=signer_kr, passphrase=pw)
         bprint("\n--- Armored OpenQPEP Attached Signature ---")
         bprint(sig_armor.strip())
-    except Exception as exc:
+    except (OSError, ValueError, TypeError, RuntimeError) as exc:
         print(f"{RED}Signing Failed: {exc}{RESET}")
 
 
@@ -552,11 +528,8 @@ def cmd_search_directory(query: str) -> None:
             for idx, k in enumerate(keys, start=1):
                 bprint(f"  [{idx}] {k['name']} <{k['email']}> ({k['suite']})")
                 bprint(f"      Key Hash: {k['key_hash']}")
-    except Exception as exc:
+    except (OSError, ValueError, RuntimeError) as exc:
         print(f"{YELLOW}Directory search error ({DIRECTORY_BASE_URL}): {exc}{RESET}")
-
-
-
 
 
 ACTIVE_CLI_SUITE = "QLX-4096"
@@ -588,7 +561,7 @@ def cmd_switch_suite() -> str:
 
 def cmd_benchmark_all_10() -> None:
     bprint("\n--- OpenQPEP Live Benchmark: All 10 Canonical Suites ---")
-    from benchmarks.bench_suites import run_benchmarks, format_markdown_table
+    from benchmarks.bench_suites import format_markdown_table, run_benchmarks
     rows = run_benchmarks(include_heavy=True)
     for r in rows:
         badge = f"{YELLOW}[HIGH-TIER >= 12 GB RAM]{RESET}" if "HIGH-TIER" in r["hardware_tier"] else f"{GREEN}[ALL DEVICES]{RESET}"
@@ -597,8 +570,7 @@ def cmd_benchmark_all_10() -> None:
 
 
 def cmd_inspect_packet(raw_or_path: str = "") -> None:
-    import base64
-    bprint("\n--- OpenQPEP Packet & Wire Format Inspector (v1.0.0-rc) ---")
+    bprint(f"\n--- OpenQPEP Packet & Wire Format Inspector ({UNIVERSAL_VERSION_LABEL}) ---")
     data_str = raw_or_path.strip()
     if data_str and Path(data_str).is_file():
         data_str = Path(data_str).read_text(encoding="utf-8", errors="ignore")
@@ -622,12 +594,18 @@ def cmd_inspect_packet(raw_or_path: str = "") -> None:
     except (OSError, ValueError, TypeError, RuntimeError):
         pass
     magic = raw_bytes[:6]
-    wire_label = (
-        f"{GREEN}Frozen Wire Format v4 / RC-1.0.0 (\\x89QPE\\x04\\x00){RESET}" if magic == b"\x89QPE\x04\x00"
-        else f"{GREEN}Compact TLV v4.1 / RC-1.0.0 (\\x89QPE\\x04\\x01){RESET}" if magic == b"\x89QPE\x04\x01"
-        else f"{RED}REJECTED Legacy -pc Wire v3/v3.1 ({magic.hex().upper()}){RESET}" if magic in (b"\x89QPE\x03\x00", b"\x89QPE\x03\x01")
-        else f"{CYAN}Armored OpenQPEP / Beyond-LWE Envelope{RESET}"
-    )
+    if magic == WIRE_MAGIC_V5:
+        wire_label = f"{GREEN}Official Release 1.0.0 Wire Format v5 (\\x89QPE\\x05\\x00){RESET}"
+    elif magic == WIRE_MAGIC_V5_1:
+        wire_label = f"{GREEN}Official Release 1.0.0 Compact TLV v5.1 (\\x89QPE\\x05\\x01){RESET}"
+    elif magic in LEGACY_RC_WIRE_MAGICS:
+        wire_label = f"{RED}REJECTED Legacy Release Candidate (-rc) Wire v4/v4.1 ({magic.hex().upper()}){RESET}"
+    elif magic in LEGACY_PC_WIRE_MAGICS:
+        wire_label = f"{RED}REJECTED Legacy Production Candidate (-pc) Wire v3/v3.1 ({magic.hex().upper()}){RESET}"
+    elif magic in LEGACY_BETA_WIRE_MAGICS:
+        wire_label = f"{RED}REJECTED Legacy Beta (-beta) Wire ({magic.hex().upper()}){RESET}"
+    else:
+        wire_label = f"{RED}Unrecognized / Non-Official Wire Format ({magic.hex().upper() if magic else 'N/A'}){RESET}"
     print(f"  Armor Header: {headers[0] if headers else '(Raw Binary)'}")
     print(f"  Wire Format:  {wire_label}")
     print(f"  Decoded Size: {len(raw_bytes):,} bytes | Magic Hex: {magic.hex().upper() if magic else 'N/A'}")
@@ -636,7 +614,7 @@ def cmd_inspect_packet(raw_or_path: str = "") -> None:
 def cmd_verify_vectors(vectors_dir: str = "") -> int:
     from .vectors.kat_verifier import verify_all_kats
     target = Path(vectors_dir) if vectors_dir else (Path(__file__).resolve().parent.parent / "vectors")
-    bprint(f"Verifying OpenQPEP Deterministic KAT Vectors in: {target}")
+    bprint(f"Verifying OpenQPEP Official Release 1.0.0 Deterministic KAT Vectors in: {target}")
     ok, lines = verify_all_kats(target)
     for line in lines:
         print(f"{GREEN if line.startswith('[PASS]') else RED}{line}{RESET}")
@@ -645,6 +623,7 @@ def cmd_verify_vectors(vectors_dir: str = "") -> int:
         return 0
     print(f"{RED}[FAIL] One or more OpenQPEP KAT suites failed verification.{RESET}")
     return 1
+
 
 def interactive_shell(keystore_path: Path = DEFAULT_KEYSTORE_PATH) -> int:
     store = OpenQPEPKeyStore(keystore_path)
@@ -655,11 +634,9 @@ def interactive_shell(keystore_path: Path = DEFAULT_KEYSTORE_PATH) -> int:
         except (EOFError, KeyboardInterrupt):
             bprint("\nExiting OpenQPEP CLI.")
             return 0
-
         if not raw_cmd:
             continue
         low = raw_cmd.lower().strip()
-
         if low in ("exit", "quit", "q"):
             bprint("Exiting OpenQPEP CLI.")
             return 0
@@ -673,18 +650,11 @@ def interactive_shell(keystore_path: Path = DEFAULT_KEYSTORE_PATH) -> int:
             arg = raw_cmd.split(None, 2)[2] if len(raw_cmd.split()) >= 3 else ""
             cmd_key_details(store, arg)
         elif low.startswith("export public"):
-            arg = raw_cmd[len("export public") :].strip()
-            cmd_export_key(store, is_private=False, key_query=arg)
+            cmd_export_key(store, is_private=False, key_query=raw_cmd[len("export public") :].strip())
         elif low.startswith("export private"):
-            arg = raw_cmd[len("export private") :].strip()
-            cmd_export_key(store, is_private=True, key_query=arg)
-        elif low.startswith("export private/public"):
-            arg = raw_cmd[len("export private/public") :].strip()
-            which = binput("Export (1) Public Key or (2) Private Key? Enter 1 or 2:")
-            cmd_export_key(store, is_private=(which == "2" or "priv" in which.lower()), key_query=arg)
+            cmd_export_key(store, is_private=True, key_query=raw_cmd[len("export private") :].strip())
         elif low.startswith("import key"):
-            arg = raw_cmd[len("import key") :].strip()
-            cmd_import_key(store, arg)
+            cmd_import_key(store, raw_cmd[len("import key") :].strip())
         elif low.startswith("delete key") or low.startswith("remove key"):
             arg = raw_cmd.split(None, 2)[2] if len(raw_cmd.split()) >= 3 else ""
             cmd_delete_key(store, arg)
@@ -710,16 +680,11 @@ def interactive_shell(keystore_path: Path = DEFAULT_KEYSTORE_PATH) -> int:
         elif low in ("benchmark all 10", "benchmark", "bench"):
             cmd_benchmark_all_10()
         elif low.startswith("inspect packet"):
-            arg = raw_cmd[len("inspect packet") :].strip()
-            cmd_inspect_packet(arg)
+            cmd_inspect_packet(raw_cmd[len("inspect packet") :].strip())
         elif low.startswith("search directory"):
-            arg = raw_cmd[len("search directory") :].strip()
-            cmd_search_directory(arg)
+            cmd_search_directory(raw_cmd[len("search directory") :].strip())
         else:
-            bprint(
-                f"Unrecognized command '{raw_cmd}'. Type 'Create Key', 'List Keys', 'Export Public <KeyName>', "
-                f"'Export Private <KeyName>', 'Encrypt Text', 'Decrypt Text', 'Create Signature', 'Verify Signature', or 'Help'."
-            )
+            bprint(f"Unrecognized command '{raw_cmd}'. Type 'Help' for all OpenQPEP commands.")
 
 
 def main(argv=None) -> int:
@@ -741,13 +706,53 @@ def main(argv=None) -> int:
 
     p_vv = sub.add_parser("verify-vectors", help="Verify OpenQPEP deterministic Known Answer Test (KAT) vectors")
     p_vv.add_argument("vectors_dir", nargs="?", default="", help="Optional path to vectors/ directory")
+
     p_kg = sub.add_parser("keygen", help="Generate a new OpenQPEP key pair and export .qpkrf files")
     p_kg.add_argument("--name", required=True)
     p_kg.add_argument("--email", required=True)
     p_kg.add_argument("--passphrase", required=True)
-    p_kg.add_argument("--tier", default="QLX-4096", choices=["QLX-4096", "QLX-768", "QLX-1024", "QLX-2048", "CIF-SQI-512", "CRT-RSD512", "QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega"])
+    p_kg.add_argument("--tier", default="QLX-4096", choices=list(ALL_TEN_SUITES.keys()))
     p_kg.add_argument("--pub-out", required=True)
     p_kg.add_argument("--priv-out", required=True)
+
+    p_enc = sub.add_parser("encrypt", help="Encrypt a file to a recipient .qpkrf public key")
+    p_enc.add_argument("--recipient", required=True, help="Recipient public .qpkrf path")
+    p_enc.add_argument("--sender", required=True, help="Sender private .qpkrf path")
+    p_enc.add_argument("--passphrase", required=True)
+    p_enc.add_argument("--in", dest="in_file", required=True)
+    p_enc.add_argument("--out", dest="out_file", required=True)
+
+    p_dec = sub.add_parser("decrypt", help="Decrypt a .qpep packet using recipient private .qpkrf")
+    p_dec.add_argument("--key", required=True, help="Recipient private .qpkrf path")
+    p_dec.add_argument("--sender-pub", default="", help="Optional sender public .qpkrf path")
+    p_dec.add_argument("--passphrase", required=True)
+    p_dec.add_argument("--in", dest="in_file", required=True)
+    p_dec.add_argument("--out", dest="out_file", required=True)
+
+    p_sig = sub.add_parser("sign", help="Create an Attached OpenQPEP Signature over a file")
+    p_sig.add_argument("--key", required=True, help="Signer private .qpkrf path")
+    p_sig.add_argument("--passphrase", required=True)
+    p_sig.add_argument("--in", dest="in_file", required=True)
+    p_sig.add_argument("--out", dest="out_file", required=True)
+
+    p_ver = sub.add_parser("verify", help="Verify an Attached OpenQPEP Signature against signer public .qpkrf")
+    p_ver.add_argument("--key", required=True, help="Signer public .qpkrf path")
+    p_ver.add_argument("--in", dest="in_file", required=True)
+    p_ver.add_argument("--extract-out", default="", help="Optional path to write verified extracted payload")
+
+    p_fp = sub.add_parser("fingerprint", help="Print the verified 64-character Key Hash of a .qpkrf file")
+    p_fp.add_argument("qpkrf_path")
+
+    p_ins = sub.add_parser("inspect", help="Inspect Wire Format v5/v5.1 magic & armor headers of a packet")
+    p_ins.add_argument("packet_path")
+
+    p_rev = sub.add_parser("revoke", help="Generate a self-authenticating .qrev revocation certificate")
+    p_rev.add_argument("--key", required=True, help="Master private .qpkrf path")
+    p_rev.add_argument("--passphrase", required=True)
+    p_rev.add_argument("--reason", default="KEY_COMPROMISED", choices=["KEY_COMPROMISED", "KEY_SUPERSEDED", "KEY_RETIRED"])
+    p_rev.add_argument("--out", dest="out_file", required=True)
+
+    sub.add_parser("audit", help="Run OpenQPEP self-audit (attack simulator + 5-language interop + timing checks)")
 
     args = parser.parse_args(argv)
     if args.interactive or not args.cmd:
@@ -764,6 +769,57 @@ def main(argv=None) -> int:
         OpenQPEPProtocol.export_qpkrf(kr, passphrase=args.passphrase, include_private=True, output_path=args.priv_out)
         bprint(f"Generated OpenQPEP Key Hash: {kr.key_hash}")
         return 0
+    if args.cmd == "encrypt":
+        recip_kr = OpenQPEPProtocol.import_qpkrf(args.recipient)
+        sender_kr = OpenQPEPProtocol.import_qpkrf(args.sender, passphrase=args.passphrase)
+        OpenQPEPProtocol.encrypt_file(args.in_file, recip_kr, sender_kr, args.passphrase, output_path=args.out_file)
+        bprint(f"Encrypted -> {args.out_file}")
+        return 0
+    if args.cmd == "decrypt":
+        dec_kr = OpenQPEPProtocol.import_qpkrf(args.key, passphrase=args.passphrase)
+        sender_pub = OpenQPEPProtocol.import_qpkrf(args.sender_pub) if args.sender_pub else None
+        _pt, out_p, meta = OpenQPEPProtocol.decrypt_file(
+            args.in_file, dec_kr, args.passphrase, output_path_or_dir=args.out_file, sender_public_keyring=sender_pub,
+        )
+        bprint(f"Decrypted -> {out_p} | signature_verified={meta.get('signature_verified')}")
+        return 0
+    if args.cmd == "sign":
+        signer_kr = OpenQPEPProtocol.import_qpkrf(args.key, passphrase=args.passphrase)
+        sig = OpenQPEPProtocol.sign_bytes(Path(args.in_file).read_bytes(), signer_kr, args.passphrase)
+        Path(args.out_file).write_text(sig, encoding="utf-8")
+        bprint(f"Signed -> {args.out_file}")
+        return 0
+    if args.cmd == "verify":
+        pub_kr = OpenQPEPProtocol.import_qpkrf(args.key)
+        ok, payload, _ = OpenQPEPProtocol.verify_signature(Path(args.in_file).read_text(encoding="utf-8"), signer_public_keyring=pub_kr)
+        if ok and payload is not None:
+            if args.extract_out:
+                Path(args.extract_out).write_bytes(payload)
+            bprint(f"VERIFIED: {pub_kr.key_hash} ({len(payload)} bytes)")
+            return 0
+        print(f"{RED}VERIFICATION FAILED{RESET}")
+        return 1
+    if args.cmd == "fingerprint":
+        kr = OpenQPEPProtocol.import_qpkrf(args.qpkrf_path)
+        print(kr.key_hash)
+        return 0
+    if args.cmd == "inspect":
+        cmd_inspect_packet(args.packet_path)
+        return 0
+    if args.cmd == "revoke":
+        from .keyring.revocation import create_revocation_certificate
+        kr = OpenQPEPProtocol.import_qpkrf(args.key, passphrase=args.passphrase)
+        qrev = create_revocation_certificate(kr, args.passphrase, reason=args.reason)
+        Path(args.out_file).write_text(qrev, encoding="utf-8")
+        bprint(f"Revocation certificate written -> {args.out_file}")
+        return 0
+    if args.cmd == "audit":
+        from .audit import run_all_attack_simulations, run_cross_language_interop_matrix
+        atk = run_all_attack_simulations()
+        iop = run_cross_language_interop_matrix()
+        ok = bool(atk["all_passed"] and iop["all_passed"])
+        print(json.dumps({"attack_simulations": atk, "interop_matrix": iop, "all_passed": ok}, indent=2))
+        return 0 if ok else 1
     return 0
 
 

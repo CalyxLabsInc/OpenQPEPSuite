@@ -1,10 +1,9 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
 """
 Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)
-OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc) — Calyx Labs Inc. (CPOSLS-1.0).
+OpenQPEP Official Release 1.0.0 (v1.0.0) — Calyx Labs Inc. (CPOSLS-1.0).
 
-Fuses Zero-Ring Unstructured Plain-LWE (CULC-2048) with NP-Complete Binary Goppa Codes (CGM-8192),
-Stateless qSponge-512 Hypertree signatures (QHS-512), and CC-512 over Frozen Wire Format v3.
+Fuses Zero-Ring Unstructured Plain-LWE (CULC-2048) with Genuine Binary Goppa Patterson Codes (CGM-8192),
+Stateless qSponge-512 Hypertree signatures (QHS-512), and CMT-4 Key-Committing CC-512 over Official Wire Format v5.
 Enforces the >= 12 GB RAM flagship hardware guardrail.
 """
 import base64
@@ -14,12 +13,13 @@ import os
 from typing import Dict, Tuple
 
 from ..codes.goppa_8192 import BinaryGoppaKEM
-from ..constants import PACKET_TYPE_SINGLE, PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import PACKET_TYPE_SIGNATURE, PACKET_TYPE_SINGLE, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..exceptions import QPEPSuiteError
 from ..hashsig.qhs_512_hypertree import QHS512HypertreeEngine
 from ..kdf.hardware_tuner import detect_system_ram_mib
 from ..primitives.cc512_aead import cc512_decrypt, cc512_encrypt
 from ..primitives.qsponge import qsponge_512
+from ..primitives.zeroize import SecretBuffer
 from ..wire.armor import armor_unwrap, armor_wrap
 from .plain_lwe import PlainLWEEngine
 
@@ -54,12 +54,13 @@ class CalyxUnstructuredCitadelSuite:
             "suite_id": CalyxUnstructuredCitadelSuite.SUITE_ID,
             "suite": CalyxUnstructuredCitadelSuite.SUITE_NAME,
             "version": UNIVERSAL_VERSION,
+            "wire_format": "v5",
             "plain_lwe_pk_b64": b64(lwe_pk),
             "goppa_pk_b64": b64(gop_pk),
             "qhs_pk_b64": b64(qhs_pk),
         }
         pub["key_hash"] = qsponge_512(
-            b"CALYX-CULC2048-KH|" + json.dumps(pub, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            b"CALYX-CULC2048-KH-v1.0.0|" + json.dumps(pub, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hex()[:64].upper()
         priv = {
             "key_hash": pub["key_hash"],
@@ -78,13 +79,14 @@ class CalyxUnstructuredCitadelSuite:
             ct_gop, ss_gop = f_gop.result()
 
         transcript = qsponge_512(ct_lwe + ct_gop)
-        key64 = qsponge_512(b"CALYX-CULC2048-CC512|" + ss_lwe + ss_gop + transcript)
-        n24 = os.urandom(24)
-        ct = cc512_encrypt(key64, n24, plaintext, b"CULC-2048+CGM-8192")
+        with SecretBuffer(qsponge_512(b"CALYX-CULC2048-CC512-v1.0.0|" + ss_lwe + ss_gop + transcript)) as key_buf:
+            n24 = os.urandom(24)
+            ct = cc512_encrypt(key_buf.as_bytes(), n24, plaintext, b"CALYX-CULC-2048+CGM-8192-v1.0.0")
         pkt = {
             "type": "openqpep-unstructured-citadel-packet",
             "version": UNIVERSAL_VERSION,
             "protocol": PROTOCOL_VERSION,
+            "wire_format": "v5",
             "suite": CalyxUnstructuredCitadelSuite.SUITE_NAME,
             "ct_lwe_b64": base64.b64encode(ct_lwe).decode("ascii"),
             "ct_goppa_b64": base64.b64encode(ct_gop).decode("ascii"),
@@ -105,8 +107,13 @@ class CalyxUnstructuredCitadelSuite:
             ss_lwe = f_lwe.result()
             ss_gop = f_gop.result()
         transcript = qsponge_512(ct_lwe + ct_gop)
-        key64 = qsponge_512(b"CALYX-CULC2048-CC512|" + ss_lwe + ss_gop + transcript)
-        return cc512_decrypt(key64, base64.b64decode(pkt["nonce24_b64"]), base64.b64decode(pkt["ct_b64"]), b"CULC-2048+CGM-8192")
+        with SecretBuffer(qsponge_512(b"CALYX-CULC2048-CC512-v1.0.0|" + ss_lwe + ss_gop + transcript)) as key_buf:
+            return cc512_decrypt(
+                key_buf.as_bytes(),
+                base64.b64decode(pkt["nonce24_b64"]),
+                base64.b64decode(pkt["ct_b64"]),
+                b"CALYX-CULC-2048+CGM-8192-v1.0.0",
+            )
 
     @staticmethod
     def sign(message: bytes, signer_priv: Dict[str, str]) -> str:
@@ -114,20 +121,25 @@ class CalyxUnstructuredCitadelSuite:
         bundle = {
             "type": "openqpep-unstructured-citadel-signature",
             "version": UNIVERSAL_VERSION,
+            "protocol": PROTOCOL_VERSION,
+            "wire_format": "v5",
             "suite": CalyxUnstructuredCitadelSuite.SUITE_NAME,
             "message_b64": base64.b64encode(message).decode("ascii"),
             "sig_qhs_b64": base64.b64encode(sig_qhs).decode("ascii"),
         }
-        return armor_wrap(CITADEL_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"))
+        return armor_wrap(CITADEL_SIG_LABEL, json.dumps(bundle, separators=(",", ":")).encode("utf-8"), packet_type=PACKET_TYPE_SIGNATURE)
 
     @staticmethod
     def verify(armored_sig: str, signer_pub: Dict[str, str]) -> Tuple[bool, bytes]:
-        raw, _ = armor_unwrap(armored_sig, CITADEL_SIG_LABEL)
-        bundle = json.loads(raw.decode("utf-8"))
-        msg = base64.b64decode(bundle["message_b64"])
-        ok = QHS512HypertreeEngine.verify(
-            base64.b64decode(signer_pub["qhs_pk_b64"]),
-            msg,
-            base64.b64decode(bundle["sig_qhs_b64"]),
-        )
-        return bool(ok), msg
+        try:
+            raw, _ = armor_unwrap(armored_sig, CITADEL_SIG_LABEL)
+            bundle = json.loads(raw.decode("utf-8"))
+            msg = base64.b64decode(bundle["message_b64"])
+            ok = QHS512HypertreeEngine.verify(
+                base64.b64decode(signer_pub["qhs_pk_b64"]),
+                msg,
+                base64.b64decode(bundle["sig_qhs_b64"]),
+            )
+            return bool(ok), (msg if ok else b"")
+        except Exception:
+            return False, b""

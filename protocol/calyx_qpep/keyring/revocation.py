@@ -1,5 +1,5 @@
 """
-OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Release Candidate 1.0.0).
+OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Official Release 1.0.0 / Wire v5).
 Supports offline revocation certificates signed conjunctively by the Master QVS + Ed448
 identity key with standardized reason codes: KEY_COMPROMISED, KEY_SUPERSEDED, KEY_RETIRED.
 """
@@ -8,11 +8,12 @@ import datetime
 import json
 from typing import Any, Dict, Optional, Tuple
 
-from ..constants import PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import PACKET_TYPE_KEYRING, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..exceptions import QPEPKeyRingError, QPEPWireFormatError
 from ..lattice.qvs_dsa import QVSEngine
 from ..primitives.hgc448 import ed448_sign, ed448_verify
 from ..primitives.qsponge import qsponge_512
+from ..primitives.zeroize import SecretBuffer
 from ..protocol import OpenQPEPProtocol, QPEPKeyRing
 from ..wire.armor import armor_unwrap, armor_wrap
 
@@ -22,7 +23,7 @@ REVOCATION_REASONS = ("KEY_COMPROMISED", "KEY_SUPERSEDED", "KEY_RETIRED")
 
 def _revocation_transcript(body: Dict[str, Any]) -> bytes:
     return qsponge_512(
-        b"CALYX-QPEP-REVOCATION-v1.0.0-rc|"
+        b"CALYX-QPEP-REVOCATION-v1.0.0|"
         + json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
     )
 
@@ -35,10 +36,6 @@ def create_revocation_certificate(
     comment: str = "",
     target_subkey_id: Optional[str] = None,
 ) -> str:
-    """
-    Generates an offline, self-authenticating .qrev Revocation Certificate signed
-    conjunctively by the Master QVS + Ed448 key.
-    """
     if reason not in REVOCATION_REASONS:
         raise QPEPKeyRingError(f"Invalid revocation reason '{reason}'. Must be one of {REVOCATION_REASONS}.")
 
@@ -56,22 +53,26 @@ def create_revocation_certificate(
     }
     transcript = _revocation_transcript(body)
     master_qvs_pk = base64.b64decode(master_keyring.public_bundle["qvs_public_b64"])
-    sig_qvs = QVSEngine.sign(master_priv["qvs_private"], master_qvs_pk, transcript, tier=master_keyring.qvs_tier)
-    sig_ed448 = ed448_sign(master_priv["hgc_sig_private"], transcript)
+    with SecretBuffer(master_priv["qvs_private"]) as qbuf, SecretBuffer(master_priv["hgc_sig_private"]) as ebuf:
+        sig_qvs = QVSEngine.sign(qbuf.as_bytes(), master_qvs_pk, transcript, tier=master_keyring.qvs_tier)
+        sig_ed448 = ed448_sign(ebuf.as_bytes(), transcript)
 
     cert = {
         "body": body,
         "master_qvs_sig_b64": base64.b64encode(sig_qvs).decode("ascii"),
         "master_ed448_sig_b64": base64.b64encode(sig_ed448).decode("ascii"),
     }
-    return armor_wrap(REVOCATION_ARMOR_LABEL, json.dumps(cert, separators=(",", ":")).encode("utf-8"))
+    return armor_wrap(
+        REVOCATION_ARMOR_LABEL,
+        json.dumps(cert, separators=(",", ":")).encode("utf-8"),
+        packet_type=PACKET_TYPE_KEYRING,
+    )
 
 
 def verify_revocation_certificate(
     armored_qrev: str,
     master_public_keyring: QPEPKeyRing,
 ) -> Tuple[bool, Dict[str, Any]]:
-    """Verifies a .qrev Revocation Certificate against the Master public key ring."""
     raw_json, _ = armor_unwrap(armored_qrev, REVOCATION_ARMOR_LABEL)
     cert = json.loads(raw_json.decode("utf-8"))
     body = cert.get("body") or {}

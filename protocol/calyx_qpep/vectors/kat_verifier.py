@@ -1,5 +1,5 @@
 """
-OpenQPEP Known Answer Test (KAT) Verifier (Release Candidate Version 1.0.0 / v1.0.0-rc).
+OpenQPEP Known Answer Test (KAT) Verifier (Official Release 1.0.0 / v1.0.0).
 Re-runs deterministic KAT derivation across ALL 10 canonical suites (5 structured-lattice + 5 Beyond-LWE)
 from golden JSON files in vectors/*.json and verifies 100% bit-for-bit equality.
 """
@@ -11,7 +11,7 @@ from .kat_generator import SUITE_KAT_SPECS, generate_suite_kat
 
 
 def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
-    """Verifies a single golden JSON KAT file against the live OpenQPEP engine."""
+    """Verifies a single golden JSON KAT file against the live OpenQPEP Official Release 1.0.0 engine."""
     expected: Dict[str, Any] = json.loads(Path(kat_path).read_text(encoding="utf-8"))
     family = expected.get("family", "structured_lattice")
     spec = {
@@ -26,7 +26,18 @@ def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
     actual = generate_suite_kat(spec)
 
     if family == "beyond_lwe":
-        for fld in ("public_material_bytes", "public_material_sha3_512", "ct_bytes", "ct_sha3_512", "sig_bytes", "sig_sha3_512", "qpkrf_roundtrip_verified", "decrypt_verified", "signature_verified"):
+        for fld in (
+            "wire_magic_hex",
+            "public_material_bytes",
+            "public_material_sha3_512",
+            "ct_bytes",
+            "ct_sha3_512",
+            "sig_bytes",
+            "sig_sha3_512",
+            "qpkrf_roundtrip_verified",
+            "decrypt_verified",
+            "signature_verified",
+        ):
             if actual["beyond_lwe"][fld] != expected["beyond_lwe"][fld]:
                 return False, f"Mismatch in beyond_lwe.{fld} for {spec['suite_id']}"
         return (

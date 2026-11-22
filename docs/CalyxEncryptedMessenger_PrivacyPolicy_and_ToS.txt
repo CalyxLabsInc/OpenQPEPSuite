@@ -1,10 +1,10 @@
 CALYX ENCRYPTED MESSENGER (com.calyxlabs.qpem) — PRIVACY POLICY & TERMS OF SERVICE
-Effective Date: November 21, 2026
+Effective Date: November 17, 2026
 Developer: Tristen Martinez (aka Calyxia) — Calyx Labs Inc.
 Official Websites: https://calyxlabsinc.org | https://calyxlabsinc.github.io | https://messenger.calyxlabsinc.org
-OpenQPEP Repository: https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/
+OpenQPEP Repository: https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/
 
 1. ZERO TELEMETRY & SOVEREIGN END-TO-END ENCRYPTION
-Calyx Encrypted Messenger encrypts all messages and files on-device using OpenQPEP Release Candidate 1.0.0 (Calyx Signature: QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512 | Wire Format v4 \x89QPE\x04\x00 | QPEP-Ratchet | QPEP-MLS | Sphinx-PQ) before transmission. Private .qpkrf keys remain strictly locked on your device under your mandatory QPKD-Argon2id (kdf_version: 3) passphrase and are never transmitted to any server. Camera access is used exclusively on-device for the in-app Scannable CLX-Code (SC Code) scanner.
+Calyx Encrypted Messenger encrypts all messages and files on-device using OpenQPEP Production Candidate 1.2.0 (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512) before transmission. Private .qpkrf keys remain strictly locked on your device under your mandatory QPKD-Argon2id passphrase and are never transmitted to any server. Camera access is used exclusively on-device for the in-app Scannable CLX-Code (SC Code) scanner.
 
-<!-- OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) -->
+<!-- OpenQPEP v1.0.0 (Production Candidate 1.2.0) -->

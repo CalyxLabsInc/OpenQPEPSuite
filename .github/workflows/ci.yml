@@ -1,4 +1,4 @@
-# OpenQPEP v1.0.0-rc (Release Candidate 1.0.0)
+# OpenQPEP v1.2.0-pc (Production Candidate 1.2.0)
 name: OpenQPEP Suite CI
 on: [push, pull_request]
 jobs:

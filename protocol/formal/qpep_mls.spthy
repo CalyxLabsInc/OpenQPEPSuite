@@ -1,11 +1,11 @@
 /*
- * OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) — Tamarin Prover Formal Verification Model
- * Protocol: QPEP-MLS TreeKEM Group Key Agreement (Up to 256 Members, O(log N) Path Updates)
+ * OpenQPEP Official Release 1.0.0 (v1.0.0) — Tamarin Prover Formal Verification Model
+ * Protocol: QPEP-MLS TreeKEM Group Key Agreement (Up to 256 Members, Replay Protected)
  * Machine-Checked Lemmas:
  *   1. group_epoch_secrecy: Group messages encrypted under epoch E are unreadable to non-members.
  *   2. immediate_eviction_security: Evicted members at epoch E+1 cannot derive the epoch E+1 secret.
  */
-theory QPEP_MLS_TreeKEM_RC100
+theory QPEP_MLS_TreeKEM_v100
 begin
 
 builtins: hashing, symmetric-encryption

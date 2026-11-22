@@ -1,7 +1,6 @@
 """
-OpenQPEP Typed Cryptographic Exception Hierarchy (Release Candidate 1.0.0 / v1.0.0-rc).
-All custom exceptions inherit from OpenQPEPError(ValueError) to maintain
-100% backward compatibility with existing callers catching ValueError.
+OpenQPEP Typed Cryptographic Exception Hierarchy (Official Release 1.0.0 / v1.0.0).
+All custom exceptions inherit from OpenQPEPError(ValueError) for clean error handling.
 """
 
 
@@ -14,19 +13,19 @@ class QPEPPassphrasePolicyError(OpenQPEPError):
 
 
 class QPEPMacVerificationError(OpenQPEPError):
-    """Raised when a 512-bit integrity_mac, 256-bit wire MAC, or AEAD tag fails verification."""
+    """Raised when a 512-bit integrity_mac, 256-bit wire MAC, CMT-4 commitment, or AEAD tag fails verification."""
 
 
 class QPEPFaultGuardError(OpenQPEPError):
-    """Raised when Verify-Before-Emit Fault-Guard detects a corrupted lattice signature."""
+    """Raised when Verify-Before-Emit Fault-Guard detects a corrupted signature before emission."""
 
 
 class QPEPWireFormatError(OpenQPEPError):
-    """Raised when an armored block, .qpkrf key ring, or binary \x89QPE wire frame is malformed."""
+    """Raised when an armored block, .qpkrf key ring, or binary \\x89QPE wire frame is malformed."""
 
 
 class QPEPLegacyProtocolError(QPEPWireFormatError):
-    """Raised when a legacy Production Candidate (-pc, Wire v3/v3.1, kdf_version < 3) or beta packet/keyring is hard-rejected in Release Candidate v1.0.0 (v1.0.0-rc)."""
+    """Raised when any legacy pre-release (-rc, -pc, or -beta) wire frame, stream, or kdf_version < 4 key ring is hard-rejected in Official Release 1.0.0."""
 
 
 class QPEPTruncationError(OpenQPEPError):
@@ -38,4 +37,4 @@ class QPEPKeyRingError(OpenQPEPError):
 
 
 class QPEPSuiteError(OpenQPEPError):
-    """Raised when an unsupported QLX/QVS suite identifier or mismatched key/ciphertext size is used."""
+    """Raised when an unsupported suite identifier, hardware guardrail violation, or mismatched key/ciphertext size occurs."""

@@ -1,4 +1,4 @@
-/* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) */
+/* OpenQPEP Official Release 1.0.0 (OpenQPEP/1.0.0) */
 package com.calyxlabs.mail;
 
 import android.webkit.PermissionRequest;

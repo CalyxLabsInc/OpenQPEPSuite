@@ -1,5 +1,5 @@
 """
-OpenQPEP Master Identity Key + Rotatable Operational Subkeys (Release Candidate 1.0.0).
+OpenQPEP Master Identity Key + Rotatable Operational Subkeys (Official Release 1.0.0 / kdf_version: 4).
 Separates a user's long-lived Master Identity Key (64-character Key Hash) from short-lived
 operational Encryption Subkeys (QLX + X448) and Signing Subkeys (QVS + Ed448) with explicit
 UTC expiration timestamps and conjunctive Master QVS + Ed448 certification.
@@ -11,9 +11,9 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
-from ..constants import PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import MANDATORY_KDF_VERSION, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..exceptions import QPEPKeyRingError
-from ..kdf.argon2id_cascade import derive_qpkrf_keys_v3
+from ..kdf.argon2id_cascade import derive_qpkrf_keys_v4
 from ..lattice.qlx_kem import QLXEngine
 from ..lattice.qvs_dsa import QVSEngine
 from ..primitives.cc512_aead import cc512_encrypt
@@ -69,7 +69,7 @@ def _subkey_cert_transcript(
     public_bundle: Dict[str, str],
 ) -> bytes:
     payload = {
-        "domain": "CALYX-QPEP-SUBKEY-CERT-v1.0.0-rc",
+        "domain": "CALYX-QPEP-SUBKEY-CERT-v1.0.0",
         "master_key_hash": master_key_hash,
         "subkey_id": subkey_id,
         "role": role,
@@ -90,11 +90,6 @@ def issue_subkey(
     validity_days: int = 90,
     qlx_tier: Optional[str] = None,
 ) -> QPEPSubkey:
-    """
-    Issues a new rotatable operational subkey ('encryption' or 'signing') certified by
-    the Master Identity Key's conjunctive QVS + Ed448 signature without changing the
-    user's 64-character Master Key Hash.
-    """
     if role not in VALID_SUBKEY_ROLES:
         raise QPEPKeyRingError(f"Invalid subkey role: {role}. Must be one of {VALID_SUBKEY_ROLES}.")
     if validity_days <= 0:
@@ -108,7 +103,7 @@ def issue_subkey(
     expires = now + datetime.timedelta(days=validity_days)
     created_iso = now.isoformat()
     expires_iso = expires.isoformat()
-    sub_witness = qsponge_512(b"CALYX-SUBKEY-WITNESS|" + os.urandom(32))
+    sub_witness = qsponge_512(b"CALYX-SUBKEY-WITNESS-v1.0.0|" + os.urandom(32))
 
     if role == "encryption":
         qlx_pk, qlx_sk = QLXEngine.keygen(tier_qlx, sub_witness)
@@ -134,7 +129,7 @@ def issue_subkey(
         }, separators=(",", ":")).encode("utf-8")
 
     subkey_id = qsponge_512(
-        b"CALYX-SUBKEY-ID|" + master_keyring.key_hash.encode("ascii") + json.dumps(public_bundle, sort_keys=True).encode("utf-8")
+        b"CALYX-SUBKEY-ID-v1.0.0|" + master_keyring.key_hash.encode("ascii") + json.dumps(public_bundle, sort_keys=True).encode("utf-8")
     ).hex()[:32].upper()
 
     transcript = _subkey_cert_transcript(
@@ -145,14 +140,14 @@ def issue_subkey(
     sig_ed448 = ed448_sign(master_priv["hgc_sig_private"], transcript)
 
     kdf_salt = os.urandom(32)
-    k1, k2, _kmac, kdf_params = derive_qpkrf_keys_v3(master_passphrase, kdf_salt, qlx_tier=tier_qlx)
+    k1, k2, _kmac, kdf_params = derive_qpkrf_keys_v4(master_passphrase, kdf_salt, qlx_tier=tier_qlx)
     nonce24 = os.urandom(24)
-    aad = f"CALYX-SUBKEY-PRIV|{master_keyring.key_hash}|{subkey_id}".encode("utf-8")
-    with SecretBuffer(k1 + k2) as kbuf:
-        ct_priv = cc512_encrypt(kbuf.as_bytes(), nonce24, priv_raw, aad)
+    aad = f"CALYX-SUBKEY-PRIV-v1.0.0|{master_keyring.key_hash}|{subkey_id}".encode("utf-8")
+    with SecretBuffer(k1 + k2) as kbuf, SecretBuffer(priv_raw) as pbuf:
+        ct_priv = cc512_encrypt(kbuf.as_bytes(), nonce24, pbuf.as_bytes(), aad)
 
     enc_priv = {
-        "kdf_version": 3,
+        "kdf_version": MANDATORY_KDF_VERSION,
         "kdf_salt_b64": base64.b64encode(kdf_salt).decode("ascii"),
         "kdf_params": kdf_params,
         "nonce24_b64": base64.b64encode(nonce24).decode("ascii"),
@@ -180,12 +175,6 @@ def verify_subkey(
     *,
     now_utc: Optional[datetime.datetime] = None,
 ) -> Tuple[bool, str]:
-    """
-    Verifies a rotatable subkey against the Master Identity public key ring:
-      1. Master Key Hash match
-      2. UTC expiration check
-      3. Conjunctive Master QVS + Ed448 signature verification
-    """
     if subkey.master_key_hash != master_public_keyring.key_hash:
         return False, "Subkey master_key_hash does not match Master Identity Key."
 

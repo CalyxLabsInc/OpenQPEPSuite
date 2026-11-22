@@ -1,4 +1,4 @@
-/* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) */
+/* OpenQPEP Official Release 1.0.0 (OpenQPEP/1.0.0) */
 package com.calyxlabs.mail;
 
 import android.app.Activity;
@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -23,6 +24,12 @@ public class MainActivity extends Activity implements Runnable {
     private String lastUrl = "";
     private String pendingTarget = "";
     private String pendingData = "";
+
+    private static String sanitizeFilename(String rawName) {
+        if (rawName == null) return "calyxmail_export.bin";
+        String base = new File(rawName).getName().replaceAll("[\\\\/:*?\"<>|]", "_").trim();
+        return base.isEmpty() ? "calyxmail_export.bin" : base;
+    }
 
     private void hideSystemBars() {
         Window w = getWindow();
@@ -53,6 +60,8 @@ public class MainActivity extends Activity implements Runnable {
         WebSettings ws = wv.getSettings();
         ws.setJavaScriptEnabled(true);
         ws.setDomStorageEnabled(true);
+        ws.setAllowFileAccess(true);
+        ws.setAllowContentAccess(false);
         wv.clearCache(true);
         ws.setMediaPlaybackRequiresUserGesture(false);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -120,7 +129,7 @@ public class MainActivity extends Activity implements Runnable {
             String head = url.substring(0, idx);
             int idx2 = head.lastIndexOf("|");
             if (idx2 < 0) return;
-            String fname = head.substring(idx2 + 1);
+            String fname = sanitizeFilename(head.substring(idx2 + 1));
             Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");
@@ -164,7 +173,7 @@ public class MainActivity extends Activity implements Runnable {
         } catch (Exception ignored) {}
     }
 
-    /* OpenQPEP v1.0.0-rc: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
+    /* OpenQPEP Official Release 1.0.0: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
     private double getDeviceRamGiB() {
         android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(android.content.Context.ACTIVITY_SERVICE);
         if (am == null) return 0.0;

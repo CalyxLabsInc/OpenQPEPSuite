@@ -13,12 +13,11 @@ import unittest
 from pathlib import Path
 
 from calyx_qpep.constants import (
-    LEGACY_BETA_WIRE_MAGICS,
-    LEGACY_PC_WIRE_MAGICS,
+    ALL_LEGACY_WIRE_MAGICS,
     PACKET_TYPE_PENTAD,
     PROTOCOL_VERSION,
     UNIVERSAL_VERSION,
-    WIRE_MAGIC_V4,
+    WIRE_MAGIC_V5,
 )
 from calyx_qpep.exceptions import QPEPLegacyProtocolError, QPEPWireFormatError
 from calyx_qpep.lattice.ntt_3329 import inv_ntt_3329, ntt_3329, ntt_base_mul_3329, poly_add_3329, poly_sub_3329
@@ -83,18 +82,18 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
         self.assertLess(t_nat, t_py)
 
     def test_03_wire_format_v3_and_strict_beta_magic_rejection(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0-rc")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/RC-1.0.0")
-        payload = b"OpenQPEP Release Candidate 1.0.0 strict wire v4 payload"
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
+        payload = b"OpenQPEP Official Release 1.0.0 strict wire v5 payload"
         label = "CALYX QPEP MESSAGE"
 
-        f_v4 = pack_wire_frame(payload, label)
-        self.assertTrue(f_v4.startswith(WIRE_MAGIC_V4))
-        out_v4, _ = unpack_wire_frame(f_v4, label)
-        self.assertEqual(out_v4, payload)
+        f_v5 = pack_wire_frame(payload, label)
+        self.assertTrue(f_v5.startswith(WIRE_MAGIC_V5))
+        out_v5, _ = unpack_wire_frame(f_v5, label)
+        self.assertEqual(out_v5, payload)
 
-        # All legacy -pc (v3/v3.1) and -beta wire magics MUST be strictly rejected in RC 1.0.0 with QPEPLegacyProtocolError
-        for legacy_magic in (LEGACY_PC_WIRE_MAGICS + LEGACY_BETA_WIRE_MAGICS):
+        # All legacy -rc (v4/v4.1), -pc (v3/v3.1), and -beta wire magics MUST be strictly rejected in v1.0.0
+        for legacy_magic in ALL_LEGACY_WIRE_MAGICS:
             forged = legacy_magic + os.urandom(64)
             with self.assertRaises(QPEPLegacyProtocolError):
                 unpack_wire_frame(forged, label)
@@ -109,14 +108,14 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
 
         set_native_enabled(True)
         pub, priv = CalyxSovereignPentad.keygen(allow_low_ram_override=True)
-        msg = b"Sovereign-Pentad RC 1.0.0 strict v4 directive"
-        armored_v4 = CalyxSovereignPentad.encrypt(msg, pub)
-        sep = armored_v4.find("\n\n")
-        end = armored_v4.rfind("\n=")
-        raw_v4 = base64.b64decode("".join(armored_v4[sep + 2 : end].split()))
-        self.assertTrue(raw_v4.startswith(WIRE_MAGIC_V4))
-        self.assertEqual(raw_v4[6], PACKET_TYPE_PENTAD)
-        self.assertEqual(CalyxSovereignPentad.decrypt(armored_v4, priv), msg)
+        msg = b"Sovereign-Pentad Official Release 1.0.0 strict v5 directive"
+        armored_v5 = CalyxSovereignPentad.encrypt(msg, pub)
+        sep = armored_v5.find("\n\n")
+        end = armored_v5.rfind("\n=")
+        raw_v5 = base64.b64decode("".join(armored_v5[sep + 2 : end].split()))
+        self.assertTrue(raw_v5.startswith(WIRE_MAGIC_V5))
+        self.assertEqual(raw_v5[6], PACKET_TYPE_PENTAD)
+        self.assertEqual(CalyxSovereignPentad.decrypt(armored_v5, priv), msg)
 
     def test_05_kat_vectors_identical_native_and_pure_python(self):
         vec_dir = Path(__file__).resolve().parent.parent / "vectors"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OpenQPEP v1.0.0-rc — Compile OpenQPEP Core to standalone WebAssembly SIMD128
+# OpenQPEP Official Release 1.0.0 (v1.0.0) — Compile OpenQPEP Core to standalone WebAssembly SIMD128
 set -euo pipefail
 if command -v cargo >/dev/null 2>&1; then
   RUSTFLAGS="-C target-feature=+simd128" cargo build --manifest-path ../../../rust/openqpep-core/Cargo.toml --target wasm32-unknown-unknown --release

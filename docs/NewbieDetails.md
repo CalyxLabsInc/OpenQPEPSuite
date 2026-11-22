@@ -1,9 +1,9 @@
 # OpenQPEP for Beginners (`NewbieDetails.md`)
 **A Plain-English Guide to How OpenQPEP Works, How Every Key Tier Encrypts, Decrypts & Signs, and Why OpenQPEP Is Stronger Than Post-Quantum PGP (`ML-KEM-1024` v6, `ML-DSA-87` v6 & `LibrePGP` v5)**
 
-* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/) (`Release Candidate 1.0.0`, `v1.0.0-rc`)
+* **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.2.0`)
 * **Creator & Lead Architect:** Tristen Martinez, Founder of [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
-* **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/apps/calyx-qpep-client/) (Android 10 through Android 17)
+* **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) (Android 10 through Android 17)
 * **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 
 ---
@@ -72,7 +72,7 @@ Whether you are encrypting a Notepad message or selecting any binary file (`.jpg
 3. **Lock Every 64 KB Chunk in `CC-512` Cascade:**
    * Your compressed payload and embedded signature are split into 64 KB chunks. Each chunk is encrypted with **`AES-256-GCM`** (`k_s1`) and then encrypted again with **`ChaCha20-Poly1305`** (`k_s2`), binding the chunk index (`idx`) and end-of-stream flag (`final=1`) into the authenticated header so chunks cannot be reordered or truncated.
 4. **Binary Wire Whitening (`.qpep`):**
-   * The entire packet is XOR-whitened with a `qSponge-XOF` stream (`\x89QPE\x04\x00` Wire Format v4) and sealed with a 256-bit wire MAC before Base64 armoring (`-----BEGIN CALYX QPEP ENCRYPTED PACKET-----`), hiding all internal structure from traffic analyzers.
+   * The entire packet is XOR-whitened with a `qSponge-XOF` stream (`\x89QPE\x01\x01`) and sealed with a 256-bit wire MAC before Base64 armoring (`-----BEGIN CALYX QPEP ENCRYPTED PACKET-----`), hiding all internal structure from traffic analyzers.
 
 ---
 
@@ -153,9 +153,9 @@ Here is why **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/p
 * **Choose `QLX-1024 + QVS-87 Sovereign Hybrid`:** When you want the same `1,024`-dimension grid footprint as `ML-KEM-1024` v6, upgraded with OpenQPEP's `CC-512` dual-cipher cascade, 512-bit `qSponge-512` Key Hashes, and hardcoded `QPKD-Argon2id` passphrase witness.
 * **Choose `QLX-768 + QVS-65 Velocity`:** When you want the fastest mobile packet sizes (`768` dimensions) while still keeping 448-bit `HGC-448` curve fusion and `CC-512` double encryption instead of downgrading to 255-bit curves or v4 subkeys.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0-rc`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
 
-Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 3`)**, and **Frozen Wire Format v4 (`\x89QPE\x04\x00`) / Compact TLV v4.1 (`\x89QPE\x04\x01`)**.
+Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 2`)**, and **Frozen Wire Format v3 (`\x89QPE\x03\x00`) / Compact TLV v3.1 (`\x89QPE\x03\x01`)**.
 
 | Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
 | :--- | :--- | :--- | :--- | :--- |

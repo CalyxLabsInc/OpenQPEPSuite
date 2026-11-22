@@ -1,8 +1,8 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
+# OpenQPEP Official Release 1.0.0 (v1.0.0)
 CC ?= cc
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
-CFLAGS := -O3 -std=c99 -fPIC -Wall -Wextra
+CFLAGS := -O3 -std=c99 -fPIC -Wall -Wextra -Werror
 
 ifeq ($(PORTABLE),1)
   SIMD_FLAGS :=

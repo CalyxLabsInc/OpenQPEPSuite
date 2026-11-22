@@ -1,4 +1,4 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
+# OpenQPEP Official Release 1.0.0 (v1.0.0) CI Verification Pipeline
 name: OpenQPEP CI
 on: [push, pull_request]
 jobs:
@@ -9,7 +9,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: make -C calyx_qpep/native/csrc
-      - run: pip install -e .
-      - run: python3 -m calyx_qpep.cli verify-vectors
-      - run: python3 -m unittest discover -s tests -v
+      - name: Compile Native C99 libopenqpep (-Wall -Wextra -Werror)
+        run: make -C calyx_qpep/native/csrc clean all
+      - name: Install OpenQPEP Official Release 1.0.0
+        run: pip install -e .
+      - name: Verify 10/10 Deterministic Golden KAT Vectors (Native C99)
+        run: python3 -m calyx_qpep.cli verify-vectors
+      - name: Verify 10/10 Deterministic Golden KAT Vectors (Pure-Python Reference)
+        run: OPENQPEP_DISABLE_NATIVE=1 python3 -m calyx_qpep.cli verify-vectors
+      - name: Run Full OpenQPEP Official Release 1.0.0 Test & Audit Suite
+        run: python3 -m unittest discover -s tests -v

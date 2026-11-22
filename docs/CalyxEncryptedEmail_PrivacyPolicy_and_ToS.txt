@@ -1,10 +1,10 @@
 CALYX ENCRYPTED EMAIL (com.calyxlabs.mail • calyxmail.org • mail.calyxlabsinc.org)
 PRIVACY POLICY & TERMS OF SERVICE
-Effective Date: November 21, 2026
+Effective Date: November 19, 2026
 Developer / Publisher: Tristen Martinez — Calyx Labs Inc.
 
 1. ZERO-KNOWLEDGE OPENQPEP ENCRYPTION (INTERNAL @CALYXMAIL.ORG MAIL)
-All emails exchanged between @calyxmail.org users are encrypted client-side using OpenQPEP Release Candidate 1.0.0 (Wire Format v4 \x89QPE\x04\x00) before transmission. Private .qpkrf key rings remain strictly locked on your device under your QPKD-Argon2id (kdf_version: 3) passphrase and are never transmitted to Calyx Labs Inc. servers.
+All emails exchanged between @calyxmail.org users are encrypted client-side using OpenQPEP Production Candidate 1.2.0 before transmission. Private .qpkrf key rings remain strictly locked on your device under your QPKD-Argon2id passphrase and are never transmitted to Calyx Labs Inc. servers.
 
 2. STANDARD EMAIL INTEROPERABILITY (3RD-PARTY PROVIDERS)
 Emails sent to or received from external 3rd-party domains (such as gmail.com or yahoo.com) are transmitted using standard RFC 5322 / SMTP / TLS protocols with DKIM signing to ensure universal deliverability. Standard emails are not end-to-end encrypted with OpenQPEP.
@@ -12,4 +12,4 @@ Emails sent to or received from external 3rd-party domains (such as gmail.com or
 3. ACCEPTABLE USE & ANTI-SPAM POLICY
 Users of @calyxmail.org agree not to send unsolicited bulk email (spam), phishing, or malware. Accounts violating anti-abuse policies may be suspended to protect calyxmail.org domain reputation and deliverability.
 
-<!-- OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) -->
+<!-- OpenQPEP v1.0.0 (Production Candidate 1.2.0) -->

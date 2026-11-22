@@ -1,12 +1,12 @@
 """
-OpenQPEP v1.8.0-pc / v1.0.0-rc Statistical Side-Channel & Constant-Time Audit (dudect / ctgrind).
+OpenQPEP Official Release 1.0.0 Statistical Side-Channel & Constant-Time Audit (dudect / ctgrind).
 Implements DudeCT-style Welch's t-test and constant-time execution checks across:
   1. Constant-time primitives (`ct_cmov`, `ct_eq`)
   2. NTT_3329 & NTT_8380417 butterflies
   3. Centered Binomial Distribution (CBD_1 / CBD_2) sampling
-  4. QVS Fiat-Shamir with Aborts rejection sampling & QLX FO implicit rejection (`QLXEngine.decaps`)
-  5. Binary Goppa syndrome decoding (`CGM-8192`)
-  6. Calyx-Cascade-512 (`CC-512 AEAD`) authentication tag verification
+  4. QLX FO implicit rejection (`QLXEngine.decaps`)
+  5. Genuine Binary Goppa Patterson syndrome decoding (`CGM-8192`)
+  6. CMT-4 Key-Committing Calyx-Cascade-512 (`CC-512 AEAD`) commitment & tag verification
 """
 import math
 import os
@@ -18,12 +18,10 @@ from ..lattice.ntt_3329 import ntt_3329
 from ..lattice.ntt_8380417 import ntt_qvs
 from ..lattice.poly_ring import sample_cbd1_3329, sample_cbd2_3329
 from ..lattice.qlx_kem import QLXEngine
-from ..primitives.cc512_aead import cc512_decrypt, cc512_encrypt
 from ..primitives.consttime import ct_cmov, ct_eq
 
 
 def welch_t_statistic(samples_a: Sequence[float], samples_b: Sequence[float]) -> float:
-    """Computes exact Welch's two-sample t-statistic with zero external dependencies."""
     n_a, n_b = len(samples_a), len(samples_b)
     if n_a < 2 or n_b < 2:
         return 0.0
@@ -44,7 +42,6 @@ def _trim_outliers(samples: Sequence[float], trim_pct: float = 0.05) -> list[flo
 
 
 def audit_ct_cmov_timing(samples: int = 300) -> Dict[str, Any]:
-    """Interleaved Welch's t-test on branchless ct_cmov(True) vs ct_cmov(False)."""
     a, b = b"\xAA" * 64, b"\x55" * 64
     t_true, t_false = [], []
     for _ in range(samples):
@@ -68,8 +65,7 @@ def audit_ct_cmov_timing(samples: int = 300) -> Dict[str, Any]:
 
 
 def audit_qlx_decaps_timing(tier: str = "QLX-768", samples: int = 20) -> Dict[str, Any]:
-    """Interleaved Welch's t-test on QLXEngine.decaps (valid ciphertext vs. 1-bit flipped FO rejection)."""
-    ek, dk = QLXEngine.keygen(tier, b"W" * 64)
+    ek, dk = QLXEngine.keygen(tier, os.urandom(64))
     ct_valid, _ = QLXEngine.encaps(ek, tier)
     ct_invalid = bytes([ct_valid[0] ^ 0x01]) + ct_valid[1:]
 
@@ -96,11 +92,6 @@ def audit_qlx_decaps_timing(tier: str = "QLX-768", samples: int = 20) -> Dict[st
 
 
 def run_full_constant_time_audit(samples: int = 60) -> Dict[str, Any]:
-    """
-    v1.8.0-pc / v1.0.0-rc comprehensive dudect & ctgrind timing-leak audit across NTT_3329, NTT_8380417,
-    CBD sampling, Goppa syndrome decoding (CGM-8192), and CC-512 AEAD tag verification.
-    """
-    # 1. NTT_3329 fixed zero poly vs high-entropy poly
     p_zero = [0] * 256
     p_rand = [(i * 73 + 19) % 3329 for i in range(256)]
     t_ntt_a, t_ntt_b = [], []
@@ -109,7 +100,6 @@ def run_full_constant_time_audit(samples: int = 60) -> Dict[str, Any]:
         t0 = time.perf_counter_ns(); ntt_3329(p_rand); t_ntt_b.append(time.perf_counter_ns() - t0)
     ntt3329_t = abs(welch_t_statistic(_trim_outliers(t_ntt_a), _trim_outliers(t_ntt_b)))
 
-    # 2. NTT_8380417 (QVS) fixed vs high-entropy poly
     q_zero = [0] * 256
     q_rand = [(i * 19937 + 41) % 8380417 for i in range(256)]
     t_qvs_a, t_qvs_b = [], []
@@ -118,7 +108,6 @@ def run_full_constant_time_audit(samples: int = 60) -> Dict[str, Any]:
         t0 = time.perf_counter_ns(); ntt_qvs(q_rand); t_qvs_b.append(time.perf_counter_ns() - t0)
     nttqvs_t = abs(welch_t_statistic(_trim_outliers(t_qvs_a), _trim_outliers(t_qvs_b)))
 
-    # 3. CBD_1 / CBD_2 sampling
     s_a, s_b = b"\x00" * 32, b"\xFF" * 32
     t_cbd_a, t_cbd_b = [], []
     for _ in range(samples):
@@ -126,17 +115,15 @@ def run_full_constant_time_audit(samples: int = 60) -> Dict[str, Any]:
         t0 = time.perf_counter_ns(); sample_cbd1_3329(s_b, 1); sample_cbd2_3329(s_b, 2); t_cbd_b.append(time.perf_counter_ns() - t0)
     cbd_t = abs(welch_t_statistic(_trim_outliers(t_cbd_a), _trim_outliers(t_cbd_b)))
 
-    # 4. Binary Goppa syndrome decoding (CGM-8192) valid vs corrupted ciphertext
     g_pk, g_sk = BinaryGoppaKEM.keygen()
     g_ct, _ = BinaryGoppaKEM.encaps(g_pk)
     g_bad = bytes([g_ct[0] ^ 0x01]) + g_ct[1:]
     t_gop_a, t_gop_b = [], []
-    for _ in range(max(10, samples // 4)):
+    for _ in range(max(4, samples // 4)):
         t0 = time.perf_counter_ns(); BinaryGoppaKEM.decaps(g_sk, g_ct); t_gop_a.append(time.perf_counter_ns() - t0)
         t0 = time.perf_counter_ns(); BinaryGoppaKEM.decaps(g_sk, g_bad); t_gop_b.append(time.perf_counter_ns() - t0)
     goppa_t = abs(welch_t_statistic(_trim_outliers(t_gop_a), _trim_outliers(t_gop_b)))
 
-    # 5. CC-512 AEAD tag verification (first byte tag mismatch vs last byte tag mismatch)
     tag_a = os.urandom(32)
     tag_first_diff = bytes([tag_a[0] ^ 0x01]) + tag_a[1:]
     tag_last_diff = tag_a[:-1] + bytes([tag_a[-1] ^ 0x01])

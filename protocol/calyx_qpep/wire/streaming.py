@@ -1,48 +1,68 @@
 """
-OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Release Candidate 1.0.0).
+OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Official Release 1.0.0).
 
 Features:
-  - Constant ~256 KiB RAM streaming for arbitrary-sized files (100 MB - 100 GB+) in 64 KiB CC-512 frames.
-  - Deterministic chunk-bound nonces:
-      nonce_i = qSponge-XOF("CALYX-STREAM-NONCE|" || base_nonce || uint64_be(chunk_idx) || uint8(is_final), 24)
-    making chunk reordering, duplication, or mid-stream truncation mathematically impossible.
-  - Optional qSponge-512 Binary Merkle Tree over chunk authentication tags enabling verified random-access
-    byte-range decryption (`decrypt_byte_range`) without decrypting from byte 0.
+  - Official Release 1.0.0 Stream Magic `STREAM_MAGIC = \\x89QPS\\x05\\x00` (hard-rejects legacy
+    pre-release `\\x89QPS\\x02\\x07` streams with QPEPLegacyProtocolError).
+  - Constant ~256 KiB RAM streaming for arbitrary-sized files in 64 KiB CMT-4 CC-512 frames.
+  - Deterministic chunk-bound nonces making chunk reordering, duplication, or mid-stream truncation impossible.
+  - Full-ciphertext qSponge-512 Binary Merkle Tree over every byte of every encrypted chunk enabling
+    verified random-access byte-range decryption (`decrypt_byte_range`).
 """
-import io
 import os
 import struct
 from typing import BinaryIO, Dict, List, Optional, Tuple
 
-from ..constants import CHUNK_SIZE
-from ..exceptions import QPEPMacVerificationError, QPEPTruncationError, QPEPWireFormatError
-from ..primitives.cc512_aead import cc512_decrypt, cc512_encrypt
+from ..constants import CHUNK_SIZE, LEGACY_STREAM_MAGICS, STREAM_MAGIC_V5
+from ..exceptions import (
+    QPEPLegacyProtocolError,
+    QPEPMacVerificationError,
+    QPEPTruncationError,
+    QPEPWireFormatError,
+)
+from ..primitives.cc512_aead import CC512_OVERHEAD_BYTES, cc512_decrypt, cc512_encrypt
 from ..primitives.consttime import ct_eq
 from ..primitives.qsponge import qsponge_512, qsponge_var
 from ..primitives.zeroize import SecretBuffer
 
-STREAM_MAGIC = b"\x89QPS\x02\x07"
+STREAM_MAGIC = STREAM_MAGIC_V5  # b"\x89QPS\x05\x00"
 HEADER_STRUCT = struct.Struct(">6sII16s")  # magic(6), chunk_size(4), flags(4), base_nonce(16) -> 30 bytes
 CHUNK_PREFIX_STRUCT = struct.Struct(">QBI")  # chunk_idx(8), is_final(1), ct_len(4) -> 13 bytes
 FLAG_MERKLE_SEEKABLE = 0x00000001
+MAX_STREAM_CHUNK_SIZE = 16 * 1024 * 1024  # 16 MiB max chunk ceiling
+
+
+def _validate_stream_magic(magic: bytes) -> None:
+    if magic in LEGACY_STREAM_MAGICS:
+        raise QPEPLegacyProtocolError(
+            "Legacy pre-release OpenQPEP stream magic (\\x89QPS\\x02\\x07) is strictly rejected in "
+            "Official Release 1.0.0 (zero backwards compatibility). Official stream magic \\x89QPS\\x05\\x00 is required."
+        )
+    if magic != STREAM_MAGIC:
+        raise QPEPWireFormatError("Invalid OpenQPEP Official Release 1.0.0 streaming magic bytes.")
 
 
 def derive_chunk_nonce24(base_nonce: bytes, chunk_idx: int, is_final: bool) -> bytes:
     """Derives a unique 24-byte CC-512 nonce bound strictly to (base_nonce, chunk_idx, is_final)."""
     return qsponge_var(
-        b"CALYX-STREAM-NONCE|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0),
+        b"CALYX-STREAM-NONCE-v1.0.0|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0),
         24,
     )
 
 
 def _chunk_aad(base_nonce: bytes, chunk_idx: int, is_final: bool) -> bytes:
-    return b"CALYX-STREAM-AAD-v1.0.0-rc|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0)
+    return b"CALYX-STREAM-AAD-v1.0.0|" + base_nonce + struct.pack(">QB", chunk_idx, 1 if is_final else 0)
+
+
+def _chunk_merkle_leaf(chunk_idx: int, ct: bytes) -> bytes:
+    """Commits to EVERY byte of the chunk ciphertext via qSponge-512."""
+    return qsponge_512(b"CALYX-MERKLE-LEAF-v1.0.0|" + struct.pack(">Q", chunk_idx) + qsponge_512(ct))
 
 
 def build_chunk_merkle_tree(leaf_hashes: List[bytes]) -> Tuple[bytes, List[List[bytes]]]:
     """Builds a qSponge-512 binary Merkle tree over chunk authentication leaf digests."""
     if not leaf_hashes:
-        empty_root = qsponge_512(b"CALYX-MERKLE-EMPTY")
+        empty_root = qsponge_512(b"CALYX-MERKLE-EMPTY-v1.0.0")
         return empty_root, [[empty_root]]
     levels: List[List[bytes]] = [list(leaf_hashes)]
     cur = list(leaf_hashes)
@@ -51,7 +71,7 @@ def build_chunk_merkle_tree(leaf_hashes: List[bytes]) -> Tuple[bytes, List[List[
         for i in range(0, len(cur), 2):
             left = cur[i]
             right = cur[i + 1] if i + 1 < len(cur) else left
-            nxt.append(qsponge_512(b"CALYX-MERKLE-NODE|" + left + right))
+            nxt.append(qsponge_512(b"CALYX-MERKLE-NODE-v1.0.0|" + left + right))
         levels.append(nxt)
         cur = nxt
     return cur[0], levels
@@ -76,18 +96,20 @@ def verify_merkle_proof(leaf_hash: bytes, proof: List[Tuple[str, bytes]], expect
     cur = leaf_hash
     for side, sib in proof:
         if side == "R":
-            cur = qsponge_512(b"CALYX-MERKLE-NODE|" + cur + sib)
+            cur = qsponge_512(b"CALYX-MERKLE-NODE-v1.0.0|" + cur + sib)
         else:
-            cur = qsponge_512(b"CALYX-MERKLE-NODE|" + sib + cur)
+            cur = qsponge_512(b"CALYX-MERKLE-NODE-v1.0.0|" + sib + cur)
     return ct_eq(cur, expected_root)
 
 
 class StreamingEncryptor:
-    """O(1)-RAM streaming chunked CC-512 encryptor with optional Merkle-tree seek index."""
+    """O(1)-RAM streaming chunked CMT-4 CC-512 encryptor with optional Merkle-tree seek index."""
 
     def __init__(self, key64: bytes, *, chunk_size: int = CHUNK_SIZE, merkle_seekable: bool = True):
         if len(key64) != 64:
             raise ValueError("StreamingEncryptor requires a 64-byte CC-512 key.")
+        if chunk_size <= 0 or chunk_size > MAX_STREAM_CHUNK_SIZE:
+            raise ValueError(f"chunk_size must be in 1..{MAX_STREAM_CHUNK_SIZE}.")
         self._key_buf = SecretBuffer(key64)
         self.chunk_size = int(chunk_size)
         self.merkle_seekable = bool(merkle_seekable)
@@ -102,7 +124,6 @@ class StreamingEncryptor:
         leaf_hashes: List[bytes] = []
         chunk_offsets: List[int] = []
 
-        # Read-ahead 1 chunk so we always know accurately whether current chunk is final (O(1) RAM)
         cur_buf = src.read(self.chunk_size)
         while True:
             nxt_buf = src.read(self.chunk_size) if cur_buf else b""
@@ -116,7 +137,7 @@ class StreamingEncryptor:
             dst.write(ct)
 
             if self.merkle_seekable:
-                leaf_hashes.append(qsponge_512(b"CALYX-MERKLE-LEAF|" + struct.pack(">Q", chunk_idx) + ct[-32:]))
+                leaf_hashes.append(_chunk_merkle_leaf(chunk_idx, ct))
 
             total_plain += len(cur_buf)
             chunk_idx += 1
@@ -151,7 +172,7 @@ class StreamingEncryptor:
 
 
 class StreamingDecryptor:
-    """O(1)-RAM streaming chunked CC-512 decryptor with truncation, reorder, and Merkle range verification."""
+    """O(1)-RAM streaming chunked CMT-4 CC-512 decryptor with truncation, reorder, and Merkle range verification."""
 
     def __init__(self, key64: bytes):
         if len(key64) != 64:
@@ -163,13 +184,15 @@ class StreamingDecryptor:
         if len(hdr) != HEADER_STRUCT.size:
             raise QPEPWireFormatError("Truncated OpenQPEP streaming header.")
         magic, chunk_size, flags, base_nonce = HEADER_STRUCT.unpack(hdr)
-        if magic != STREAM_MAGIC:
-            raise QPEPWireFormatError("Invalid OpenQPEP streaming magic bytes.")
+        _validate_stream_magic(magic)
+        if chunk_size <= 0 or chunk_size > MAX_STREAM_CHUNK_SIZE:
+            raise QPEPWireFormatError("Invalid chunk_size in OpenQPEP streaming header.")
 
         expected_idx = 0
         saw_final = False
         total_plain = 0
         leaf_hashes: List[bytes] = []
+        max_ct_len = chunk_size + CC512_OVERHEAD_BYTES
 
         while True:
             prefix = src.read(CHUNK_PREFIX_STRUCT.size)
@@ -180,6 +203,8 @@ class StreamingDecryptor:
             chunk_idx, is_final_byte, ct_len = CHUNK_PREFIX_STRUCT.unpack(prefix)
             if chunk_idx != expected_idx:
                 raise QPEPMacVerificationError(f"Chunk reordering/duplication detected: expected {expected_idx}, got {chunk_idx}.")
+            if ct_len < CC512_OVERHEAD_BYTES or ct_len > max_ct_len:
+                raise QPEPWireFormatError(f"Invalid chunk ciphertext length {ct_len} in chunk {chunk_idx}.")
             ct = src.read(ct_len)
             if len(ct) != ct_len:
                 raise QPEPTruncationError(f"Truncated ciphertext in chunk {chunk_idx}.")
@@ -192,7 +217,7 @@ class StreamingDecryptor:
             total_plain += len(pt)
 
             if flags & FLAG_MERKLE_SEEKABLE:
-                leaf_hashes.append(qsponge_512(b"CALYX-MERKLE-LEAF|" + struct.pack(">Q", chunk_idx) + ct[-32:]))
+                leaf_hashes.append(_chunk_merkle_leaf(chunk_idx, ct))
 
             expected_idx += 1
             if is_final:
@@ -227,10 +252,6 @@ class StreamingDecryptor:
         merkle_levels: List[List[bytes]],
         merkle_root: bytes,
     ) -> bytes:
-        """
-        Seekable Merkle-Tree Decryption: verifies and decrypts ONLY the chunks overlapping
-        [start_byte, end_byte) without decrypting earlier chunks from byte 0.
-        """
         if start_byte < 0 or end_byte < start_byte:
             raise ValueError("Invalid byte range.")
         if start_byte == end_byte:
@@ -238,9 +259,10 @@ class StreamingDecryptor:
 
         src.seek(0)
         hdr = src.read(HEADER_STRUCT.size)
+        if len(hdr) != HEADER_STRUCT.size:
+            raise QPEPWireFormatError("Truncated OpenQPEP streaming header.")
         magic, chunk_size, _flags, base_nonce = HEADER_STRUCT.unpack(hdr)
-        if magic != STREAM_MAGIC:
-            raise QPEPWireFormatError("Invalid OpenQPEP streaming magic bytes.")
+        _validate_stream_magic(magic)
 
         first_chunk = start_byte // chunk_size
         last_chunk = (end_byte - 1) // chunk_size
@@ -255,7 +277,9 @@ class StreamingDecryptor:
             if chunk_idx != cidx:
                 raise QPEPMacVerificationError("Seeked chunk index mismatch.")
             ct = src.read(ct_len)
-            leaf = qsponge_512(b"CALYX-MERKLE-LEAF|" + struct.pack(">Q", cidx) + ct[-32:])
+            if len(ct) != ct_len:
+                raise QPEPTruncationError(f"Truncated seeked chunk {cidx}.")
+            leaf = _chunk_merkle_leaf(cidx, ct)
             proof = get_merkle_proof(merkle_levels, cidx)
             if not verify_merkle_proof(leaf, proof, merkle_root):
                 raise QPEPMacVerificationError(f"Merkle proof verification failed for seeked chunk {cidx}.")

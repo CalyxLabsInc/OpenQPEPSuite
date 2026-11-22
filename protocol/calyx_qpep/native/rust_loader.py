@@ -1,4 +1,4 @@
-# OpenQPEP v1.0.0-rc (Release Candidate 1.0.0)
+# OpenQPEP Official Release 1.0.0 (v1.0.0)
 """Optional PyO3 Rust `openqpep_core` bridge with graceful fallback to C99/Python."""
 from typing import Any, Dict
 
@@ -14,6 +14,6 @@ def rust_backend_info() -> Dict[str, Any]:
     return {
         "rust_pyo3_loaded": RUST_AVAILABLE,
         "crate": "openqpep-core",
-        "version": "1.0.0-rc",
+        "version": "1.0.0",
         "fallback": "libopenqpep-c99 / pure-python",
     }

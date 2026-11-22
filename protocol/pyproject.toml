@@ -1,28 +1,30 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "openqpep"
-version = "1.0.0rc1"
-description = "OpenQPEP by Calyx Labs Inc. (Release Candidate 1.0.0 / v1.0.0-rc) — Quantum-Proof Encryption Protocol, Interactive CLI & .qpkrf Reference Implementation"
+name = "calyx-openqpep"
+version = "1.0.0"
+description = "OpenQPEP Official Release 1.0.0 (v1.0.0) by Calyx Labs Inc. — Worldwide Post-Quantum Encryption Protocol (10 Suites, CMT-4 CC-512, Wire Format v5/v5.1, QPKD-Argon2id kdf_version: 4, C99/AVX2/NEON)"
 readme = "README.md"
-requires-python = ">=3.10"
-license = {text = "Calyx Public Open Source License 1.0 (CPOSLS-1.0)"}
-authors = [{name = "Tristen Martinez (Calyx Labs Inc.)", email = "support@calyxlabsinc.org"}]
-dependencies = ["cryptography>=38.0.0"]
+requires-python = ">=3.9"
+license = {text = "CPOSLS-1.0"}
+authors = [
+    {name = "Tristen Martinez (Calyx Labs Inc.)", email = "support@calyxlabsinc.org"},
+]
+dependencies = [
+    "cryptography>=42.0.0",
+    "argon2-cffi>=23.1.0",
+]
 
 [project.urls]
-Homepage = "https://github.com/CalyxLabsInc/OpenQPEP/"
-Repository = "https://github.com/CalyxLabsInc/OpenQPEP/"
-KeyDirectory = "https://qpepkeys.calyxlabsinc.org"
+Homepage = "https://calyxlabsinc.org"
+Repository = "https://github.com/CalyxLabsInc/OpenQPEP"
+Directory = "https://qpepkeys.calyxlabsinc.org"
 
 [project.scripts]
 openqpep = "calyx_qpep.cli:main"
 calyx-qpep = "calyx_qpep.cli:main"
-
-[project.optional-dependencies]
-argon2 = ["argon2-cffi>=23.1.0"]
 
 [tool.setuptools.packages.find]
 include = ["calyx_qpep*"]

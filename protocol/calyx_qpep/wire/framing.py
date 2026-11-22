@@ -1,117 +1,146 @@
 """
-OpenQPEP Frozen Binary Wire Format v4 (\x89QPE\x04\x00) — Release Candidate 1.0.0 (v1.0.0-rc).
-Hard Clean Break — Zero Backwards Compatibility:
-All legacy Production Candidate (-pc: \x89QPE\x03\x00, \x89QPE\x03\x01) and legacy beta
-(\x89QPE\x01\x01, \x89QPE\x01\x09, \x89QPE\x02\x00) wire formats are strictly rejected with QPEPLegacyProtocolError.
+OpenQPEP Official Binary Wire Framing v5 (\\x89QPE\\x05\\x00) & Standardized Traffic-Analysis Padding
+(Official Release 1.0.0 / v1.0.0 — Clean-Slate Zero Legacy Backwards Compatibility).
+
+Binary Wire Format v5 Layout:
+  - Bytes 0..5   : WIRE_MAGIC_V5 (\\x89QPE\\x05\\x00)
+  - Byte  6      : packet_type (0x01=Single, 0x02=Multi-Recipient, 0x03=Stream, 0x04=Ratchet,
+                   0x05=Multisig, 0x06=Sovereign-Pentad, 0x07=Keyring, 0x08=Signature, 0x09=GroupMLS)
+  - Byte  7      : flags (bit 0 = standardized bucket padding active; bits 1..7 reserved 0)
+  - Bytes 8..23  : 16-byte CSPRNG wire_nonce
+  - Bytes 24..-32: whitened payload = payload ^ qSponge-XOF("CALYX-WIRE-WHITEN-v5-1.0.0|" || hdr || nonce || label)
+  - Bytes -32..  : 32-byte wire MAC = qSponge-512("CALYX-WIRE-MAC-v5-1.0.0|" || hdr || nonce || label || whitened)[:32]
+
+Hard Clean Break:
+  ALL legacy Release Candidate (-rc: \\x89QPE\\x04\\x00 / \\x04\\x01), Production Candidate
+  (-pc: \\x89QPE\\x03\\x00 / \\x03\\x01), and Beta (-beta: \\x89QPE\\x01\\x01 / \\x01\\x09 / \\x02\\x00)
+  frames are strictly rejected with QPEPLegacyProtocolError.
 """
 import os
 import struct
-from typing import Optional, Tuple
+from typing import Tuple
 
 from ..constants import (
+    ALL_LEGACY_WIRE_MAGICS,
+    BUCKET_SIZES,
     LEGACY_BETA_WIRE_MAGICS,
     LEGACY_PC_WIRE_MAGICS,
-    PACKET_TYPE_KEYRING,
-    PACKET_TYPE_MULTI,
-    PACKET_TYPE_MULTISIG,
-    PACKET_TYPE_PENTAD,
-    PACKET_TYPE_RATCHET,
-    PACKET_TYPE_SIGNATURE,
+    LEGACY_RC_WIRE_MAGICS,
+    MAX_WIRE_FRAME_BYTES,
     PACKET_TYPE_SINGLE,
-    PACKET_TYPE_STREAM,
-    WIRE_MAGIC_V4,
+    WIRE_MAGIC_V5,
 )
 from ..exceptions import QPEPLegacyProtocolError, QPEPMacVerificationError, QPEPWireFormatError
 from ..primitives.consttime import ct_eq
 from ..primitives.qsponge import qsponge_512, qsponge_var
 
-BUCKET_SIZES = (4096, 16384, 65536)
+WIRE_FLAG_BUCKET_PADDED = 0x01
 
 
-def infer_packet_type(header_label: str) -> int:
-    lbl = header_label.upper()
-    if "PENTAD" in lbl:
-        return PACKET_TYPE_PENTAD
-    if "MULTI" in lbl and "SIG" not in lbl:
-        return PACKET_TYPE_MULTI
-    if "MULTISIG" in lbl or "THRESHOLD" in lbl:
-        return PACKET_TYPE_MULTISIG
-    if "RATCHET" in lbl:
-        return PACKET_TYPE_RATCHET
-    if "STREAM" in lbl:
-        return PACKET_TYPE_STREAM
-    if "KEY" in lbl or "QPKRF" in lbl or "REVOCATION" in lbl or "SHARE" in lbl:
-        return PACKET_TYPE_KEYRING
-    if "SIGNATURE" in lbl or "TIMESTAMP" in lbl:
-        return PACKET_TYPE_SIGNATURE
-    return PACKET_TYPE_SINGLE
-
-
-def pad_to_bucket(payload: bytes, bucket_size: int = 4096) -> bytes:
-    if bucket_size < 64:
-        raise ValueError("bucket_size must be at least 64 bytes.")
-    header = struct.pack(">I", len(payload))
-    total_raw = 4 + len(payload)
-    padded_len = ((total_raw + bucket_size - 1) // bucket_size) * bucket_size
-    pad_len = padded_len - total_raw
-    return header + payload + (os.urandom(pad_len) if pad_len > 0 else b"")
+def pad_to_bucket(data: bytes, bucket_size: int = 4096) -> bytes:
+    """
+    Standardized Traffic-Analysis Padding (4 KiB / 16 KiB / 64 KiB buckets).
+    Format: [4-byte big-endian original length][data][CSPRNG random padding up to next multiple of bucket_size].
+    """
+    if bucket_size <= 0:
+        raise ValueError("bucket_size must be positive.")
+    raw = struct.pack(">I", len(data)) + data
+    rem = len(raw) % bucket_size
+    pad_len = (bucket_size - rem) if rem != 0 else 0
+    return raw + (os.urandom(pad_len) if pad_len else b"")
 
 
 def unpad_from_bucket(padded: bytes) -> bytes:
+    """Reverses standardized bucket padding and validates length bounds."""
     if len(padded) < 4:
-        raise QPEPWireFormatError("Padded bucket buffer is too short.")
+        raise QPEPWireFormatError("Truncated padded OpenQPEP bucket.")
     orig_len = struct.unpack(">I", padded[:4])[0]
     if 4 + orig_len > len(padded):
-        raise QPEPWireFormatError("Invalid bucket padding length prefix.")
+        raise QPEPWireFormatError("Corrupted padded OpenQPEP bucket length header.")
     return padded[4 : 4 + orig_len]
 
 
 def pack_wire_frame(
-    payload_bytes: bytes,
-    header_label: str,
+    payload: bytes,
+    label: str,
     *,
-    packet_type: Optional[int] = None,
+    packet_type: int = PACKET_TYPE_SINGLE,
     flags: int = 0,
+    bucket_size: int = 0,
 ) -> bytes:
-    """Encapsulates payload_bytes into a strict Frozen Wire Format v4 (\x89QPE\x04\x00) RC-1.0.0 frame."""
+    """
+    Packs `payload` into Official Release 1.0.0 Binary Wire Format v5 (\\x89QPE\\x05\\x00).
+    """
+    if len(payload) > MAX_WIRE_FRAME_BYTES:
+        raise QPEPWireFormatError(f"Wire frame payload exceeds maximum limit ({MAX_WIRE_FRAME_BYTES} bytes).")
+    if flags & ~WIRE_FLAG_BUCKET_PADDED:
+        raise QPEPWireFormatError("Reserved Wire Format v5 header flag bits must be zero.")
+
+    body = payload
+    eff_flags = flags & 0xFF
+    if bucket_size and bucket_size > 0:
+        body = pad_to_bucket(payload, bucket_size=bucket_size)
+        eff_flags |= WIRE_FLAG_BUCKET_PADDED
+
     wire_nonce = os.urandom(16)
-    label_b = header_label.encode("utf-8")
-    ptype = infer_packet_type(header_label) if packet_type is None else (packet_type & 0xFF)
-    hdr = WIRE_MAGIC_V4 + bytes([ptype, flags & 0xFF])
-    mask = qsponge_var(b"CALYX-WIRE-WHITEN-v4-RC-1.0.0|" + hdr + wire_nonce + label_b, len(payload_bytes))
-    whitened = bytes(a ^ b for a, b in zip(payload_bytes, mask))
-    wire_mac = qsponge_512(b"CALYX-WIRE-MAC-v4-RC-1.0.0|" + hdr + wire_nonce + label_b + whitened)[:32]
-    return hdr + wire_nonce + whitened + wire_mac
+    hdr = WIRE_MAGIC_V5 + bytes([packet_type & 0xFF, eff_flags])
+    lbl = label.encode("ascii")
+    mask = qsponge_var(b"CALYX-WIRE-WHITEN-v5-1.0.0|" + hdr + wire_nonce + lbl, len(body))
+    whitened = bytes(a ^ b for a, b in zip(body, mask))
+    mac = qsponge_512(b"CALYX-WIRE-MAC-v5-1.0.0|" + hdr + wire_nonce + lbl + whitened)[:32]
+    return hdr + wire_nonce + whitened + mac
 
 
-def unpack_wire_frame(raw_frame: bytes, begin_label: str) -> Tuple[bytes, bytes]:
+def unpack_wire_frame(frame: bytes, label: str) -> Tuple[bytes, int]:
     """
-    Verifies the 256-bit wire MAC and unwhitens a Frozen Wire Format v4 (\x89QPE\x04\x00) frame.
-    Hard-rejects all legacy Production Candidate (-pc: \x89QPE\x03\x00, \x89QPE\x03\x01) and
-    legacy beta (\x89QPE\x01\x01, \x01\x09, \x02\x00) frames with QPEPLegacyProtocolError.
+    Unpacks and authenticates an Official Release 1.0.0 Binary Wire Format v5 (\\x89QPE\\x05\\x00) frame.
+    Strictly rejects ALL legacy -rc, -pc, and -beta wire magics with QPEPLegacyProtocolError.
+    Returns (plaintext_payload, packet_type).
     """
-    if len(raw_frame) >= 6 and raw_frame[:6] in LEGACY_PC_WIRE_MAGICS:
+    if len(frame) > MAX_WIRE_FRAME_BYTES:
+        raise QPEPWireFormatError(f"Wire frame exceeds maximum allowed size ({MAX_WIRE_FRAME_BYTES} bytes).")
+    if len(frame) < 6:
+        raise QPEPWireFormatError("Truncated OpenQPEP wire frame.")
+
+    magic = frame[:6]
+    if magic in LEGACY_RC_WIRE_MAGICS:
         raise QPEPLegacyProtocolError(
-            "Legacy Production Candidate (-pc) Wire Format v3/v3.1 (\\x89QPE\\x03\\x00 / \\x89QPE\\x03\\x01) is strictly rejected in Release Candidate v1.0.0 (Wire Format v4 \\x89QPE\\x04\\x00 required)."
+            "Legacy Release Candidate (-rc) wire format (\\x89QPE\\x04\\x00 / \\x04\\x01) is strictly rejected in "
+            "OpenQPEP Official Release 1.0.0 (zero backwards compatibility). Re-encrypt using Wire Format v5 (\\x89QPE\\x05\\x00)."
         )
-    if len(raw_frame) >= 6 and raw_frame[:6] in LEGACY_BETA_WIRE_MAGICS:
+    if magic in LEGACY_PC_WIRE_MAGICS:
         raise QPEPLegacyProtocolError(
-            "Legacy beta wire magic is strictly rejected in OpenQPEP Release Candidate v1.0.0 (Wire Format v4 \\x89QPE\\x04\\x00 required)."
+            "Legacy Production Candidate (-pc) wire format (\\x89QPE\\x03\\x00 / \\x03\\x01) is strictly rejected in "
+            "OpenQPEP Official Release 1.0.0 (zero backwards compatibility)."
         )
-    if not raw_frame.startswith(WIRE_MAGIC_V4):
+    if magic in LEGACY_BETA_WIRE_MAGICS:
         raise QPEPLegacyProtocolError(
-            "Unsupported or legacy wire magic. OpenQPEP Release Candidate v1.0.0 requires Wire Format v4 (\\x89QPE\\x04\\x00)."
+            "Legacy Beta (-beta) wire format is strictly rejected in OpenQPEP Official Release 1.0.0."
         )
-    if len(raw_frame) < 8 + 16 + 32:
-        raise QPEPWireFormatError("Truncated OpenQPEP Wire Format v4 frame.")
-    label_b = begin_label.encode("utf-8")
-    hdr = raw_frame[:8]
-    wire_nonce = raw_frame[8:24]
-    whitened = raw_frame[24:-32]
-    wire_mac = raw_frame[-32:]
-    expected_mac = qsponge_512(b"CALYX-WIRE-MAC-v4-RC-1.0.0|" + hdr + wire_nonce + label_b + whitened)[:32]
-    if not ct_eq(wire_mac, expected_mac):
-        raise QPEPMacVerificationError("Wire Format v4 integrity MAC verification failed.")
-    mask = qsponge_var(b"CALYX-WIRE-WHITEN-v4-RC-1.0.0|" + hdr + wire_nonce + label_b, len(whitened))
-    payload_bytes = bytes(a ^ b for a, b in zip(whitened, mask))
-    return payload_bytes, wire_nonce
+    if magic != WIRE_MAGIC_V5:
+        raise QPEPWireFormatError(
+            f"Unsupported OpenQPEP wire magic ({magic.hex().upper()}); Official Release 1.0.0 requires Wire Format v5 (895150450500)."
+        )
+    if len(frame) < 56:  # 6 magic + 2 hdr + 16 nonce + 32 mac
+        raise QPEPWireFormatError("Truncated OpenQPEP Wire Format v5 frame.")
+
+    hdr = frame[:8]
+    packet_type = hdr[6]
+    flags = hdr[7]
+    if flags & ~WIRE_FLAG_BUCKET_PADDED:
+        raise QPEPWireFormatError("Non-zero reserved flag bits in Wire Format v5 header.")
+
+    wire_nonce = frame[8:24]
+    whitened = frame[24:-32]
+    mac = frame[-32:]
+    lbl = label.encode("ascii")
+
+    expected_mac = qsponge_512(b"CALYX-WIRE-MAC-v5-1.0.0|" + hdr + wire_nonce + lbl + whitened)[:32]
+    if not ct_eq(mac, expected_mac):
+        raise QPEPMacVerificationError("OpenQPEP Wire Format v5 frame MAC verification failed.")
+
+    mask = qsponge_var(b"CALYX-WIRE-WHITEN-v5-1.0.0|" + hdr + wire_nonce + lbl, len(whitened))
+    body = bytes(a ^ b for a, b in zip(whitened, mask))
+    if flags & WIRE_FLAG_BUCKET_PADDED:
+        body = unpad_from_bucket(body)
+    return body, packet_type

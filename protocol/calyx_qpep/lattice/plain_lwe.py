@@ -1,10 +1,8 @@
 """
-Family 1 of Calyx Sovereign-Pentad (CSP-Omega): Pure Unstructured Plain-LWE (CULC-2048).
+Family 1 of Calyx Sovereign-Pentad (CSP-Omega): Pure Unstructured Plain-LWE (CULC-2048 — Official Release 1.0.0).
 Zero cyclotomic polynomial ring, zero NTT, zero Galois symmetry.
 Row-streams unstructured matrix A in Z_{65536}^{n x n} from qSponge-XOF with Fujisaki-Okamoto
 IND-CCA2 re-encryption verification and branchless ct_cmov implicit rejection.
-Release Candidate 1.0.0: Automatically accelerates row-accumulated matrix-vector inner loops
-via libopenqpep C99/AVX2/NEON when compiled, with bit-exact pure-Python fallback.
 """
 import os
 import struct
@@ -29,7 +27,7 @@ def _sample_centered_noise(seed: bytes, count: int, domain: bytes) -> List[int]:
 
 
 def _expand_row(seed_a: bytes, row_idx: int, n: int) -> List[int]:
-    raw = qsponge_var(b"CALYX-PLAIN-LWE-ROW|" + seed_a + struct.pack(">I", row_idx), 2 * n)
+    raw = qsponge_var(b"CALYX-PLAIN-LWE-ROW-v1.0.0|" + seed_a + struct.pack(">I", row_idx), 2 * n)
     return list(struct.unpack(f"<{n}H", raw))
 
 
@@ -42,10 +40,10 @@ class PlainLWEEngine:
         seed_s = os.urandom(32)
         seed_z = os.urandom(32)
 
-        s_flat = _sample_centered_noise(seed_s, n * nbar, b"CALYX-PLWE-S|")
-        e_flat = _sample_centered_noise(seed_s, n * nbar, b"CALYX-PLWE-E|")
+        with SecretBuffer(seed_s) as ss_buf:
+            s_flat = _sample_centered_noise(ss_buf.as_bytes(), n * nbar, b"CALYX-PLWE-S-v1.0.0|")
+            e_flat = _sample_centered_noise(ss_buf.as_bytes(), n * nbar, b"CALYX-PLWE-E-v1.0.0|")
 
-        # B = A * S + E (mod 65536), row-streamed so full n x n matrix is never stored in RAM
         b_flat = [0] * (n * nbar)
         for i in range(n):
             row = _expand_row(seed_a, i, n)
@@ -70,11 +68,10 @@ class PlainLWEEngine:
         seed_a = pk[4:36]
         b_flat = list(struct.unpack(f"<{n * nbar}H", pk[36:]))
 
-        sp = _sample_centered_noise(coins, nbar * n, b"CALYX-PLWE-SP|")
-        ep = _sample_centered_noise(coins, nbar * n, b"CALYX-PLWE-EP|")
-        epp = _sample_centered_noise(coins, nbar * nbar, b"CALYX-PLWE-EPP|")
+        sp = _sample_centered_noise(coins, nbar * n, b"CALYX-PLWE-SP-v1.0.0|")
+        ep = _sample_centered_noise(coins, nbar * n, b"CALYX-PLWE-EP-v1.0.0|")
+        epp = _sample_centered_noise(coins, nbar * nbar, b"CALYX-PLWE-EPP-v1.0.0|")
 
-        # U = S' * A + E' (nbar x n) computed row-by-row over A
         u_flat = list(ep)
         for k in range(n):
             row = _expand_row(seed_a, k, n)
@@ -88,7 +85,6 @@ class PlainLWEEngine:
                     for j in range(n):
                         u_flat[base + j] = (u_flat[base + j] + s_ik * row[j]) & 0xFFFF
 
-        # V = S' * B + E'' + Encode(msg16)
         v_flat = [0] * (nbar * nbar)
         for i in range(nbar):
             for j in range(nbar):
@@ -105,8 +101,8 @@ class PlainLWEEngine:
     @staticmethod
     def encaps(pk: bytes) -> Tuple[bytes, bytes]:
         msg16 = os.urandom(16)
-        h_pk = qsponge_var(b"CALYX-PLWE-HPK|" + pk, 32)
-        kr = qsponge_512(b"CALYX-PLWE-FO-G|" + msg16 + h_pk)
+        h_pk = qsponge_var(b"CALYX-PLWE-HPK-v1.0.0|" + pk, 32)
+        kr = qsponge_512(b"CALYX-PLWE-FO-G-v1.0.0|" + msg16 + h_pk)
         ss, coins = kr[:32], kr[32:]
         ct = PlainLWEEngine._indcpa_enc(pk, msg16, coins)
         return ct, ss
@@ -137,9 +133,9 @@ class PlainLWEEngine:
                 msg_bits[bit_pos // 8] |= (two_bits << (bit_pos % 8))
 
         m_prime = bytes(msg_bits)
-        h_pk = qsponge_var(b"CALYX-PLWE-HPK|" + pk, 32)
-        kr_prime = qsponge_512(b"CALYX-PLWE-FO-G|" + m_prime + h_pk)
+        h_pk = qsponge_var(b"CALYX-PLWE-HPK-v1.0.0|" + pk, 32)
+        kr_prime = qsponge_512(b"CALYX-PLWE-FO-G-v1.0.0|" + m_prime + h_pk)
         k_cand, r_prime = kr_prime[:32], kr_prime[32:]
         ct_prime = PlainLWEEngine._indcpa_enc(pk, m_prime, r_prime)
-        k_reject = qsponge_var(b"CALYX-PLWE-FO-REJECT|" + seed_z + ct, 32)
+        k_reject = qsponge_var(b"CALYX-PLWE-FO-REJECT-v1.0.0|" + seed_z + ct, 32)
         return ct_cmov(ct_eq(ct, ct_prime), k_cand, k_reject)

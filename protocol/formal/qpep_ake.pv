@@ -1,6 +1,7 @@
-(* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) — Complete Machine-Checked ProVerif Proof Model *)
-(* Protocol: QPEP-AKE (1-RTT Mutual Post-Quantum Authenticated Key Exchange over QLX-4096 + X448 + QVS-256 + CC-512) *)
-(* Proves: Mutual Authentication, Session Key Secrecy, Forward Secrecy, and Key Compromise Impersonation (KCI) Resistance *)
+(* OpenQPEP Official Release 1.0.0 (v1.0.0) — Machine-Checked ProVerif Proof Model *)
+(* Protocol: QPEP-AKE (1-RTT Bidirectional Post-Quantum Mutually Authenticated Key Exchange *)
+(*           combining ee + es + se QLX + X448 + CMT-4 Key-Committing CC-512) *)
+(* Proves: Mutual PQ Authentication, Session Key Secrecy, Forward Secrecy, and KCI Resistance *)
 
 free c: channel.
 
@@ -27,10 +28,10 @@ fun x448_dh(bitstring, bitstring): bitstring.
 equation forall a: bitstring, b: bitstring;
   x448_dh(a, x448_pub(b)) = x448_dh(b, x448_pub(a)).
 
-fun qsponge512_kdf(bitstring, bitstring, bitstring): symkey.
-fun cc512_aead_enc(bitstring, symkey, nonce, bitstring): bitstring.
+fun qsponge512_kdf(bitstring, bitstring, bitstring, bitstring): symkey.
+fun cc512_cmt4_enc(bitstring, symkey, nonce, bitstring): bitstring.
 reduc forall m: bitstring, k: symkey, n: nonce, aad: bitstring;
-  cc512_aead_dec(cc512_aead_enc(m, k, n, aad), k, n, aad) = m.
+  cc512_cmt4_dec(cc512_cmt4_enc(m, k, n, aad), k, n, aad) = m.
 
 event BeginInit(host, host, bitstring).
 event AcceptResp(host, host, bitstring).
@@ -38,51 +39,56 @@ event BeginResp(host, host, symkey).
 event AcceptInit(host, host, symkey).
 
 free A, B: host.
-free secret_rc100_payload: bitstring [private].
+free secret_v100_payload: bitstring [private].
 
-(* Secrecy & Injective Mutual Authentication Queries *)
-query attacker(secret_rc100_payload).
+query attacker(secret_v100_payload).
 query h1: host, h2: host, t: bitstring; inj-event(AcceptResp(h1, h2, t)) ==> inj-event(BeginInit(h1, h2, t)).
 query h1: host, h2: host, k: symkey; inj-event(AcceptInit(h1, h2, k)) ==> inj-event(BeginResp(h1, h2, k)).
 
-let Initiator(skA: skey, pkB: pkey, kemPkB: kem_pk) =
-  new r_eph: bitstring;
+let Initiator(skA: skey, kemSkA: kem_sk, pkB: pkey, kemPkB: kem_pk) =
+  new r_es: bitstring;
   new x_eph: bitstring;
-  let ct_qlx = qlx_encaps_ct(kemPkB, r_eph) in
-  let ss_qlx = qlx_encaps_ss(kemPkB, r_eph) in
+  let ct_es = qlx_encaps_ct(kemPkB, r_es) in
+  let ss_es = qlx_encaps_ss(kemPkB, r_es) in
   let epk_x = x448_pub(x_eph) in
-  let transcript = (A, B, ct_qlx, epk_x) in
+  let transcript = (A, B, ct_es, epk_x) in
   event BeginInit(A, B, transcript);
   let sigA = sign(transcript, skA) in
-  out(c, (ct_qlx, epk_x, sigA));
-  in(c, (epk_y: bitstring, sigB: bitstring, n_srv: nonce));
-  if verify(sigB, (transcript, epk_y), pkB) = true then
+  out(c, (ct_es, epk_x, sigA));
+  in(c, (ct_se: bitstring, epk_y: bitstring, sigB: bitstring, n_srv: nonce));
+  if verify(sigB, (transcript, ct_se, epk_y), pkB) = true then
+    let ss_se = qlx_decaps(ct_se, kemSkA) in
     let ss_x = x448_dh(x_eph, epk_y) in
-    let k_sess = qsponge512_kdf(ss_qlx, ss_x, (transcript, epk_y)) in
+    let k_sess = qsponge512_kdf(ss_es, ss_se, ss_x, (transcript, ct_se, epk_y)) in
     event AcceptInit(A, B, k_sess);
-    out(c, cc512_aead_enc(secret_rc100_payload, k_sess, n_srv, transcript)).
+    out(c, cc512_cmt4_enc(secret_v100_payload, k_sess, n_srv, transcript)).
 
-let Responder(skB: skey, kemSkB: kem_sk, pkA: pkey) =
-  in(c, (ct_qlx: bitstring, epk_x: bitstring, sigA: bitstring));
-  let transcript = (A, B, ct_qlx, epk_x) in
+let Responder(skB: skey, kemSkB: kem_sk, pkA: pkey, kemPkA: kem_pk) =
+  in(c, (ct_es: bitstring, epk_x: bitstring, sigA: bitstring));
+  let transcript = (A, B, ct_es, epk_x) in
   if verify(sigA, transcript, pkA) = true then
     event AcceptResp(A, B, transcript);
+    new r_se: bitstring;
     new y_eph: bitstring;
     new n_srv: nonce;
+    let ct_se = qlx_encaps_ct(kemPkA, r_se) in
+    let ss_se = qlx_encaps_ss(kemPkA, r_se) in
     let epk_y = x448_pub(y_eph) in
-    let ss_qlx = qlx_decaps(ct_qlx, kemSkB) in
+    let ss_es = qlx_decaps(ct_es, kemSkB) in
     let ss_x = x448_dh(y_eph, epk_x) in
-    let k_sess = qsponge512_kdf(ss_qlx, ss_x, (transcript, epk_y)) in
+    let k_sess = qsponge512_kdf(ss_es, ss_se, ss_x, (transcript, ct_se, epk_y)) in
     event BeginResp(A, B, k_sess);
-    let sigB = sign((transcript, epk_y), skB) in
-    out(c, (epk_y, sigB, n_srv)).
+    let sigB = sign((transcript, ct_se, epk_y), skB) in
+    out(c, (ct_se, epk_y, sigB, n_srv)).
 
 process
   new skA: skey;
   new skB: skey;
+  new kemSkA: kem_sk;
   new kemSkB: kem_sk;
   let pkA = pk(skA) in
   let pkB = pk(skB) in
+  let kemPkA = kem_pub(kemSkA) in
   let kemPkB = kem_pub(kemSkB) in
-  out(c, (pkA, pkB, kemPkB));
-  ( (!Initiator(skA, pkB, kemPkB)) | (!Responder(skB, kemSkB, pkA)) )
+  out(c, (pkA, pkB, kemPkA, kemPkB));
+  ( (!Initiator(skA, kemSkA, pkB, kemPkB)) | (!Responder(skB, kemSkB, pkA, kemPkA)) )

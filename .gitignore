@@ -1,4 +1,4 @@
-# OpenQPEP v1.0.0-rc (Release Candidate 1.0.0)
+# OpenQPEP v1.0.0 (Production Candidate 1.2.0)
 # Python
 __pycache__/
 *.py[cod]
@@ -29,10 +29,6 @@ build/
 *.key
 *.env
 .env
-*.db
-*.sqlite*
-OpenQPEP_ServerFiles/
-AIUpdateInstructions.md
 backend/
 website_server/
 directory_server/

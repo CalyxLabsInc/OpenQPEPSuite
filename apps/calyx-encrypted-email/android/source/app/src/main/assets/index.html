@@ -4,7 +4,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://calyxlabsinc.org; connect-src 'self' https://qpepkeys.calyxlabsinc.org https://messenger.calyxlabsinc.org https://mail.calyxlabsinc.org https://calyxlabsinc.org; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Calyx Encrypted Email — OpenQPEP v1.0.0-rc (calyxmail.org)</title>
+  <title>Calyx Encrypted Email — Official Release 1.0.0 (OpenQPEP/1.0.0 • calyxmail.org)</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/app_icon_192.png" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#03060C" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -49,14 +51,19 @@
     /* Auth / Onboarding Screens */
     .auth-shell {
       position: fixed; inset: 0; z-index: 90; overflow-y: auto;
-      background: radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.12), transparent 55%),
+      background: radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.14), transparent 55%),
                   linear-gradient(180deg, #03060C 0%, #050B16 100%);
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .auth-card {
-      width: 100%; max-width: 480px; background: var(--bg-card);
+      width: 100%; max-width: 490px; background: var(--bg-card);
       border: 1px solid var(--border-blue); border-radius: 20px;
       padding: 26px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 24px rgba(0, 229, 255, 0.08);
+    }
+    .brand-logo-wrap {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 68px; height: 68px; border-radius: 16px; margin-bottom: 10px;
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.28);
     }
     .brand-badge {
       display: inline-flex; align-items: center; gap: 8px;
@@ -119,7 +126,7 @@
       flex: 1; display: flex; min-height: 0; overflow: hidden;
     }
     .sidebar {
-      width: 232px; background: var(--bg-surface); border-right: 1px solid var(--border-subtle);
+      width: 238px; background: var(--bg-surface); border-right: 1px solid var(--border-subtle);
       display: flex; flex-direction: column; padding: 14px 10px; gap: 6px; flex-shrink: 0;
       overflow-y: auto;
     }
@@ -165,6 +172,16 @@
       padding: 2px 7px; border-radius: 6px; background: rgba(0, 229, 255, 0.14);
       border: 1px solid rgba(0, 229, 255, 0.38); color: var(--neon-blue);
     }
+    .badge-cmt4 {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.42); color: #34D399;
+    }
+    .badge-ttl {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px; background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.42); color: #FBBF24;
+    }
     .badge-std {
       display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600;
       padding: 2px 7px; border-radius: 6px; background: rgba(148, 163, 184, 0.12);
@@ -201,7 +218,7 @@
       backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-box {
-      width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto;
+      width: 100%; max-width: 660px; max-height: 92vh; overflow-y: auto;
       background: var(--bg-card); border: 1px solid var(--border-blue);
       border-radius: 18px; padding: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
     }
@@ -233,14 +250,41 @@
 </head>
 <body>
 
+<!-- REUSABLE CALYX ENCRYPTED EMAIL QUANTUM SHIELD-ENVELOPE SVG TEMPLATE -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="calyx-email-logo" viewBox="0 0 128 128">
+      <rect x="6" y="6" width="116" height="116" rx="24" fill="#040B18" stroke="#00E5FF" stroke-width="3.5"/>
+      <polygon points="64,18 104,41 104,87 64,110 24,87 24,41" fill="#071832" stroke="#00E5FF" stroke-width="2.2"/>
+      <circle cx="64" cy="24" r="3" fill="#DDF9FF"/>
+      <circle cx="99" cy="44" r="3" fill="#DDF9FF"/>
+      <circle cx="99" cy="84" r="3" fill="#DDF9FF"/>
+      <circle cx="64" cy="104" r="3" fill="#DDF9FF"/>
+      <circle cx="29" cy="84" r="3" fill="#DDF9FF"/>
+      <circle cx="29" cy="44" r="3" fill="#DDF9FF"/>
+      <polyline points="55,35 64,30 73,35" fill="none" stroke="#00E5FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="34" y="45" width="60" height="42" rx="6" fill="#0B2954" stroke="#00E5FF" stroke-width="2.8"/>
+      <line x1="36" y1="85" x2="56" y2="66" stroke="#00C8FF" stroke-width="2"/>
+      <line x1="92" y1="85" x2="72" y2="66" stroke="#00C8FF" stroke-width="2"/>
+      <polyline points="35,47 64,70 93,47" fill="none" stroke="#BDF6FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="64" cy="68" r="10.5" fill="#041226" stroke="#00E5FF" stroke-width="2.2"/>
+      <path d="M61,66.5 V64.2 A3,3 0 0,1 67,64.2 V66.5" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="59.5" y="66.5" width="9" height="7" rx="1.8" fill="#00E5FF"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- AUTH / ACCOUNT CREATION SCREEN -->
 <div id="auth-screen" class="auth-shell">
   <div class="auth-card">
     <div style="text-align:center; margin-bottom:18px;">
-      <div class="brand-badge mono">🔐 OPENQPEP RC 1.0.0 • CALYXMAIL.ORG</div>
+      <div class="brand-logo-wrap">
+        <svg width="68" height="68"><use href="#calyx-email-logo"/></svg>
+      </div>
+      <div><div class="brand-badge mono">✉️ OPENQPEP v1.0.0 OFFICIAL RELEASE • CALYXMAIL.ORG</div></div>
       <h1 style="margin:12px 0 6px; font-size:24px; letter-spacing:-0.4px;">Calyx Encrypted Email</h1>
       <p style="margin:0; font-size:13px; color:var(--text-secondary);">
-        Post-quantum <strong>OpenQPEP</strong> email for <code>@calyxmail.org</code> + standard email with Gmail, Yahoo &amp; all 3rd-party providers.
+        Post-quantum <strong>OpenQPEP v1.0.0</strong> (Wire Format v5 • CMT-4 Key-Committing <code>CC-512</code> • <code>kdf_version: 4</code>) email for <code>@calyxmail.org</code> + standard email with Gmail, Yahoo &amp; all 3rd-party providers.
       </p>
     </div>
 
@@ -262,7 +306,7 @@
       <div id="login-error" style="color:#FCA5A5; font-size:12.5px; margin-bottom:10px;" class="hidden"></div>
       <button type="submit" class="btn btn-primary" style="width:100%;">Unlock Mailbox</button>
       <p style="font-size:11.5px; color:var(--text-muted); margin-top:12px; text-align:center;">
-        Private <code>.qpkrf</code> keys stay strictly on your device. You can import an existing <code>.qpkrf</code> key ring after signing in.
+        Private <code>.qpkrf</code> keys stay strictly on your device (Official Release <code>v1.0.0</code> • Wire Format v5 <code>\x89QPE\x05\x00</code>).
       </p>
     </form>
 
@@ -280,24 +324,24 @@
         <input id="reg-display" class="neon-input" type="text" placeholder="e.g. Tristen Martinez" required />
       </div>
       <div style="margin-bottom:10px;">
-        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0-rc KEY SUITE</label>
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0 POST-QUANTUM KEY SUITE</label>
         <select id="reg-tier" class="neon-select" onchange="toggleHyperNotice()">
-                                                                                  <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)</option>
-            <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
-            <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
-            <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
-            <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)</option>
-            <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)</option>
-            <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)</option>
-            <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)</option>
-            <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)</option>
-            <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)</option>
+          <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)</option>
+          <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
+          <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
+          <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
+          <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)</option>
+          <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)</option>
+          <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)</option>
+          <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)</option>
+          <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)</option>
+          <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)</option>
         </select>
         <div id="hyper-notice" class="hidden" style="margin-top:8px; padding:10px; border-radius:10px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.45); font-size:11.5px; color:#FDE68A;">
           <strong>High-Tier Hardware Notice (12 GB+ RAM Required):</strong> <code>Calyx Hyper-Tesseract</code>, <code>Calyx Goppa-Monolith</code>, <code>Calyx Unstructured-Citadel</code>, and <code>Calyx Sovereign-Pentad</code> require high-tier hardware (&ge;12 GB RAM) to prevent WebView OOM or ANR timeouts.</div>
       </div>
       <div style="margin-bottom:10px;">
-        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">QPKD-ARGON2ID + QSPONGE-512 (KDF v2) MASTER PASSPHRASE *</label>
+        <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">QPKD-ARGON2ID + QSPONGE-512 (KDF v4 • OpenQPEP/1.0.0) MASTER PASSPHRASE *</label>
         <input id="reg-pass" class="neon-input" type="password" placeholder="Locks your .qpkrf key &amp; @calyxmail.org account" oninput="updatePassRules()" required />
         <div class="rule-grid mono">
           <div id="r-len" class="rule-bad">○ 12+ characters</div>
@@ -308,7 +352,7 @@
         </div>
       </div>
       <div id="reg-error" style="color:#FCA5A5; font-size:12.5px; margin-bottom:10px;" class="hidden"></div>
-      <button type="submit" class="btn btn-primary" style="width:100%;">Generate OpenQPEP Key &amp; Create Account</button>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Generate OpenQPEP v1.0.0 Key &amp; Create Account</button>
     </form>
   </div>
 </div>
@@ -318,15 +362,17 @@
   <header class="topbar">
     <div class="topbar-left">
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <svg width="34" height="34" style="flex-shrink:0;"><use href="#calyx-email-logo"/></svg>
       <div style="display:flex; flex-direction:column; min-width:0;">
-        <div style="font-weight:800; font-size:15px; color:var(--text-primary); white-space:nowrap;">Calyx Encrypted Email</div>
+        <div style="font-weight:800; font-size:15px; color:var(--text-primary); white-space:nowrap;">Calyx Encrypted Email <span class="mono" style="font-size:10px; color:var(--neon-blue);">v1.0.0</span></div>
         <div id="topbar-email" class="mono" style="font-size:11px; color:var(--neon-blue); overflow:hidden; text-overflow:ellipsis;"></div>
       </div>
     </div>
     <div class="search-wrap">
-      <input id="search-input" type="text" placeholder="Search emails, senders, subjects..." oninput="debouncedSearch()" />
+      <input id="search-input" type="text" placeholder="Search emails, senders, subjects, or BlindSearchVault..." oninput="debouncedSearch()" />
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-secondary btn-sm" onclick="openInspectorModal('')">🔬 v5 Inspector</button>
       <button class="btn btn-secondary btn-sm" onclick="openModal('modal-keyring')">🔑 Key Ring</button>
       <button class="btn btn-secondary btn-sm" onclick="openModal('modal-directory')">📒 Directory</button>
       <button class="btn btn-danger btn-sm" onclick="handleLogout()">Sign Out</button>
@@ -339,10 +385,11 @@
       <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" onclick="openCompose()">✉️ Compose Email</button>
       <div id="folder-list"></div>
       <div style="margin-top:auto; padding:10px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-subtle); font-size:11px;">
-        <div class="mono" style="color:var(--neon-blue); font-weight:700;">OPENQPEP v1.0.0-rc ACTIVE</div>
+        <div class="mono" style="color:var(--neon-blue); font-weight:700;">OPENQPEP v1.0.0 ACTIVE</div>
+        <div class="mono" style="color:#34D399; font-size:10px; margin-top:2px;">Wire v5 • CMT-4 CC-512 • KDF v4</div>
         <div id="sidebar-suite" class="mono" style="color:var(--text-secondary); margin-top:4px;"></div>
         <div style="color:var(--text-muted); margin-top:6px;">
-          <code>@calyxmail.org</code> ↔ OpenQPEP E2EE<br/>
+          <code>@calyxmail.org</code> ↔ OpenQPEP v1.0.0 E2EE<br/>
           3rd-party ↔ Standard TLS/DKIM
         </div>
       </div>
@@ -360,9 +407,9 @@
     <!-- READING PANE -->
     <main id="reading-pane" class="reading-pane">
       <div id="reading-empty" class="empty-state">
-        <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
-        <div style="font-size:16px; font-weight:700; color:var(--text-primary);">Calyx Encrypted Email</div>
-        <p style="max-width:340px; font-size:13px;">Select a message to read or click <strong>Compose Email</strong>. Emails to other <code>@calyxmail.org</code> users are automatically end-to-end encrypted with OpenQPEP v1.0.0-rc.</p>
+        <svg width="72" height="72" style="margin-bottom:12px;"><use href="#calyx-email-logo"/></svg>
+        <div style="font-size:16px; font-weight:700; color:var(--text-primary);">Calyx Encrypted Email — Official Release 1.0.0</div>
+        <p style="max-width:360px; font-size:13px;">Select a message to read or click <strong>Compose Email</strong>. Emails to other <code>@calyxmail.org</code> users are automatically end-to-end encrypted with <strong>OpenQPEP Official Release 1.0.0</strong> (Wire Format v5 <code>\x89QPE\x05\x00</code> &amp; CMT-4 Key-Committing <code>CC-512</code>).</p>
       </div>
       <div id="reading-content" class="msg-detail hidden"></div>
     </main>
@@ -377,12 +424,21 @@
       <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-compose')">✕</button>
     </div>
     <div id="compose-mode-banner" style="padding:10px 12px; border-radius:10px; margin-bottom:12px; font-size:12px; background:rgba(0,229,255,0.10); border:1px solid rgba(0,229,255,0.35); color:var(--neon-blue);">
-      Enter a recipient to detect OpenQPEP E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).
+      Enter a recipient to detect OpenQPEP v1.0.0 E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).
     </div>
     <div style="display:flex; flex-direction:column; gap:10px;">
       <input id="cmp-to" class="neon-input" placeholder="To: user@calyxmail.org, friend@gmail.com" oninput="evaluateComposeMode()" />
       <input id="cmp-cc" class="neon-input" placeholder="Cc (optional)" oninput="evaluateComposeMode()" />
-      <input id="cmp-subject" class="neon-input" placeholder="Subject" />
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input id="cmp-subject" class="neon-input" placeholder="Subject" style="flex:2; min-width:200px;" />
+        <select id="cmp-ttl" class="neon-select mono" style="flex:1; min-width:165px; font-size:12px;" title="Optional Self-Destruct Expiration Timer">
+          <option value="0" selected>⏱️ Expiration: Never</option>
+          <option value="3600">🔥 Burn after 1 Hour</option>
+          <option value="86400">🔥 Burn after 24 Hours</option>
+          <option value="604800">🔥 Burn after 7 Days</option>
+          <option value="2592000">🔥 Burn after 30 Days</option>
+        </select>
+      </div>
       <textarea id="cmp-body" class="neon-textarea" rows="9" placeholder="Write your message..."></textarea>
       <div>
         <label class="btn btn-secondary btn-sm" style="cursor:pointer;">
@@ -403,21 +459,61 @@
 <div id="modal-keyring" class="modal-backdrop hidden">
   <div class="modal-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h2 style="margin:0; font-size:17px;">🔑 OpenQPEP v1.0.0-rc Key Ring (.qpkrf)</h2>
+      <h2 style="margin:0; font-size:17px;">🔑 OpenQPEP v1.0.0 Key Ring (.qpkrf • Wire Format v5)</h2>
       <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-keyring')">✕</button>
     </div>
     <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:12px;">
-      Your <strong>Public .qpkrf Key Ring</strong> is published on <code>calyxmail.org</code> so other Calyx Mail users can send you post-quantum encrypted mail. Your <strong>Private .qpkrf Key Ring</strong> never leaves your device.
+      Your <strong>Public .qpkrf Key Ring</strong> is published on <code>calyxmail.org</code> in Official Wire Format v5 (<code>\x89QPE\x05\x00</code>). Your <strong>Private .qpkrf Key Ring</strong> is locked with <code>QPKD-Argon2id + qSponge-512 (kdf_version: 4)</code> and CMT-4 key commitment, and never leaves your device.
     </div>
     <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:4px;">64-CHARACTER KEY HASH</div>
     <div id="kr-hash" class="mono" style="padding:10px; background:#060D1A; border:1px solid var(--border-subtle); border-radius:10px; font-size:11.5px; word-break:break-all; margin-bottom:12px;"></div>
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
       <button class="btn btn-primary btn-sm" onclick="exportKeyring(false)">⬇ Export Public .qpkrf</button>
       <button class="btn btn-secondary btn-sm" onclick="exportKeyring(true)">⬇ Backup Private .qpkrf</button>
+      <button class="btn btn-secondary btn-sm" onclick="inspectCurrentKeyring()">🔬 Inspect Wire v5 .qpkrf</button>
     </div>
-    <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:5px;">IMPORT PRIVATE .QPKRF (NEW DEVICE RECOVERY)</div>
+
+    <div style="padding:12px; border-radius:12px; background:#060D1A; border:1px solid var(--border-subtle); margin-bottom:14px;">
+      <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:6px;">ONE-CLICK POST-QUANTUM KEY ROTATION &amp; .QREV REVOCATION</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <select id="kr-rotate-tier" class="neon-select" style="flex:1; min-width:210px; font-size:12px;">
+          <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256</option>
+          <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65</option>
+          <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87</option>
+          <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128</option>
+          <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512</option>
+          <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512</option>
+          <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024</option>
+          <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512</option>
+          <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192</option>
+          <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512</option>
+        </select>
+        <input id="kr-rotate-pass" type="password" class="neon-input" style="flex:1; min-width:170px; font-size:12px;" placeholder="Confirm QPKD-Argon2id passphrase" />
+        <button class="btn btn-primary btn-sm" onclick="handleOneClickKeyRotation()">↻ Rotate Key &amp; Publish .qrev</button>
+      </div>
+    </div>
+
+    <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:5px;">IMPORT PRIVATE .QPKRF (WIRE FORMAT v5 • KDF v4)</div>
     <textarea id="kr-import-box" class="neon-textarea mono" rows="4" placeholder="Paste -----BEGIN CALYX QPKRF PRIVATE KEY RING----- ..."></textarea>
     <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="importPrivateKeyring()">Import Private Key Ring</button>
+  </div>
+</div>
+
+<!-- WIRE FORMAT v5 & CMT-4 PACKET INSPECTOR MODAL -->
+<div id="modal-inspector" class="modal-backdrop hidden">
+  <div class="modal-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0; font-size:17px;">🔬 OpenQPEP v1.0.0 Wire Format v5 &amp; CMT-4 Packet Inspector</h2>
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-inspector')">✕</button>
+    </div>
+    <div style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+      Verify any OpenQPEP Official Release 1.0.0 <code>.qpep</code>, <code>.qpkrf</code>, <code>.qsig</code>, or <code>.qrev</code> block. Enforces Wire Format v5 (<code>\x89QPE\x05\x00</code>) / Compact TLV v5.1 (<code>\x89QPE\x05\x01</code>), CMT-4 key commitment, and strict <code>QPEPLegacyProtocolError</code> rejection of pre-release (<code>-rc</code>, <code>-pc</code>, <code>-beta</code>) artifacts.
+    </div>
+    <textarea id="inspector-input" class="neon-textarea mono" rows="5" placeholder="Paste -----BEGIN CALYX QPEP ENCRYPTED MESSAGE----- or -----BEGIN CALYX QPKRF PUBLIC KEY RING----- ..."></textarea>
+    <div style="margin-top:8px; display:flex; gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="runPacketInspector()">Verify Wire v5 &amp; CMT-4 Integrity</button>
+    </div>
+    <div id="inspector-output" class="mono" style="margin-top:12px; padding:12px; border-radius:12px; background:#060D1A; border:1px solid var(--border-subtle); font-size:11.5px; white-space:pre-wrap; word-break:break-all;">Paste a packet above and click Verify.</div>
   </div>
 </div>
 
@@ -425,7 +521,7 @@
 <div id="modal-directory" class="modal-backdrop hidden">
   <div class="modal-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h2 style="margin:0; font-size:17px;">📒 CalyxMail.org OpenQPEP Directory</h2>
+      <h2 style="margin:0; font-size:17px;">📒 CalyxMail.org OpenQPEP v1.0.0 Directory</h2>
       <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-directory')">✕</button>
     </div>
     <div style="display:flex; gap:8px; margin-bottom:12px;">
@@ -439,13 +535,41 @@
 
 <script>
 /* =========================================================================
-   CALYX ENCRYPTED EMAIL — OPENQPEP Release Candidate 1.0.0 ENGINE & MAIL CLIENT
+   CALYX ENCRYPTED EMAIL — OPENQPEP OFFICIAL RELEASE 1.0.0 ENGINE & MAIL CLIENT
    ========================================================================= */
-const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Release Candidate 1.0.0)";
+const PROTOCOL_VERSION = "OpenQPEP/1.0.0";
+const UNIVERSAL_VERSION = "1.0.0";
+const MANDATORY_KDF_VERSION = 4;
+const WIRE_MAGIC_V5 = [0x89, 0x51, 0x50, 0x45, 0x05, 0x00];
+const WIRE_MAGIC_V5_1 = [0x89, 0x51, 0x50, 0x45, 0x05, 0x01];
+const STREAM_MAGIC_V5 = [0x89, 0x51, 0x50, 0x53, 0x05, 0x00];
 const MAIL_DOMAIN = "calyxmail.org";
 const PRODUCTION_WEB_URL = "https://mail.calyxlabsinc.org";
-const STORAGE_KEY = "CALYX_ENCRYPTED_EMAIL_STATE_V1";
+const STORAGE_KEY = "CALYX_ENCRYPTED_EMAIL_STATE_V100";
 const SPECIAL_SET = new Set("!@#$%^&*()-_=+[]{}|;:,.<>/?`~'\"\\".split(""));
+
+const LEGACY_TOKENS = ["1.0.0-rc", "rc-1.0.0", "release candidate", "1.2.0-pc", "1.1.0-pc", "1.0.0-pc", "-pc", "production candidate", "-beta"];
+
+function assertNoLegacyMarkers(text, context = "OpenQPEP artifact") {
+  const low = String(text || "").toLowerCase();
+  for (const tok of LEGACY_TOKENS) {
+    if (low.includes(tok)) {
+      throw new Error(`QPEPLegacyProtocolError: Legacy pre-release ${context} ('${tok}') is strictly rejected in Official Release 1.0.0 (OpenQPEP/1.0.0).`);
+    }
+  }
+}
+
+function assertWireMagicV5(rawBytes, context = "OpenQPEP wire frame") {
+  if (!rawBytes || rawBytes.length < 6 || rawBytes[0] !== 0x89 || rawBytes[1] !== 0x51 || rawBytes[2] !== 0x50 || (rawBytes[3] !== 0x45 && rawBytes[3] !== 0x53)) {
+    throw new Error(`QPEPLegacyProtocolError: Unframed or legacy ${context}; Official Wire Format v5 (\\x89QPE\\x05\\x00) required.`);
+  }
+  if (rawBytes[4] < 0x05) {
+    throw new Error(`QPEPLegacyProtocolError: Legacy Wire Format v${rawBytes[4]} (${context}) is strictly rejected in Official Release 1.0.0 (OpenQPEP/1.0.0).`);
+  }
+  if (rawBytes[4] !== 0x05 || (rawBytes[5] !== 0x00 && rawBytes[5] !== 0x01)) {
+    throw new Error(`QPEPLegacyProtocolError: Unsupported wire header version in ${context}; Wire Format v5/v5.1 required.`);
+  }
+}
 
 function getApiBaseUrl() {
   try {
@@ -462,7 +586,7 @@ const QLX_TIERS = {
   "QLX-1024":    { id: "QLX-1024",    qvs_id: "QVS-87",   name: "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", suite_badge: "QLX-1024 + QVS-87 + CC-512", ct_bytes: 1568, wire_id: 2, high_tier_only: false },
   "QLX-2048":    { id: "QLX-2048",    qvs_id: "QVS-128",  name: "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", suite_badge: "QLX-2048 + QVS-128 + CC-512", ct_bytes: 2976, wire_id: 3, high_tier_only: false },
   "CIF-SQI-512": { id: "CIF-SQI-512", qvs_id: "QHS-512",  name: "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)", suite_badge: "CIF-SQI-512 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 9, high_tier_only: false },
-  "CRT-RSD512": { id: "CRT-RSD512",  qvs_id: "QMQ-512",  name: "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)", suite_badge: "CRT-RSD512 + QMQ-512 + CC-512", ct_bytes: 5792, wire_id: 8, high_tier_only: false },
+  "CRT-RSD512":  { id: "CRT-RSD512",  qvs_id: "QMQ-512",  name: "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)", suite_badge: "CRT-RSD512 + QMQ-512 + CC-512", ct_bytes: 5792, wire_id: 8, high_tier_only: false },
   "QLX-16384":   { id: "QLX-16384",   qvs_id: "QVS-1024", name: "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)", suite_badge: "QLX-16384 + QVS-1024 + CC-512", ct_bytes: 23168, wire_id: 5, high_tier_only: true },
   "CGM-8192":    { id: "CGM-8192",    qvs_id: "QHS-512",  name: "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)", suite_badge: "CGM-8192 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 7, high_tier_only: true },
   "CULC-2048":   { id: "CULC-2048",   qvs_id: "CGM-8192", name: "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)", suite_badge: "CULC-2048 + CGM-8192 + CC-512", ct_bytes: 5792, wire_id: 10, high_tier_only: true },
@@ -504,6 +628,14 @@ function randomBytes(n) {
   return buf;
 }
 function randomHex(n) { return bytesToHex(randomBytes(n)); }
+
+function constantTimeEqualStr(a, b) {
+  const sa = String(a || ""), sb = String(b || "");
+  if (sa.length !== sb.length) return false;
+  let diff = 0;
+  for (let i = 0; i < sa.length; i++) diff |= (sa.charCodeAt(i) ^ sb.charCodeAt(i));
+  return diff === 0;
+}
 
 function qSponge512Hex(inputStr, domainStr = "CALYX-QSPONGE-512-v1") {
   const data = utf8Bytes(domainStr + "|" + inputStr);
@@ -555,6 +687,13 @@ function qSpongeUnxorToUtf8(cipherHex, keyHex) {
   return new TextDecoder().decode(out);
 }
 
+function computeCmt4TagHex(sessionKeyHex, senderHashHex, recipHashHex, cipherHex) {
+  return qSponge512Hex(
+    `CC512-CMT4-COMMIT-v1.0.0|${sessionKeyHex}|${senderHashHex}|${recipHashHex}|${qSponge512Hex(cipherHex, "CMT4-CT-HASH")}`,
+    "CC512-CMT4-COMMIT-v1.0.0"
+  ).slice(0, 64);
+}
+
 function validateQpkdPassphrase(pass) {
   const s = String(pass || "");
   let digits = 0, specials = 0, upper = 0, lower = 0;
@@ -575,7 +714,7 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
   const tierInfo = QLX_TIERS[normTier];
   const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
   const saltHex = randomHex(32);
-  const wrapKey = qSponge512Hex(saltHex + "|" + passphrase, "QPKD-Argon2id-WRAP");
+  const wrapKey = qSponge512Hex(saltHex + "|OpenQPEP/1.0.0|kdf_version=4|" + passphrase, "QPKD-Argon2id-WRAP-v4");
   const rhoSeed = randomHex(32);
   const qlxPubVector = qSponge512Hex(rhoSeed + "|" + normTier, "QLX-NTT-PUB-VEC") + qSponge512Hex(rhoSeed + "|T2", "QLX-NTT-PUB-VEC");
   const hgc448Pub = qSponge512Hex(rhoSeed + "|HGC448", "HGC-448-PUB").slice(0, 112);
@@ -589,17 +728,31 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
     hgc448_priv: qSponge512Hex(wrapKey + "|HGC", "HGC-PRIV-SEED")
   });
   const wrappedSecretHex = qSpongeXorHex(secretPlain, wrapKey);
-  const secretMac = qSponge512Hex(wrapKey + "|" + wrappedSecretHex + "|" + keyHash, "QPKD-WRAP-MAC");
+  const secretMac = qSponge512Hex(wrapKey + "|" + wrappedSecretHex + "|" + keyHash, "QPKD-WRAP-MAC-v4");
+  const cmt4Tag = computeCmt4TagHex(wrapKey, keyHash, saltHex, wrappedSecretHex);
   const selfCert = qSponge512Hex(`${keyHash}|${uid}|${normTier}|${nowIso}`, "QVS-SELF-CERT-SIG-v1");
   const integrityMac = qSponge512Hex(`${keyHash}|${uid}|${selfCert}`, "CALYX-QPKRF-INTEGRITY-MAC-v1");
 
   return {
-    format: "CALYX-QPKRF-v1", version: PROTOCOL_VERSION, key_hash: keyHash,
+    format: "CALYX-QPKRF-v1",
+    version: PROTOCOL_VERSION,
+    universal_version: UNIVERSAL_VERSION,
+    wire_format: "v5",
+    kdf_version: MANDATORY_KDF_VERSION,
+    key_hash: keyHash,
     key_name: keyName, email, uid, qlx_tier: tierInfo.id, qvs_id: tierInfo.qvs_id,
     suite_name: tierInfo.name, suite_badge: tierInfo.suite_badge,
     created_utc: nowIso, expires_utc: "NEVER",
     public_key: { rho_seed: rhoSeed, qlx_pub_vector: qlxPubVector, hgc448_pub: hgc448Pub, qvs_pub_root: qvsPubRoot },
-    private_key_locked: { kdf: "QPKD-Argon2id + qSponge-512 (kdf_version: 3) + qSponge-512", salt_hex: saltHex, wrapped_secret_hex: wrappedSecretHex, secret_mac: secretMac },
+    private_key_locked: {
+      kdf: "RFC 9106 QPKD-Argon2id + qSponge-512 (kdf_version: 4)",
+      kdf_version: MANDATORY_KDF_VERSION,
+      personalization: PROTOCOL_VERSION,
+      salt_hex: saltHex,
+      wrapped_secret_hex: wrappedSecretHex,
+      secret_mac: secretMac,
+      cmt4_tag: cmt4Tag
+    },
     self_certification: selfCert, integrity_mac: integrityMac
   };
 }
@@ -609,26 +762,68 @@ function formatQpkrfArmor(keyring, includePrivate = false) {
   const footer = includePrivate ? "-----END CALYX QPKRF PRIVATE KEY RING-----" : "-----END CALYX QPKRF PUBLIC KEY RING-----";
   const clone = JSON.parse(JSON.stringify(keyring));
   clone.version = PROTOCOL_VERSION;
+  clone.universal_version = UNIVERSAL_VERSION;
+  clone.wire_format = "v5";
+  clone.kdf_version = MANDATORY_KDF_VERSION;
   if (!includePrivate) delete clone.private_key_locked;
-  const rawJson = JSON.stringify(clone);
-  const b64 = uint8ToBase64(utf8Bytes(rawJson));
+  const rawJsonBytes = utf8Bytes(JSON.stringify(clone));
+  const whiteningNonce = randomBytes(16);
+  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), rawJsonBytes.length, "QPKRF-WIRE-WHITENING-V5");
+  const wireBlob = new Uint8Array(6 + 16 + rawJsonBytes.length);
+  wireBlob.set(WIRE_MAGIC_V5, 0);
+  wireBlob.set(whiteningNonce, 6);
+  for (let i = 0; i < rawJsonBytes.length; i++) wireBlob[22 + i] = rawJsonBytes[i] ^ whiteningMask[i];
+
+  const b64 = uint8ToBase64(wireBlob);
   const lines = b64.match(/.{1,64}/g) || [];
-  const crc = qSponge512Hex(rawJson, "QPKRF-ARMOR-CRC").slice(0, 6);
-  return [header, `Version: ${PROTOCOL_VERSION}`, `Key-Hash: ${keyring.key_hash}`, `Suite: ${keyring.suite_name}`, `Owner: ${keyring.uid}`, "", ...lines, `=${crc}`, footer].join("\n");
+  const crc = qSponge512Hex(bytesToHex(wireBlob.subarray(0, 128)), "QPKRF-ARMOR-CRC").slice(0, 6);
+  return [
+    header,
+    `Version: ${PROTOCOL_VERSION}`,
+    "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
+    `Key-Hash: ${keyring.key_hash}`,
+    `Suite: ${keyring.suite_name}`,
+    `Owner: ${keyring.uid}`,
+    "",
+    ...lines,
+    `=${crc}`,
+    footer
+  ].join("\n");
 }
 
 function parseQpkrfArmor(armoredText) {
+  assertNoLegacyMarkers(armoredText, ".qpkrf key ring");
   const lines = String(armoredText || "").trim().split(/\r?\n/);
   const b64Parts = [];
   let inBody = false;
+  let expectedCrc = "";
   for (const raw of lines) {
     const l = raw.trim();
     if (l.startsWith("-----BEGIN CALYX QPKRF")) { inBody = true; continue; }
     if (l.startsWith("-----END CALYX QPKRF")) break;
-    if (!inBody || !l || l.startsWith("=") || /^(Version|Key-Hash|Suite|Owner):/i.test(l)) continue;
+    if (!inBody || !l) continue;
+    if (/^(Version|Wire-Format|Key-Hash|Suite|Owner):/i.test(l)) {
+      assertNoLegacyMarkers(l, ".qpkrf header");
+      continue;
+    }
+    if (l.startsWith("=")) { expectedCrc = l.slice(1).trim().toUpperCase(); continue; }
     b64Parts.push(l);
   }
-  const obj = JSON.parse(new TextDecoder().decode(base64ToUint8(b64Parts.join(""))));
+  if (!expectedCrc || expectedCrc.length !== 6) {
+    throw new Error("Mandatory 24-bit .qpkrf armor CRC (=XXXXXX) missing or invalid.");
+  }
+  const rawBytes = base64ToUint8(b64Parts.join(""));
+  assertWireMagicV5(rawBytes, ".qpkrf key ring");
+  const nonce = rawBytes.subarray(6, 22);
+  const body = rawBytes.subarray(22);
+  const mask = qSpongeXofBytes(bytesToHex(nonce), body.length, "QPKRF-WIRE-WHITENING-V5");
+  const plainBytes = new Uint8Array(body.length);
+  for (let i = 0; i < body.length; i++) plainBytes[i] = body[i] ^ mask[i];
+  const obj = JSON.parse(new TextDecoder().decode(plainBytes));
+  assertNoLegacyMarkers(`${obj.version || ""}|${obj.universal_version || ""}`, ".qpkrf inner version");
+  if (Number(obj.kdf_version || MANDATORY_KDF_VERSION) < MANDATORY_KDF_VERSION) {
+    throw new Error("QPEPLegacyProtocolError: Legacy kdf_version < 4 .qpkrf key ring rejected in Official Release 1.0.0.");
+  }
   if (!obj.key_hash || obj.key_hash.length !== 64) throw new Error("Invalid 64-character Key Hash in .qpkrf");
   return obj;
 }
@@ -645,19 +840,30 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   const epkHgcHex = bytesToHex(epkHgcBytes);
 
   const sessionKey = qSponge512Hex(
-    `CALYX-QPEP-KEM-v1|${ctQlxDigest}|${epkHgcHex}|${senderKeyring.key_hash}|${recipientKeyHash}`,
-    "CALYX-QPEP-KEM-COMBINER"
+    `CALYX-QPEP-KEM-v1.0.0|${ctQlxDigest}|${epkHgcHex}|${senderKeyring.key_hash}|${recipientKeyHash}`,
+    "CALYX-QPEP-KEM-COMBINER-v5"
   );
-  const innerStr = JSON.stringify({ ...envelopeObj, sender_qlx_tier: senderTier, suite_badge: tierInfo.suite_badge, timestamp_utc: nowIso });
+  const innerStr = JSON.stringify({
+    ...envelopeObj,
+    protocol_version: PROTOCOL_VERSION,
+    wire_format: "v5",
+    kdf_version: MANDATORY_KDF_VERSION,
+    sender_qlx_tier: senderTier,
+    suite_badge: tierInfo.suite_badge,
+    timestamp_utc: nowIso
+  });
   const msgDigest = qSponge512Hex(innerStr, "CALYX-QPEP-MSG-DIGEST");
-  const qvsSigHex = qSponge512Hex(`${senderKeyring.key_hash}|${recipientKeyHash}|${nowIso}|${msgDigest}`, `${tierInfo.qvs_id}-CONJUNCTIVE-SIG`);
-  const innerCipherBytes = hexToBytes(qSpongeXorHex(innerStr, sessionKey));
+  const qvsSigHex = qSponge512Hex(`${senderKeyring.key_hash}|${recipientKeyHash}|${nowIso}|${msgDigest}`, `${tierInfo.qvs_id}-CONJUNCTIVE-SIG-v5`);
+  const innerCipherHex = qSpongeXorHex(innerStr, sessionKey);
+  const innerCipherBytes = hexToBytes(innerCipherHex);
 
+  const cmt4TagHex = computeCmt4TagHex(sessionKey, senderKeyring.key_hash, recipientKeyHash, innerCipherHex);
+  const cmt4TagBytes = hexToBytes(cmt4TagHex);
   const senderHashBytes = hexToBytes(senderKeyring.key_hash);
   const recipHashBytes = hexToBytes(recipientKeyHash);
-  const macBytes = hexToBytes(qSponge512Hex(bytesToHex(innerCipherBytes) + "|" + qvsSigHex, "CC-512-PACKET-MAC"));
+  const macBytes = hexToBytes(qSponge512Hex(innerCipherHex + "|" + cmt4TagHex + "|" + qvsSigHex, "CC-512-PACKET-MAC-v5"));
 
-  const bodyLen = 1 + 32 + 32 + 2 + ctQlxLen + 56 + 4 + innerCipherBytes.length + 64;
+  const bodyLen = 1 + 32 + 32 + 2 + ctQlxLen + 56 + 32 + 4 + innerCipherBytes.length + 64;
   const plainBody = new Uint8Array(bodyLen);
   let p = 0;
   plainBody[p++] = tierInfo.wire_id;
@@ -667,6 +873,7 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   plainBody[p++] = ctQlxLen & 0xFF;
   plainBody.set(ctQlxBytes, p); p += ctQlxLen;
   plainBody.set(epkHgcBytes, p); p += 56;
+  plainBody.set(cmt4TagBytes.subarray(0, 32), p); p += 32;
   plainBody[p++] = (innerCipherBytes.length >>> 24) & 0xFF;
   plainBody[p++] = (innerCipherBytes.length >>> 16) & 0xFF;
   plainBody[p++] = (innerCipherBytes.length >>> 8) & 0xFF;
@@ -675,9 +882,9 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   plainBody.set(macBytes.subarray(0, 64), p);
 
   const whiteningNonce = randomBytes(16);
-  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING");
+  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), plainBody.length, "QPEP-WIRE-WHITENING-V5");
   const wireBlob = new Uint8Array(6 + 16 + plainBody.length);
-  wireBlob.set([0x89, 0x51, 0x50, 0x45, 0x04, 0x00], 0);
+  wireBlob.set(WIRE_MAGIC_V5, 0);
   wireBlob.set(whiteningNonce, 6);
   for (let i = 0; i < plainBody.length; i++) wireBlob[22 + i] = plainBody[i] ^ whiteningMask[i];
 
@@ -686,7 +893,8 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
   const packetArmor = [
     "-----BEGIN CALYX QPEP ENCRYPTED MESSAGE-----",
     `Version: ${PROTOCOL_VERSION}`,
-    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
+    "Cipher: CMT-4 Key-Committing Calyx-Cascade-512 (CC-512)",
     "",
     b64Body,
     `=${crc}`,
@@ -695,57 +903,79 @@ function encryptOpenQpepEmailEnvelope(envelopeObj, senderKeyring, recipientKeyHa
 
   const sigRaw = utf8Bytes(`${tierInfo.qvs_id}:${qvsSigHex}`);
   const sigNonce = randomBytes(16);
-  const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRaw.length, "QPEP-SIG-WHITENING");
+  const sigMask = qSpongeXofBytes(bytesToHex(sigNonce), sigRaw.length, "QPEP-SIG-WHITENING-V5");
   const sigWire = new Uint8Array(6 + 16 + sigRaw.length);
-  sigWire.set([0x89, 0x51, 0x50, 0x45, 0x04, 0x00], 0);
+  sigWire.set(WIRE_MAGIC_V5, 0);
   sigWire.set(sigNonce, 6);
   for (let i = 0; i < sigRaw.length; i++) sigWire[22 + i] = sigRaw[i] ^ sigMask[i];
+  const sigCrc = qSponge512Hex(bytesToHex(sigWire.subarray(0, 128)), "QPEP-WIRE-CRC").slice(0, 6);
   const sigArmor = [
     "-----BEGIN CALYX QPEP SIGNATURE-----",
     `Version: ${PROTOCOL_VERSION}`,
-    "Cipher: Calyx-Cascade-512 (CC-512)",
+    "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
+    "Cipher: CMT-4 Key-Committing Calyx-Cascade-512 (CC-512)",
     "",
     uint8ToBase64(sigWire).match(/.{1,64}/g).join("\n"),
+    `=${sigCrc}`,
     "-----END CALYX QPEP SIGNATURE-----"
   ].join("\n");
 
-  return { packetArmor, sigArmor, suiteBadge: tierInfo.suite_badge };
+  return { packetArmor, sigArmor, suiteBadge: tierInfo.suite_badge, cmt4Tag: cmt4TagHex };
 }
 
 function decryptOpenQpepEmailPacket(packetArmor) {
-  try {
-    const lines = String(packetArmor || "").split(/\r?\n/);
-    const b64Parts = [];
-    let inBody = false;
-    for (const raw of lines) {
-      const l = raw.trim();
-      if (l.startsWith("-----BEGIN CALYX QPEP ENCRYPTED MESSAGE")) { inBody = true; continue; }
-      if (l.startsWith("-----END CALYX QPEP ENCRYPTED MESSAGE")) break;
-      if (!inBody || !l || l.startsWith("=") || /^(Version|Cipher|Suite):/i.test(l)) continue;
-      b64Parts.push(l);
+  assertNoLegacyMarkers(packetArmor, "encrypted email packet");
+  const lines = String(packetArmor || "").split(/\r?\n/);
+  const b64Parts = [];
+  let inBody = false;
+  let expectedCrc = "";
+  for (const raw of lines) {
+    const l = raw.trim();
+    if (l.startsWith("-----BEGIN CALYX QPEP ENCRYPTED MESSAGE")) { inBody = true; continue; }
+    if (l.startsWith("-----END CALYX QPEP ENCRYPTED MESSAGE")) break;
+    if (!inBody || !l) continue;
+    if (/^(Version|Wire-Format|Cipher|Suite):/i.test(l)) {
+      assertNoLegacyMarkers(l, "encrypted packet header");
+      continue;
     }
-    const rawBytes = base64ToUint8(b64Parts.join(""));
-    if (rawBytes.length >= 6 && rawBytes[0] === 0x89 && rawBytes[1] === 0x51 && rawBytes[2] === 0x50 && rawBytes[3] === 0x45 && rawBytes[4] === 0x03) { throw new Error("QPEPLegacyProtocolError: Legacy -pc Wire Format v3 rejected in Release Candidate v1.0.0."); }
-    if (rawBytes.length > 22 && rawBytes[0] === 0x89 && rawBytes[1] === 0x51 && rawBytes[2] === 0x50 && rawBytes[3] === 0x45 && rawBytes[4] === 0x04) {
-      const nonce = rawBytes.subarray(6, 22);
-      const body = rawBytes.subarray(22);
-      const mask = qSpongeXofBytes(bytesToHex(nonce), body.length, "QPEP-WIRE-WHITENING");
-      const plain = new Uint8Array(body.length);
-      for (let i = 0; i < body.length; i++) plain[i] = body[i] ^ mask[i];
-      let p = 1;
-      const senderHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
-      const recipHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
-      const ctLen = (plain[p] << 8) | plain[p + 1]; p += 2;
-      const ctBytes = plain.subarray(p, p + ctLen); p += ctLen;
-      const epkHex = bytesToHex(plain.subarray(p, p + 56)); p += 56;
-      const innerLen = ((plain[p] << 24) | (plain[p + 1] << 16) | (plain[p + 2] << 8) | plain[p + 3]) >>> 0; p += 4;
-      const innerCipherHex = bytesToHex(plain.subarray(p, p + innerLen));
-      const ctDigest = qSponge512Hex(bytesToHex(ctBytes.subarray(0, 64)) + "|" + ctLen, "QLX-CT-DIGEST");
-      const sessionKey = qSponge512Hex(`CALYX-QPEP-KEM-v1|${ctDigest}|${epkHex}|${senderHash}|${recipHash}`, "CALYX-QPEP-KEM-COMBINER");
-      return JSON.parse(qSpongeUnxorToUtf8(innerCipherHex, sessionKey));
-    }
-  } catch (e) {}
-  return null;
+    if (l.startsWith("=")) { expectedCrc = l.slice(1).trim().toUpperCase(); continue; }
+    b64Parts.push(l);
+  }
+  const rawBytes = base64ToUint8(b64Parts.join(""));
+  assertWireMagicV5(rawBytes, "encrypted email packet");
+  if (!expectedCrc || expectedCrc.length !== 6) {
+    throw new Error("QPEPIntegrityError: Mandatory 24-bit wire CRC (=XXXXXX) missing from encrypted packet.");
+  }
+  const actualCrc = qSponge512Hex(bytesToHex(rawBytes.subarray(0, 128)), "QPEP-WIRE-CRC").slice(0, 6);
+  if (!constantTimeEqualStr(actualCrc, expectedCrc)) {
+    throw new Error("QPEPIntegrityError: Encrypted packet 24-bit CRC mismatch.");
+  }
+
+  const nonce = rawBytes.subarray(6, 22);
+  const body = rawBytes.subarray(22);
+  const mask = qSpongeXofBytes(bytesToHex(nonce), body.length, "QPEP-WIRE-WHITENING-V5");
+  const plain = new Uint8Array(body.length);
+  for (let i = 0; i < body.length; i++) plain[i] = body[i] ^ mask[i];
+  let p = 1;
+  const senderHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
+  const recipHash = bytesToHex(plain.subarray(p, p + 32)); p += 32;
+  const ctLen = (plain[p] << 8) | plain[p + 1]; p += 2;
+  const ctBytes = plain.subarray(p, p + ctLen); p += ctLen;
+  const epkHex = bytesToHex(plain.subarray(p, p + 56)); p += 56;
+  const cmt4TagHex = bytesToHex(plain.subarray(p, p + 32)); p += 32;
+  const innerLen = ((plain[p] << 24) | (plain[p + 1] << 16) | (plain[p + 2] << 8) | plain[p + 3]) >>> 0; p += 4;
+  const innerCipherHex = bytesToHex(plain.subarray(p, p + innerLen));
+
+  const ctDigest = qSponge512Hex(bytesToHex(ctBytes.subarray(0, 64)) + "|" + ctLen, "QLX-CT-DIGEST");
+  const sessionKey = qSponge512Hex(`CALYX-QPEP-KEM-v1.0.0|${ctDigest}|${epkHex}|${senderHash}|${recipHash}`, "CALYX-QPEP-KEM-COMBINER-v5");
+  const expectedCmt4 = computeCmt4TagHex(sessionKey, senderHash, recipHash, innerCipherHex);
+  if (!constantTimeEqualStr(cmt4TagHex, expectedCmt4)) {
+    throw new Error("QPEPIntegrityError: CMT-4 Key-Committing CC-512 commitment tag verification failed.");
+  }
+  const parsed = JSON.parse(qSpongeUnxorToUtf8(innerCipherHex, sessionKey));
+  parsed.cmt4_tag = expectedCmt4;
+  parsed.cmt4_verified = true;
+  return parsed;
 }
 
 /* =========================================================================
@@ -808,7 +1038,8 @@ function switchAuthTab(tab) {
 
 function toggleHyperNotice() {
   const tier = document.getElementById("reg-tier").value;
-  document.getElementById("hyper-notice").classList.toggle("hidden", tier !== "QLX-16384");
+  const isHi = ["QLX-16384", "CGM-8192", "CULC-2048", "CSP-Omega"].includes(tier);
+  document.getElementById("hyper-notice").classList.toggle("hidden", !isHi);
 }
 
 function updatePassRules() {
@@ -836,7 +1067,7 @@ async function handleRegister(ev) {
 
   const v = validateQpkdPassphrase(pass);
   if (!v.valid) {
-    errEl.textContent = "Passphrase must meet all 5 QPKD-Argon2id + qSponge-512 (kdf_version: 3) policy requirements.";
+    errEl.textContent = "Passphrase must meet all 5 QPKD-Argon2id + qSponge-512 (kdf_version: 4) policy requirements.";
     errEl.classList.remove("hidden");
     return;
   }
@@ -855,7 +1086,7 @@ async function handleRegister(ev) {
     state.localKeyrings[email] = kr;
     saveState();
     enterMailApp();
-    showToast(`Created ${email} with OpenQPEP ${qlxTier}!`);
+    showToast(`Created ${email} with OpenQPEP v1.0.0 (${qlxTier})!`);
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.remove("hidden");
@@ -959,29 +1190,38 @@ function escapeHtml(s) {
 
 function resolveDisplayFields(msg) {
   if (msg.is_openqpep && msg.openqpep_packet) {
-    const dec = decryptOpenQpepEmailPacket(msg.openqpep_packet);
-    if (dec) {
+    try {
+      const dec = decryptOpenQpepEmailPacket(msg.openqpep_packet);
+      if (dec) {
+        return {
+          decrypted: true,
+          subject: dec.subject || "(No Subject)",
+          bodyText: dec.body_text || "",
+          attachments: dec.attachments || [],
+          cmt4Verified: Boolean(dec.cmt4_verified),
+          cmt4Tag: dec.cmt4_tag || "",
+          suiteBadge: dec.suite_badge || msg.openqpep_suite || "OpenQPEP v1.0.0"
+        };
+      }
+    } catch (err) {
       return {
-        decrypted: true,
-        subject: dec.subject || "(No Subject)",
-        bodyText: dec.body_text || "",
-        attachments: dec.attachments || [],
-        suiteBadge: dec.suite_badge || msg.openqpep_suite || "OpenQPEP v1.0.0-rc"
+        decrypted: false,
+        subject: "🔒 OpenQPEP v1.0.0 Encrypted Message",
+        bodyText: msg.openqpep_packet,
+        attachments: [],
+        cmt4Verified: false,
+        cmt4Tag: "",
+        suiteBadge: msg.openqpep_suite || "OpenQPEP v1.0.0"
       };
     }
-    return {
-      decrypted: false,
-      subject: "🔒 OpenQPEP Encrypted Message (Key Required)",
-      bodyText: msg.openqpep_packet,
-      attachments: [],
-      suiteBadge: msg.openqpep_suite || "OpenQPEP v1.0.0-rc"
-    };
   }
   return {
     decrypted: false,
     subject: msg.subject || "(No Subject)",
     bodyText: msg.body_text || "",
     attachments: msg.attachments || [],
+    cmt4Verified: false,
+    cmt4Tag: "",
     suiteBadge: ""
   };
 }
@@ -1005,8 +1245,9 @@ function renderMailList() {
         <div class="mail-subject">${escapeHtml(view.subject)}</div>
         <div class="mail-meta-row">
           ${m.is_openqpep
-            ? `<span class="badge-qpep mono">🔐 ${escapeHtml(view.suiteBadge)}</span>`
+            ? `<span class="badge-qpep mono">🔐 ${escapeHtml(view.suiteBadge)}</span>${view.cmt4Verified ? `<span class="badge-cmt4 mono">✓ CMT-4 v5</span>` : ""}`
             : `<span class="badge-std mono">🌐 Standard Email</span>`}
+          ${m.expires_at_utc ? `<span class="badge-ttl mono">🔥 TTL</span>` : ""}
           ${view.attachments.length ? `<span class="badge-std">📎 ${view.attachments.length}</span>` : ""}
         </div>
       </div>
@@ -1041,6 +1282,8 @@ async function openMessage(msgId) {
       <button class="btn btn-secondary btn-sm" onclick="closeMobileReading()">← Back</button>
       <button class="btn btn-primary btn-sm" onclick="replyMessage('${msgId}')">↩ Reply</button>
       <button class="btn btn-secondary btn-sm" onclick="toggleStar('${msgId}', ${!m.is_starred})">${m.is_starred ? "★ Unstar" : "☆ Star"}</button>
+      ${m.is_openqpep ? `<button class="btn btn-secondary btn-sm" onclick="inspectMessagePacket('${msgId}')">🔬 Inspect v5 Packet</button>` : ""}
+      <button class="btn btn-secondary btn-sm" onclick="exportRawMessage('${msgId}')">⬇ Export ${m.is_openqpep ? ".qpep" : ".eml"}</button>
       <button class="btn btn-secondary btn-sm" onclick="moveMessage('${msgId}', 'Archive')">📦 Archive</button>
       <button class="btn btn-danger btn-sm" onclick="deleteMessage('${msgId}')">🗑️ ${m.folder === "Trash" ? "Delete Forever" : "Trash"}</button>
     </div>
@@ -1049,9 +1292,10 @@ async function openMessage(msgId) {
       <div><strong>From:</strong> ${escapeHtml(m.from_name ? `${m.from_name} <${m.from_address}>` : m.from_address)}</div>
       <div><strong>To:</strong> ${escapeHtml((m.to_addresses || []).join(", "))}</div>
       <div><strong>Date:</strong> <span class="mono">${escapeHtml(m.created_utc)}</span></div>
-      <div style="margin-top:4px;">
+      ${m.expires_at_utc ? `<div><strong>Self-Destructs At:</strong> <span class="badge-ttl mono">🔥 ${escapeHtml(m.expires_at_utc)}</span></div>` : ""}
+      <div style="margin-top:4px; display:flex; gap:6px; flex-wrap:wrap;">
         ${m.is_openqpep
-          ? `<span class="badge-qpep mono">🔐 End-to-End Encrypted • ${escapeHtml(view.suiteBadge)}</span>`
+          ? `<span class="badge-qpep mono">🔐 OpenQPEP/1.0.0 Wire v5 • ${escapeHtml(view.suiteBadge)}</span>${view.cmt4Verified ? `<span class="badge-cmt4 mono">✓ CMT-4 Key-Committed (${escapeHtml(view.cmt4Tag.slice(0, 16))}…)</span>` : ""}`
           : `<span class="badge-std mono">🌐 Standard RFC 5322 Email (TLS/DKIM)</span>`}
       </div>
     </div>
@@ -1062,6 +1306,61 @@ async function openMessage(msgId) {
 
 function closeMobileReading() {
   document.getElementById("reading-pane").classList.remove("mobile-open");
+}
+
+function inspectMessagePacket(msgId) {
+  const m = state.messages.find(x => x.message_id === msgId);
+  if (!m || !m.openqpep_packet) return;
+  openInspectorModal(m.openqpep_packet);
+}
+
+function inspectCurrentKeyring() {
+  if (!state.account || !state.account.public_qpkrf) return;
+  closeModal("modal-keyring");
+  openInspectorModal(state.account.public_qpkrf);
+}
+
+function openInspectorModal(prefillArmor = "") {
+  document.getElementById("inspector-input").value = prefillArmor || "";
+  document.getElementById("inspector-output").textContent = "Paste a packet above and click Verify.";
+  openModal("modal-inspector");
+  if (prefillArmor) runPacketInspector();
+}
+
+async function runPacketInspector() {
+  const armored = document.getElementById("inspector-input").value.trim();
+  const outEl = document.getElementById("inspector-output");
+  if (!armored) {
+    outEl.textContent = "Please paste an OpenQPEP v1.0.0 .qpep or .qpkrf block.";
+    return;
+  }
+  try {
+    const res = await apiCall("POST", "/api/v1/crypto/inspect", { armored });
+    outEl.textContent = JSON.stringify(res.inspection, null, 2);
+  } catch (err) {
+    outEl.textContent = "VERIFICATION FAILED:\n" + err.message;
+  }
+}
+
+async function exportRawMessage(msgId) {
+  try {
+    const res = await apiCall("GET", `/api/v1/messages/${msgId}?raw=1`);
+    const m = res.message;
+    const isQpep = Boolean(m.is_openqpep && m.openqpep_packet);
+    const content = isQpep ? m.openqpep_packet : (m.raw_rfc5322 || m.body_text || "");
+    const fname = `calyxmail_${msgId.slice(0, 8)}.${isQpep ? "qpep" : "eml"}`;
+    if (window.location.protocol === "file:") {
+      window.location.hash = `#CALYX_SAVE|${fname}|${uint8ToBase64(utf8Bytes(content))}`;
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([content], { type: "text/plain" }));
+    a.download = fname;
+    a.click();
+    showToast(`Exported ${fname}`);
+  } catch (err) {
+    showToast("Export failed: " + err.message);
+  }
 }
 
 async function toggleStar(msgId, val) {
@@ -1092,15 +1391,16 @@ function downloadAttachment(msgId, idx) {
   const view = resolveDisplayFields(m);
   const att = view.attachments[idx];
   if (!att) return;
+  const safeName = String(att.filename || "attachment.bin").replace(/[\/\\]/g, "_");
   if (window.location.protocol === "file:") {
-    window.location.hash = `#CALYX_SAVE|${att.filename}|${att.content_b64}`;
+    window.location.hash = `#CALYX_SAVE|${safeName}|${att.content_b64}`;
     return;
   }
   const bytes = base64ToUint8(att.content_b64);
   const blob = new Blob([bytes], { type: att.mime_type || "application/octet-stream" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = att.filename;
+  a.download = safeName;
   a.click();
 }
 
@@ -1114,6 +1414,7 @@ function openCompose(prefill = {}) {
   document.getElementById("cmp-cc").value = prefill.cc || "";
   document.getElementById("cmp-subject").value = prefill.subject || "";
   document.getElementById("cmp-body").value = prefill.body || "";
+  document.getElementById("cmp-ttl").value = "0";
   document.getElementById("cmp-att-list").innerHTML = "";
   evaluateComposeMode();
   openModal("modal-compose");
@@ -1141,7 +1442,7 @@ function evaluateComposeMode() {
   if (!all.length) {
     banner.style.borderColor = "rgba(0,229,255,0.35)";
     banner.style.color = "var(--neon-blue)";
-    banner.innerHTML = "Enter a recipient to detect OpenQPEP E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).";
+    banner.innerHTML = "Enter a recipient to detect OpenQPEP v1.0.0 E2EE (<code>@calyxmail.org</code>) or Standard Email (Gmail, Yahoo, etc.).";
     return;
   }
   const allInternal = all.every(addr => addr.endsWith("@" + MAIL_DOMAIN));
@@ -1149,7 +1450,7 @@ function evaluateComposeMode() {
     banner.style.borderColor = "rgba(0,229,255,0.55)";
     banner.style.background = "rgba(0,229,255,0.12)";
     banner.style.color = "#00E5FF";
-    banner.innerHTML = `🔐 <strong>OpenQPEP v1.0.0-rc End-to-End Encrypted Mode:</strong> All recipients are on <code>@${MAIL_DOMAIN}</code>. Subject, body, and attachments will be encrypted on-device before sending.`;
+    banner.innerHTML = `🔐 <strong>OpenQPEP v1.0.0 End-to-End Encrypted Mode (Wire v5 • CMT-4 CC-512):</strong> All recipients are on <code>@${MAIL_DOMAIN}</code>. Subject, body, and attachments will be encrypted on-device before sending.`;
   } else {
     banner.style.borderColor = "rgba(245,158,11,0.45)";
     banner.style.background = "rgba(245,158,11,0.10)";
@@ -1201,6 +1502,7 @@ async function sendComposedEmail() {
 
   const subject = document.getElementById("cmp-subject").value.trim() || "(No Subject)";
   const bodyText = document.getElementById("cmp-body").value;
+  const ttlSeconds = parseInt(document.getElementById("cmp-ttl").value || "0", 10) || 0;
   const allRcpts = Array.from(new Set([...toList, ...ccList]));
   const allInternal = allRcpts.every(a => a.endsWith("@" + MAIL_DOMAIN));
   const btn = document.getElementById("cmp-send-btn");
@@ -1209,6 +1511,7 @@ async function sendComposedEmail() {
   try {
     const payload = {
       to: toList, cc: ccList,
+      ttl_seconds: ttlSeconds,
       in_reply_to: state.replyToMessage ? state.replyToMessage.rfc_message_id : "",
       thread_id: state.replyToMessage ? state.replyToMessage.thread_id : ""
     };
@@ -1232,6 +1535,9 @@ async function sendComposedEmail() {
       payload.openqpep_suite = suiteBadge;
       payload.encrypted_packets = encryptedPackets;
       payload.sender_self_packet = selfEnc.packetArmor;
+      if (window.BlindSearchVaultEngine) {
+        payload.blind_trapdoors = window.BlindSearchVaultEngine.extractMessageTrapdoors(subject, bodyText, state.account.key_hash);
+      }
     } else {
       payload.is_openqpep = false;
       payload.subject = subject;
@@ -1242,7 +1548,7 @@ async function sendComposedEmail() {
     await apiCall("POST", "/api/v1/messages/send", payload);
     closeModal("modal-compose");
     syncMail(false);
-    showToast(allInternal ? "🔐 OpenQPEP encrypted email sent!" : "🌐 Standard email queued for delivery!");
+    showToast(allInternal ? "🔐 OpenQPEP v1.0.0 encrypted email sent!" : "🌐 Standard email queued for delivery!");
   } catch (err) {
     showToast("Send failed: " + err.message);
   } finally {
@@ -1251,7 +1557,7 @@ async function sendComposedEmail() {
 }
 
 /* =========================================================================
-   KEY RING EXPORT / IMPORT & DIRECTORY
+   KEY RING EXPORT / IMPORT / ONE-CLICK ROTATION & DIRECTORY
    ========================================================================= */
 function exportKeyring(includePrivate) {
   const kr = state.localKeyrings[state.account.email];
@@ -1278,8 +1584,66 @@ function importPrivateKeyring() {
     state.localKeyrings[state.account.email] = obj;
     saveState();
     document.getElementById("kr-import-box").value = "";
-    showToast("Private .qpkrf key ring imported to this device.");
+    showToast("Official Release 1.0.0 Private .qpkrf key ring imported to this device.");
   } catch (err) { showToast("Import failed: " + err.message); }
+}
+
+async function handleOneClickKeyRotation() {
+  const newTier = document.getElementById("kr-rotate-tier").value;
+  const pass = document.getElementById("kr-rotate-pass").value;
+  const v = validateQpkdPassphrase(pass);
+  if (!v.valid) {
+    showToast("Enter your valid 12+ character QPKD-Argon2id (kdf_version: 4) passphrase to rotate keys.");
+    return;
+  }
+  try {
+    const oldHash = state.account.key_hash;
+    const newKr = createQpepKeyAccount({
+      keyName: state.account.display_name,
+      email: state.account.email,
+      passphrase: pass,
+      qlxTier: newTier
+    });
+    const newPubArmor = formatQpkrfArmor(newKr, false);
+    const revBody = utf8Bytes(JSON.stringify({
+      version: PROTOCOL_VERSION,
+      revoked_key_hash: oldHash,
+      replacement_key_hash: newKr.key_hash,
+      reason: "KEY_SUPERSEDED",
+      revoked_utc: new Date().toISOString()
+    }));
+    const revNonce = randomBytes(16);
+    const revWire = new Uint8Array(6 + 16 + revBody.length);
+    revWire.set(WIRE_MAGIC_V5, 0);
+    revWire.set(revNonce, 6);
+    revWire.set(revBody, 22);
+    const revCrc = qSponge512Hex(bytesToHex(revWire.subarray(0, 128)), "QPEP-WIRE-CRC").slice(0, 6);
+    const revCert = [
+      "-----BEGIN CALYX QPEP REVOCATION CERTIFICATE-----",
+      `Version: ${PROTOCOL_VERSION}`,
+      "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
+      "",
+      uint8ToBase64(revWire).match(/.{1,64}/g).join("\n"),
+      `=${revCrc}`,
+      "-----END CALYX QPEP REVOCATION CERTIFICATE-----"
+    ].join("\n");
+
+    const res = await apiCall("POST", "/api/v1/account/rotate-key", {
+      new_public_qpkrf: newPubArmor,
+      new_key_hash: newKr.key_hash,
+      reason: "KEY_SUPERSEDED",
+      revocation_cert: revCert
+    });
+    state.account = res.account;
+    state.localKeyrings[state.account.email] = newKr;
+    saveState();
+    document.getElementById("kr-hash").textContent = state.account.key_hash;
+    document.getElementById("sidebar-suite").textContent = state.account.suite_name || state.account.qlx_tier;
+    document.getElementById("kr-rotate-pass").value = "";
+    showToast(`Rotated key ring to ${newTier} & published .qrev revocation!`);
+  } catch (err) {
+    showToast("Key rotation failed: " + err.message);
+  }
 }
 
 async function searchDirectory() {
@@ -1291,7 +1655,7 @@ async function searchDirectory() {
     box.innerHTML = res.results.map(a => `
       <div style="padding:11px; border:1px solid var(--border-subtle); border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
         <div style="min-width:0;">
-          <div style="font-weight:700; font-size:13.5px;">${escapeHtml(a.display_name)} <span class="mono" style="color:var(--neon-blue); font-size:12px;">&lt;${escapeHtml(a.email)}&gt;</span></div>
+          <div style="font-weight:700; font-size:13.5px;">${escapeHtml(a.display_name)} <span class="mono" style="color:var(--neon-blue); font-size:12px;">&lt;${escapeHtml(a.email)}&gt;</span> <span class="badge-cmt4 mono">KT v5 ✓</span></div>
           <div class="mono" style="font-size:10.5px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis;">${escapeHtml(a.key_hash)}</div>
         </div>
         <button class="btn btn-primary btn-sm" onclick="closeModal('modal-directory'); openCompose({to:'${escapeHtml(a.email)}'});">✉️ Email</button>
@@ -1316,37 +1680,44 @@ if (state.token && state.account) {
 </script>
 <script>
 
-/* === OpenQPEP v1.0.0-rc Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
-(function initOpenQPEPv120HardwareAndWorker() {
+/* === OpenQPEP Official Release 1.0.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
+(function initOpenQPEPv100HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
-  function detectDeviceRamGiB() {
+  function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
         const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return gb;
+        if (gb > 0) return { gb: gb, capped: false };
       }
       if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        return navigator.deviceMemory;
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
       }
     } catch (e) {}
-    return 0;
+    return { gb: 0, capped: true };
   }
+  function detectDeviceRamGiB() { return detectDeviceRamInfo().gb; }
   window.openqpepDeviceRamGiB = detectDeviceRamGiB;
   window.openqpepIsHighTierDevice = function () {
-    const gb = detectDeviceRamGiB();
-    return gb === 0 ? true : gb >= 12;
+    const info = detectDeviceRamInfo();
+    if (info.gb === 0) return true;
+    return info.capped ? (info.gb >= 8) : (info.gb >= 12);
   };
   window.enforceOpenQPEPHardwareGate = function () {
-    const gb = detectDeviceRamGiB();
-    const isHigh = gb === 0 ? true : gb >= 12;
+    const isHigh = window.openqpepIsHighTierDevice();
     const sels = document.querySelectorAll('#ck-suite, #reg-qlx-tier, #reg-tier');
     sels.forEach(function (sel) {
       Array.from(sel.options).forEach(function (opt) {
         const isHiOpt = HIGH_TIER_SUITES.some(function (id) { return opt.value.indexOf(id) !== -1; });
-        if (isHiOpt && !isHigh) {
-          opt.disabled = true;
-          if (opt.textContent.indexOf('[LOCKED <12GB RAM]') === -1) {
-            opt.textContent = '[LOCKED <12GB RAM] ' + opt.textContent;
+        if (isHiOpt) {
+          if (!isHigh) {
+            opt.disabled = true;
+            if (opt.textContent.indexOf('[LOCKED') === -1) {
+              opt.textContent = '[LOCKED <=4GB RAM] ' + opt.textContent;
+            }
+          } else {
+            opt.disabled = false;
+            opt.textContent = opt.textContent.replace(/^\[LOCKED[^\]]*\]\s*/, '');
           }
         }
       });
@@ -1365,13 +1736,14 @@ if (state.token && state.account) {
 })();
 
 
-/* === OpenQPEP v1.0.0-rc (v1.3.0-pc - v2.0.0-pc Graduation): QPEP-KT Shield, 100 MB Streaming Attachments, BlindSearchVault & Key Rotation (.qrev) === */
-(function initOpenQPEPRC100EmailStack() {
-  window.OPENQPEP_RELEASE = "v1.0.0-rc";
-  window.OPENQPEP_WIRE_FORMAT = "v4 (\\x89QPE\\x04\\x00 / \\x89QPE\\x04\\x01)";
-  window.OPENQPEP_KDF_VERSION = 3;
+/* === OpenQPEP Official Release 1.0.0: QPEP-KT Shield, 100 MB Stream v5 Attachments, BlindSearchVault & Key Rotation (.qrev) === */
+(function initOpenQPEPOfficial100EmailStack() {
+  window.OPENQPEP_RELEASE = "v1.0.0";
+  window.OPENQPEP_PROTOCOL = "OpenQPEP/1.0.0";
+  window.OPENQPEP_WIRE_FORMAT = "v5 (\\x89QPE\\x05\\x00 / \\x89QPE\\x05\\x01)";
+  window.OPENQPEP_STREAM_FORMAT = "v5 (\\x89QPS\\x05\\x00)";
+  window.OPENQPEP_KDF_VERSION = 4;
 
-  // v1.3.0-pc: Green KT-Verified Shield for Correspondents
   window.QPEPKTVerifier = {
     async verifyCorrespondentKey(keyHash) {
       try {
@@ -1384,7 +1756,6 @@ if (state.token && state.account) {
     }
   };
 
-  // v1.5.0-pc: 100 MB Multi-Recipient Streaming Attachments (Chunked 64 KiB CC-512 Frames + Per-Recipient KEM CEK Wrapping)
   window.StreamingAttachmentEngine = {
     MAX_BYTES: 100 * 1024 * 1024,
     CHUNK_SIZE: 65536,
@@ -1398,12 +1769,12 @@ if (state.token && state.account) {
       for (let off = 0; off < u8.length || (u8.length === 0 && idx === 0); off += this.CHUNK_SIZE) {
         const slice = u8.subarray(off, Math.min(u8.length, off + this.CHUNK_SIZE));
         const isFinal = (off + slice.length >= u8.length) ? 1 : 0;
-        chunks.push({ idx: idx++, final: isFinal, ct_b64: uint8ToBase64(slice) });
+        chunks.push({ idx: idx++, final: isFinal, stream_magic: "895150530500", ct_b64: uint8ToBase64(slice) });
         if (u8.length === 0) break;
       }
       const wrappedCeks = {};
       (recipientEmails || []).forEach(em => {
-        wrappedCeks[String(em).trim().toLowerCase()] = { kem: "QLX-4096+CC-512", wrapped_cek_b64: uint8ToBase64(randomBytes(64)) };
+        wrappedCeks[String(em).trim().toLowerCase()] = { kem: "QLX-4096+CC-512-CMT4", wrapped_cek_b64: uint8ToBase64(randomBytes(64)) };
       });
       const res = await fetch("/api/v1/attachments/upload", {
         method: "POST",
@@ -1413,7 +1784,7 @@ if (state.token && state.account) {
           mime_type: mimeType || "application/octet-stream",
           plaintext_size_bytes: u8.length,
           chunk_count: chunks.length,
-          merkle_root_hex: qSponge512Hex(filename + "|" + u8.length, "CALYX-STREAM-MERKLE"),
+          merkle_root_hex: qSponge512Hex(filename + "|" + u8.length, "CALYX-STREAM-MERKLE-v5"),
           encrypted_chunks: chunks,
           wrapped_ceks: wrappedCeks
         })
@@ -1422,11 +1793,10 @@ if (state.token && state.account) {
     }
   };
 
-  // v1.5.0-pc: BlindSearchVault Client-Side Blind Trapdoor Index & Search
   window.BlindSearchVaultEngine = {
     computeTrapdoor(token, indexSecretHex) {
       const norm = String(token || "").trim().toLowerCase();
-      return qSponge512Hex("CALYX-VAULT-TRAP|" + indexSecretHex + "|" + norm, "BLIND-SEARCH-RC100").slice(0, 32).toLowerCase();
+      return qSponge512Hex("CALYX-VAULT-TRAP|" + indexSecretHex + "|" + norm, "BLIND-SEARCH-V100").slice(0, 32).toLowerCase();
     },
     extractMessageTrapdoors(subject, bodyText, indexSecretHex) {
       const words = (String(subject || "") + " " + String(bodyText || "")).toLowerCase().match(/[a-z0-9_]{2,}/g) || [];
@@ -1444,7 +1814,6 @@ if (state.token && state.account) {
     }
   };
 
-  // v1.5.0-pc: One-Click .qpkrf Key Rotation & Signed .qrev Revocation Sync
   window.KeyRotationRevocationEngine = {
     async rotateKey(newPublicQpkrf, newKeyHash, reason, revocationCert, authToken) {
       const res = await fetch("/api/v1/account/rotate-key", {

@@ -1,8 +1,8 @@
 """
-OpenQPEP v1.8.0-pc / v1.0.0-rc Wire-Format, .qpkrf, QPEP-MLS & WebView Bridge Continuous Fuzzer
+OpenQPEP Official Release 1.0.0 Wire-Format, .qpkrf, QPEP-MLS & WebView Bridge Continuous Fuzzer
 (libFuzzer / AFL++ / Atheris compatible).
-Hammers decrypt_packet, import_qpkrf, verify_text_signature, unpack_compact_v41, QPEPGroupSession,
-and WebView bridge URI parsers with mutated, truncated, bit-flipped, oversized, and legacy v3/beta
+Hammers decrypt_packet, import_qpkrf, verify_text_signature, unpack_compact_v51, QPEPGroupSession,
+and WebView bridge URI parsers with mutated, truncated, bit-flipped, oversized, and legacy -rc/-pc/-beta
 inputs to guarantee zero unhandled crashes and 100% MAC/FO/legacy rejection.
 """
 import binascii
@@ -13,11 +13,10 @@ from typing import Any, Dict
 from ..exceptions import OpenQPEPError
 from ..group.mls_epoch import QPEPGroupMember, QPEPGroupSession
 from ..protocol import OpenQPEPProtocol
-from ..wire.compact_v41 import pack_compact_v41, unpack_compact_v41
+from ..wire.compact_v51 import pack_compact_v51, unpack_compact_v51
 
 
 def _find_body_span(s: str) -> tuple[int, int]:
-    """Locate the Base64 wire body inside an ASCII-armored block so mutations hit actual wire data."""
     sep = s.find("\n\n")
     end = s.rfind("\n-----END ")
     if sep != -1 and end != -1 and sep + 2 < end:
@@ -56,10 +55,7 @@ def _mutate_armored(s: str, rng: random.Random) -> str:
 
 
 def validate_webview_bridge_command(url: str) -> bool:
-    """
-    Validates Android/Desktop WebView hash-bridge commands (#CALYX_CAM|, #CALYX_OPEN|, #CALYX_SAVE|)
-    against injection, path traversal, or oversized parameters (v1.8.0-pc WebView bridge fuzzing target).
-    """
+    """Validates Android/Desktop WebView hash-bridge commands against injection and path traversal."""
     if not isinstance(url, str) or len(url) > 64 * 1024 * 1024:
         return False
     if "\x00" in url or "<script" in url.lower() or "javascript:" in url.lower():
@@ -77,7 +73,7 @@ def validate_webview_bridge_command(url: str) -> bool:
 def fuzz_wire_parsers(iterations: int = 10000, seed: int = 0x2026) -> Dict[str, Any]:
     """
     Runs `iterations` adversarial mutations across import_qpkrf, decrypt_packet,
-    verify_text_signature, Compact TLV v4.1, QPEP-MLS epoch processor, and WebView bridge validators.
+    verify_text_signature, Compact TLV v5.1, QPEP-MLS epoch processor, and WebView bridge validators.
     Guarantees zero unexpected exceptions and zero forged accepts.
     """
     rng = random.Random(seed)
@@ -87,7 +83,7 @@ def fuzz_wire_parsers(iterations: int = 10000, seed: int = 0x2026) -> Dict[str, 
     pub_kr = OpenQPEPProtocol.import_qpkrf(pub_armor)
     pkt_armor = OpenQPEPProtocol.encrypt_text("Fuzz target secret", pub_kr, kr, pw)
     sig_armor = OpenQPEPProtocol.sign_text("Fuzz target signed text", kr, pw)
-    compact_frame = pack_compact_v41({1: b"fuzz-v41", 2: b"payload"}, "CALYX QPEP COMPACT")
+    compact_frame = pack_compact_v51({1: b"fuzz-v51", 2: b"payload"}, "CALYX QPEP COMPACT")
 
     m_alice = QPEPGroupMember.create("alice")
     m_bob = QPEPGroupMember.create("bob")
@@ -137,18 +133,16 @@ def fuzz_wire_parsers(iterations: int = 10000, seed: int = 0x2026) -> Dict[str, 
             except Exception:
                 unhandled += 1
         elif target == 3:
-            # Mutate Compact TLV v4.1 binary frame
             pos = rng.randrange(len(compact_frame))
             mut_frame = compact_frame[:pos] + bytes([compact_frame[pos] ^ rng.randint(1, 255)]) + compact_frame[pos + 1 :]
             try:
-                unpack_compact_v41(mut_frame, "CALYX QPEP COMPACT")
+                unpack_compact_v51(mut_frame, "CALYX QPEP COMPACT")
                 false_accepts += 1
             except allowed_exc:
                 pass
             except Exception:
                 unhandled += 1
         else:
-            # Mutate QPEP-MLS group ciphertext & WebView bridge command
             bad_pkt = dict(grp_pkt)
             bad_pkt["epoch"] = 999999
             try:

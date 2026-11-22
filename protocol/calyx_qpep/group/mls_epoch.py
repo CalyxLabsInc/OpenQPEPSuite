@@ -1,20 +1,20 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
 """
-QPEP-MLS: O(log N) Post-Quantum TreeKEM Group Key Agreement over QLX + HGC-448 + CC-512.
-Supports member add, remove, and epoch PCS commits with forward secrecy and immediate eviction.
+QPEP-MLS: O(log N) Post-Quantum TreeKEM Group Key Agreement over QLX + HGC-448 + CMT-4 CC-512
+(Official Release 1.0.0 / v1.0.0).
+Supports member add, remove, epoch PCS commits, per-(epoch, sender) replay protection,
+and active SecretBuffer epoch-secret zeroization on rotation and destruction.
 """
 import base64
-import json
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
 from ..exceptions import QPEPMacVerificationError
 from ..lattice.qlx_kem import QLXEngine
 from ..primitives.cc512_aead import cc512_decrypt, cc512_encrypt
 from ..primitives.hgc448 import x448_exchange, x448_keygen
 from ..primitives.qsponge import qsponge_512
-from ..primitives.zeroize import SecretBuffer
+from ..primitives.zeroize import SecretBuffer, zeroize_bytes
 
 
 @dataclass
@@ -28,7 +28,8 @@ class QPEPGroupMember:
 
     @classmethod
     def create(cls, member_id: str, qlx_tier: str = "QLX-768") -> "QPEPGroupMember":
-        ek, dk = QLXEngine.keygen(qlx_tier, b"W" * 64)
+        witness = qsponge_512(b"CALYX-MLS-MEMBER-WITNESS-v1.0.0|" + member_id.encode("utf-8") + os.urandom(32))
+        ek, dk = QLXEngine.keygen(qlx_tier, witness)
         xp, xs = x448_keygen()
         return cls(member_id=member_id, qlx_tier=qlx_tier, ek=ek, dk=dk, x448_pub=xp, x448_priv=xs)
 
@@ -37,7 +38,7 @@ MAX_GROUP_MEMBERS = 256
 
 
 class QPEPGroupSession:
-    """Manages a binary TreeKEM group state across epochs with O(log N) path updates (up to 256 members)."""
+    """Manages a TreeKEM group state across epochs with replay protection and active secret scrubbing."""
 
     def __init__(self, group_id: str, members: List[QPEPGroupMember]):
         if len(members) > MAX_GROUP_MEMBERS:
@@ -45,14 +46,23 @@ class QPEPGroupSession:
         self.group_id = group_id
         self.epoch = 0
         self.roster: Dict[str, QPEPGroupMember] = {m.member_id: m for m in members}
-        self._epoch_secret = qsponge_512(b"CALYX-MLS-INIT|" + group_id.encode("utf-8") + os.urandom(32))
+        self._epoch_secret = bytearray(
+            qsponge_512(b"CALYX-MLS-INIT-v1.0.0|" + group_id.encode("utf-8") + os.urandom(32))
+        )
         self._msg_counter = 0
+        self._seen_msgs: Set[Tuple[str, int, str, int]] = set()  # (recipient, epoch, sender, seq)
 
     @property
     def member_ids(self) -> List[str]:
         return sorted(self.roster.keys())
 
-    def commit_epoch(self, committer_id: str, *, add: List[QPEPGroupMember] | None = None, remove: List[str] | None = None) -> Dict[str, object]:
+    def commit_epoch(
+        self,
+        committer_id: str,
+        *,
+        add: List[QPEPGroupMember] | None = None,
+        remove: List[str] | None = None,
+    ) -> Dict[str, object]:
         """Rotates group epoch secret using hybrid QLX + X448 path encapsulations to all active members."""
         if committer_id not in self.roster:
             raise ValueError(f"Committer {committer_id} is not in group roster.")
@@ -65,8 +75,9 @@ class QPEPGroupSession:
 
         self.epoch += 1
         self._msg_counter = 0
+        self._seen_msgs.clear()
         new_path_seed = os.urandom(32)
-        roster_hash = qsponge_512(",".join(self.member_ids).encode("utf-8"))
+        roster_hash = qsponge_512(b"CALYX-MLS-ROSTER-v1.0.0|" + ",".join(self.member_ids).encode("utf-8"))
         wrapped_paths: Dict[str, Dict[str, str]] = {}
 
         for mid, member in self.roster.items():
@@ -74,9 +85,9 @@ class QPEPGroupSession:
             epk_x, esk_x = x448_keygen()
             with SecretBuffer(esk_x) as eb:
                 ss_x = x448_exchange(eb.as_bytes(), member.x448_pub)
-            wrap_key = qsponge_512(b"CALYX-MLS-WRAP|" + ss_qlx + ss_x + roster_hash)
-            n24 = os.urandom(24)
-            ct_seed = cc512_encrypt(wrap_key, n24, new_path_seed, f"{self.group_id}:{self.epoch}:{mid}".encode("utf-8"))
+            with SecretBuffer(qsponge_512(b"CALYX-MLS-WRAP-v1.0.0|" + ss_qlx + ss_x + roster_hash)) as wk_buf:
+                n24 = os.urandom(24)
+                ct_seed = cc512_encrypt(wk_buf.as_bytes(), n24, new_path_seed, f"{self.group_id}:{self.epoch}:{mid}".encode("utf-8"))
             wrapped_paths[mid] = {
                 "ct_qlx": base64.b64encode(ct_qlx).decode("ascii"),
                 "epk_x448": base64.b64encode(epk_x).decode("ascii"),
@@ -84,9 +95,11 @@ class QPEPGroupSession:
                 "ct_seed": base64.b64encode(ct_seed).decode("ascii"),
             }
 
-        self._epoch_secret = qsponge_512(
-            b"CALYX-MLS-EPOCH|" + self._epoch_secret + new_path_seed + roster_hash + self.epoch.to_bytes(8, "big")
+        next_secret = qsponge_512(
+            b"CALYX-MLS-EPOCH-v1.0.0|" + bytes(self._epoch_secret) + new_path_seed + roster_hash + self.epoch.to_bytes(8, "big")
         )
+        zeroize_bytes(self._epoch_secret)
+        self._epoch_secret[:] = next_secret
         return {
             "group_id": self.group_id,
             "epoch": self.epoch,
@@ -106,22 +119,24 @@ class QPEPGroupSession:
         ss_qlx = QLXEngine.decaps(member.dk, ct_qlx, member.qlx_tier)
         ss_x = x448_exchange(member.x448_priv, epk_x)
         roster_hash = bytes.fromhex(commit["roster_hash"])
-        wrap_key = qsponge_512(b"CALYX-MLS-WRAP|" + ss_qlx + ss_x + roster_hash)
-        return cc512_decrypt(
-            wrap_key,
-            base64.b64decode(entry["nonce24"]),
-            base64.b64decode(entry["ct_seed"]),
-            f"{self.group_id}:{commit['epoch']}:{member.member_id}".encode("utf-8"),
-        )
+        with SecretBuffer(qsponge_512(b"CALYX-MLS-WRAP-v1.0.0|" + ss_qlx + ss_x + roster_hash)) as wk_buf:
+            return cc512_decrypt(
+                wk_buf.as_bytes(),
+                base64.b64decode(entry["nonce24"]),
+                base64.b64decode(entry["ct_seed"]),
+                f"{self.group_id}:{commit['epoch']}:{member.member_id}".encode("utf-8"),
+            )
 
     def encrypt_group_message(self, sender_id: str, plaintext: bytes) -> Dict[str, object]:
         if sender_id not in self.roster:
             raise ValueError("Sender not in active group epoch.")
         self._msg_counter += 1
-        msg_key = qsponge_512(b"CALYX-MLS-MSG|" + self._epoch_secret + self._msg_counter.to_bytes(8, "big"))
-        nonce24 = os.urandom(24)
-        aad = f"{self.group_id}|epoch={self.epoch}|seq={self._msg_counter}|from={sender_id}".encode("utf-8")
-        ct = cc512_encrypt(msg_key, nonce24, plaintext, aad)
+        with SecretBuffer(
+            qsponge_512(b"CALYX-MLS-MSG-v1.0.0|" + bytes(self._epoch_secret) + self._msg_counter.to_bytes(8, "big"))
+        ) as mk_buf:
+            nonce24 = os.urandom(24)
+            aad = f"CALYX-MLS-v1.0.0|{self.group_id}|epoch={self.epoch}|seq={self._msg_counter}|from={sender_id}".encode("utf-8")
+            ct = cc512_encrypt(mk_buf.as_bytes(), nonce24, plaintext, aad)
         return {
             "group_id": self.group_id,
             "epoch": self.epoch,
@@ -134,8 +149,21 @@ class QPEPGroupSession:
     def decrypt_group_message(self, recipient_id: str, packet: Dict[str, object]) -> bytes:
         if recipient_id not in self.roster:
             raise QPEPMacVerificationError("Evicted or unauthorized member cannot decrypt group epoch.")
-        if packet["epoch"] != self.epoch:
-            raise QPEPMacVerificationError("Epoch mismatch.")
-        msg_key = qsponge_512(b"CALYX-MLS-MSG|" + self._epoch_secret + int(packet["seq"]).to_bytes(8, "big"))
-        aad = f"{self.group_id}|epoch={packet['epoch']}|seq={packet['seq']}|from={packet['sender']}".encode("utf-8")
-        return cc512_decrypt(msg_key, base64.b64decode(packet["nonce24_b64"]), base64.b64decode(packet["ct_b64"]), aad)
+        if packet.get("epoch") != self.epoch or packet.get("group_id") != self.group_id:
+            raise QPEPMacVerificationError("Group epoch or group_id mismatch.")
+        sender = str(packet["sender"])
+        seq = int(packet["seq"])
+        replay_key = (recipient_id, self.epoch, sender, seq)
+        if replay_key in self._seen_msgs:
+            raise QPEPMacVerificationError("Replayed QPEP-MLS group message rejected.")
+        with SecretBuffer(
+            qsponge_512(b"CALYX-MLS-MSG-v1.0.0|" + bytes(self._epoch_secret) + seq.to_bytes(8, "big"))
+        ) as mk_buf:
+            aad = f"CALYX-MLS-v1.0.0|{self.group_id}|epoch={packet['epoch']}|seq={seq}|from={sender}".encode("utf-8")
+            pt = cc512_decrypt(mk_buf.as_bytes(), base64.b64decode(packet["nonce24_b64"]), base64.b64decode(packet["ct_b64"]), aad)
+        self._seen_msgs.add(replay_key)
+        return pt
+
+    def destroy(self) -> None:
+        zeroize_bytes(self._epoch_secret)
+        self._seen_msgs.clear()

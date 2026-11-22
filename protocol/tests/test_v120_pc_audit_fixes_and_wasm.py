@@ -17,15 +17,15 @@ class TestOpenQPEPv120PCAuditAndWasm(unittest.TestCase):
     def test_01_auto_dispatch_beyond_lwe_via_standard_protocol_api(self):
         for suite_id in BEYOND_LWE_SUITES:
             kr = OpenQPEPProtocol.generate_keypair(f"Auto {suite_id}", "auto@calyxmail.org", self.PASS, qlx_tier=suite_id)
-            ct = OpenQPEPProtocol.encrypt_text("Auto-dispatch test v1.0.0-rc", recipient_keyring=kr, encrypting_keyring=kr, passphrase=self.PASS)
+            ct = OpenQPEPProtocol.encrypt_text("Auto-dispatch test v1.0.0", recipient_keyring=kr, encrypting_keyring=kr, passphrase=self.PASS)
             pt_b, meta = OpenQPEPProtocol.decrypt_packet(ct, kr, self.PASS)
-            self.assertEqual(pt_b.decode("utf-8"), "Auto-dispatch test v1.0.0-rc")
+            self.assertEqual(pt_b.decode("utf-8"), "Auto-dispatch test v1.0.0")
             self.assertEqual(meta.get("suite_id"), suite_id)
 
-            sig = OpenQPEPProtocol.sign_text("Auto-sign v1.0.0-rc", kr, self.PASS)
+            sig = OpenQPEPProtocol.sign_text("Auto-sign v1.0.0", kr, self.PASS)
             ok, vtxt, matched_kr = OpenQPEPProtocol.verify_text_signature(sig, kr)
             self.assertTrue(ok)
-            self.assertEqual(vtxt, "Auto-sign v1.0.0-rc")
+            self.assertEqual(vtxt, "Auto-sign v1.0.0")
             self.assertEqual(OpenQPEPProtocol.get_keyring_suite_id(matched_kr), suite_id)
 
     def test_02_wasm_binary_and_worker_present(self):

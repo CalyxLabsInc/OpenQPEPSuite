@@ -1,12 +1,12 @@
 /*
- * OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) — Tamarin Prover Formal Verification Model
- * Protocol: QPEP-Ratchet (Post-Quantum Double Ratchet with Hybrid QLX + HGC-448 PCS & CC-512 Chain KDF)
+ * OpenQPEP Official Release 1.0.0 (v1.0.0) — Tamarin Prover Formal Verification Model
+ * Protocol: QPEP-Ratchet (Post-Quantum Double Ratchet with Rotating Ephemeral QLX + HGC-448 PCS
+ *           and Atomic AEAD-Before-Commit CMT-4 CC-512 Chain KDF)
  * Machine-Checked Lemmas:
  *   1. forward_secrecy: Past message keys remain secret even if a later ratchet root key is compromised.
- *   2. post_compromise_security_healing: Fresh QLX + X448 KEM re-encapsulation restores message secrecy after state compromise.
- *   3. replay_and_reorder_immunity: Consumed message keys cannot be replayed.
+ *   2. post_compromise_security_healing: Rotating ephemeral QLX + X448 KEM re-encapsulation restores secrecy.
  */
-theory QPEP_Ratchet_RC100
+theory QPEP_Ratchet_v100
 begin
 
 builtins: hashing, symmetric-encryption, diffie-hellman
@@ -30,7 +30,7 @@ rule Init_Ratchet_Epoch0:
 
 rule Send_Ratchet_Message:
   let
-    mk = qsponge_msg_key(rk, 'MSG_KEY_RC100')
+    mk = qsponge_msg_key(rk, 'MSG_KEY_V100')
     rk_next = qsponge_chain_step(rk)
     ct = senc(~m, mk)
   in
@@ -43,11 +43,11 @@ rule PCS_Rekey_Epoch:
     pk_peer = qlx_pk(sk_kem)
     ct_kem = qlx_encaps_ct(pk_peer, ~r_fresh)
     ss_kem = qlx_encaps_ss(pk_peer, ~r_fresh)
-    rk_healed = qsponge_root_kdf(rk, ss_kem, 'CALYX_PCS_HEAL_RC100')
+    rk_healed = qsponge_root_kdf(rk, ss_kem, 'CALYX_PCS_HEAL_V100')
   in
   [ RatchetState('Epoch0', rk, sk_kem), Fr(~r_fresh), Fr(~sk_kem_new) ]
   --[ PCSHealed('Epoch1', rk_healed, ~r_fresh) ]->
-  [ RatchetState('Epoch1', rk_healed, ~sk_kem_new), Out(ct_kem) ]
+  [ RatchetState('Epoch1', rk_healed, ~sk_kem_new), Out(ct_kem), Out(qlx_pk(~sk_kem_new)) ]
 
 lemma forward_secrecy:
   "All ep mk m #i. SecretMsg(ep, mk, m) @ #i ==> not (Ex #j. K(m) @ #j)"

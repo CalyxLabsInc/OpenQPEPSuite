@@ -1,5 +1,5 @@
 """
-OpenQPEP Known Answer Test (KAT) Generator (Release Candidate Version 1.0.0 / v1.0.0-rc).
+OpenQPEP Known Answer Test (KAT) Generator (Official Release 1.0.0 / v1.0.0).
 Generates deterministic, byte-exact ACVP-style JSON test vectors across ALL 10 canonical suites:
   1. Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)
   2. Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)
@@ -14,6 +14,7 @@ Generates deterministic, byte-exact ACVP-style JSON test vectors across ALL 10 c
 """
 import base64
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -26,99 +27,59 @@ from .drbg import deterministic_urandom
 
 SUITE_KAT_SPECS: List[Dict[str, str]] = [
     {
-        "filename": "kat_qlx768_qvs65.json",
-        "family": "structured_lattice",
-        "suite_id": "QLX-768",
-        "suite_name": ALL_TEN_SUITES["QLX-768"]["display_name"],
-        "qlx_tier": "QLX-768",
-        "qvs_tier": "QVS-65",
+        "filename": "kat_qlx768_qvs65.json", "family": "structured_lattice", "suite_id": "QLX-768",
+        "suite_name": ALL_TEN_SUITES["QLX-768"]["display_name"], "qlx_tier": "QLX-768", "qvs_tier": "QVS-65",
         "seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
     },
     {
-        "filename": "kat_qlx1024_qvs87.json",
-        "family": "structured_lattice",
-        "suite_id": "QLX-1024",
-        "suite_name": ALL_TEN_SUITES["QLX-1024"]["display_name"],
-        "qlx_tier": "QLX-1024",
-        "qvs_tier": "QVS-87",
+        "filename": "kat_qlx1024_qvs87.json", "family": "structured_lattice", "suite_id": "QLX-1024",
+        "suite_name": ALL_TEN_SUITES["QLX-1024"]["display_name"], "qlx_tier": "QLX-1024", "qvs_tier": "QVS-87",
         "seed_hex": "101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f",
     },
     {
-        "filename": "kat_qlx2048_qvs128.json",
-        "family": "structured_lattice",
-        "suite_id": "QLX-2048",
-        "suite_name": ALL_TEN_SUITES["QLX-2048"]["display_name"],
-        "qlx_tier": "QLX-2048",
-        "qvs_tier": "QVS-128",
+        "filename": "kat_qlx2048_qvs128.json", "family": "structured_lattice", "suite_id": "QLX-2048",
+        "suite_name": ALL_TEN_SUITES["QLX-2048"]["display_name"], "qlx_tier": "QLX-2048", "qvs_tier": "QVS-128",
         "seed_hex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
     },
     {
-        "filename": "kat_qlx4096_qvs256.json",
-        "family": "structured_lattice",
-        "suite_id": "QLX-4096",
-        "suite_name": ALL_TEN_SUITES["QLX-4096"]["display_name"],
-        "qlx_tier": "QLX-4096",
-        "qvs_tier": "QVS-256",
+        "filename": "kat_qlx4096_qvs256.json", "family": "structured_lattice", "suite_id": "QLX-4096",
+        "suite_name": ALL_TEN_SUITES["QLX-4096"]["display_name"], "qlx_tier": "QLX-4096", "qvs_tier": "QVS-256",
         "seed_hex": "303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f",
     },
     {
-        "filename": "kat_qlx16384_qvs1024.json",
-        "family": "structured_lattice",
-        "suite_id": "QLX-16384",
-        "suite_name": ALL_TEN_SUITES["QLX-16384"]["display_name"],
-        "qlx_tier": "QLX-16384",
-        "qvs_tier": "QVS-1024",
+        "filename": "kat_qlx16384_qvs1024.json", "family": "structured_lattice", "suite_id": "QLX-16384",
+        "suite_name": ALL_TEN_SUITES["QLX-16384"]["display_name"], "qlx_tier": "QLX-16384", "qvs_tier": "QVS-1024",
         "seed_hex": "404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f",
     },
     {
-        "filename": "kat_cif_sqi512.json",
-        "family": "beyond_lwe",
-        "suite_id": "CIF-SQI-512",
-        "suite_name": ALL_TEN_SUITES["CIF-SQI-512"]["display_name"],
-        "qlx_tier": "CIF-SQI-512",
-        "qvs_tier": "QHS-512",
+        "filename": "kat_cif_sqi512.json", "family": "beyond_lwe", "suite_id": "CIF-SQI-512",
+        "suite_name": ALL_TEN_SUITES["CIF-SQI-512"]["display_name"], "qlx_tier": "CIF-SQI-512", "qvs_tier": "QHS-512",
         "seed_hex": "505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f",
     },
     {
-        "filename": "kat_crt_rsd512.json",
-        "family": "beyond_lwe",
-        "suite_id": "CRT-RSD512",
-        "suite_name": ALL_TEN_SUITES["CRT-RSD512"]["display_name"],
-        "qlx_tier": "CRT-RSD512",
-        "qvs_tier": "QMQ-512",
+        "filename": "kat_crt_rsd512.json", "family": "beyond_lwe", "suite_id": "CRT-RSD512",
+        "suite_name": ALL_TEN_SUITES["CRT-RSD512"]["display_name"], "qlx_tier": "CRT-RSD512", "qvs_tier": "QMQ-512",
         "seed_hex": "606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
     },
     {
-        "filename": "kat_cgm8192.json",
-        "family": "beyond_lwe",
-        "suite_id": "CGM-8192",
-        "suite_name": ALL_TEN_SUITES["CGM-8192"]["display_name"],
-        "qlx_tier": "CGM-8192",
-        "qvs_tier": "QHS-512",
+        "filename": "kat_cgm8192.json", "family": "beyond_lwe", "suite_id": "CGM-8192",
+        "suite_name": ALL_TEN_SUITES["CGM-8192"]["display_name"], "qlx_tier": "CGM-8192", "qvs_tier": "QHS-512",
         "seed_hex": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
     },
     {
-        "filename": "kat_culc2048.json",
-        "family": "beyond_lwe",
-        "suite_id": "CULC-2048",
-        "suite_name": ALL_TEN_SUITES["CULC-2048"]["display_name"],
-        "qlx_tier": "CULC-2048",
-        "qvs_tier": "CGM-8192",
+        "filename": "kat_culc2048.json", "family": "beyond_lwe", "suite_id": "CULC-2048",
+        "suite_name": ALL_TEN_SUITES["CULC-2048"]["display_name"], "qlx_tier": "CULC-2048", "qvs_tier": "CGM-8192",
         "seed_hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
     },
     {
-        "filename": "kat_csp_omega.json",
-        "family": "beyond_lwe",
-        "suite_id": "CSP-Omega",
-        "suite_name": ALL_TEN_SUITES["CSP-Omega"]["display_name"],
-        "qlx_tier": "CSP-Omega",
-        "qvs_tier": "QHS-512",
+        "filename": "kat_csp_omega.json", "family": "beyond_lwe", "suite_id": "CSP-Omega",
+        "suite_name": ALL_TEN_SUITES["CSP-Omega"]["display_name"], "qlx_tier": "CSP-Omega", "qvs_tier": "QHS-512",
         "seed_hex": "909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
     },
 ]
 
 KAT_PASSPHRASE = "Calyx!@#$_2026Aa99"
-KAT_MESSAGE = b"OpenQPEP RC 1.0.0 Deterministic Known Answer Test Vector"
+KAT_MESSAGE = b"OpenQPEP Official Release 1.0.0 Deterministic Known Answer Test Vector"
 
 
 def _sha3_512_hex(data: bytes) -> str:
@@ -149,36 +110,40 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
     qlx_tier = spec["qlx_tier"]
     qvs_tier = spec["qvs_tier"]
     suite_name = spec["suite_name"]
-    policy_witness = qsponge_512(b"CALYX-KAT-POLICY-WITNESS|" + seed)
+    policy_witness = qsponge_512(b"CALYX-KAT-POLICY-WITNESS-v1.0.0|" + seed)
 
     if family == "beyond_lwe":
-        import os as _os
-        _os.environ["OPENQPEP_DETERMINISTIC_KAT"] = "1"
-        with deterministic_urandom(seed):
-            kr = OpenQPEPProtocol.generate_keypair(
-                "OpenQPEP KAT Vector",
-                "kat@calyxlabsinc.org",
-                KAT_PASSPHRASE,
-                qlx_tier=suite_id,
-            )
-            pub_armor = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
-            priv_armor = OpenQPEPProtocol.export_qpkrf(kr, passphrase=KAT_PASSPHRASE, include_private=True)
-            pub_kr = OpenQPEPProtocol.import_qpkrf(pub_armor)
-            priv_kr = OpenQPEPProtocol.import_qpkrf(priv_armor, passphrase=KAT_PASSPHRASE)
+        prev_env = os.environ.get("OPENQPEP_DETERMINISTIC_KAT")
+        os.environ["OPENQPEP_DETERMINISTIC_KAT"] = "1"
+        try:
+            with deterministic_urandom(seed):
+                kr = OpenQPEPProtocol.generate_keypair(
+                    "OpenQPEP KAT Vector", "kat@calyxlabsinc.org", KAT_PASSPHRASE, qlx_tier=suite_id,
+                )
+                pub_armor = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
+                priv_armor = OpenQPEPProtocol.export_qpkrf(kr, passphrase=KAT_PASSPHRASE, include_private=True)
+                pub_kr = OpenQPEPProtocol.import_qpkrf(pub_armor)
+                priv_kr = OpenQPEPProtocol.import_qpkrf(priv_armor, passphrase=KAT_PASSPHRASE)
 
-            ct_armored = OpenQPEPProtocol.encrypt_beyond_lwe_packet(KAT_MESSAGE, pub_kr)
-            pt_out = OpenQPEPProtocol.decrypt_beyond_lwe_packet(ct_armored, priv_kr, KAT_PASSPHRASE)
-            assert pt_out == KAT_MESSAGE, f"Beyond-LWE KAT decrypt mismatch for {suite_id}"
+                ct_armored = OpenQPEPProtocol.encrypt_beyond_lwe_packet(KAT_MESSAGE, pub_kr)
+                pt_out = OpenQPEPProtocol.decrypt_beyond_lwe_packet(ct_armored, priv_kr, KAT_PASSPHRASE)
+                assert pt_out == KAT_MESSAGE, f"Beyond-LWE KAT decrypt mismatch for {suite_id}"
 
-            sig_armored = OpenQPEPProtocol.sign_beyond_lwe_bytes(KAT_MESSAGE, priv_kr, KAT_PASSPHRASE)
-            ok_sig, verified_msg = OpenQPEPProtocol.verify_beyond_lwe_signature(sig_armored, pub_kr)
-            assert ok_sig and verified_msg == KAT_MESSAGE, f"Beyond-LWE KAT sig verify failed for {suite_id}"
+                sig_armored = OpenQPEPProtocol.sign_beyond_lwe_bytes(KAT_MESSAGE, priv_kr, KAT_PASSPHRASE)
+                ok_sig, verified_msg = OpenQPEPProtocol.verify_beyond_lwe_signature(sig_armored, pub_kr)
+                assert ok_sig and verified_msg == KAT_MESSAGE, f"Beyond-LWE KAT sig verify failed for {suite_id}"
+        finally:
+            if prev_env is None:
+                os.environ.pop("OPENQPEP_DETERMINISTIC_KAT", None)
+            else:
+                os.environ["OPENQPEP_DETERMINISTIC_KAT"] = prev_env
 
+        ct_wire = _extract_raw_wire_frame(ct_armored)
         ct_bytes = ct_armored.encode("utf-8")
         sig_bytes = sig_armored.encode("utf-8")
         blwe_pub_json = json.dumps(pub_kr.public_bundle["beyond_lwe_public"], sort_keys=True).encode("utf-8")
         return {
-            "schema": "openqpep-kat-v2",
+            "schema": "openqpep-kat-v3",
             "family": "beyond_lwe",
             "protocol_version": PROTOCOL_VERSION,
             "universal_version": UNIVERSAL_VERSION,
@@ -186,12 +151,13 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
             "suite_name": suite_name,
             "qlx_tier": qlx_tier,
             "qvs_tier": qvs_tier,
-            "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0-rc|)",
+            "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0|)",
             "drbg_seed_hex": spec["seed_hex"],
             "message_utf8": KAT_MESSAGE.decode("utf-8"),
             "message_hex": KAT_MESSAGE.hex(),
             "beyond_lwe": {
                 "key_hash": kr.key_hash,
+                "wire_magic_hex": ct_wire[:6].hex(),
                 "public_material_bytes": len(blwe_pub_json),
                 "public_material_sha3_512": _sha3_512_hex(blwe_pub_json),
                 "ct_bytes": len(ct_bytes),
@@ -219,10 +185,7 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
         assert QVSEngine.verify(qvs_pk, KAT_MESSAGE, qvs_sig, tier=qvs_tier)
 
         kr = OpenQPEPProtocol.generate_keypair(
-            "OpenQPEP KAT Vector",
-            "kat@calyxlabsinc.org",
-            KAT_PASSPHRASE,
-            qlx_tier=qlx_tier,
+            "OpenQPEP KAT Vector", "kat@calyxlabsinc.org", KAT_PASSPHRASE, qlx_tier=qlx_tier,
         )
         pub_kr = OpenQPEPProtocol.import_qpkrf(OpenQPEPProtocol.export_qpkrf(kr, include_private=False))
         armored_pkt = OpenQPEPProtocol.encrypt_text(
@@ -236,7 +199,7 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
         assert pt_out == KAT_MESSAGE
 
     return {
-        "schema": "openqpep-kat-v2",
+        "schema": "openqpep-kat-v3",
         "family": "structured_lattice",
         "protocol_version": PROTOCOL_VERSION,
         "universal_version": UNIVERSAL_VERSION,
@@ -244,7 +207,7 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
         "suite_name": suite_name,
         "qlx_tier": qlx_tier,
         "qvs_tier": qvs_tier,
-        "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0-rc|)",
+        "drbg_algorithm": "qSponge-XOF (SHAKE-256, domain CALYX-OPENQPEP-KAT-DRBG-v1.0.0|)",
         "drbg_seed_hex": spec["seed_hex"],
         "message_utf8": KAT_MESSAGE.decode("utf-8"),
         "message_hex": KAT_MESSAGE.hex(),
@@ -282,6 +245,7 @@ def generate_suite_kat(spec: Dict[str, str]) -> Dict[str, Any]:
                 "Sender-Key-Hash:" in armored_pkt
                 or "Recipient-Key-Hash:" in armored_pkt
                 or "Signer-Key-Hash:" in armored_pkt
+                or "Encrypting-Key-Hash:" in armored_pkt
             ),
         },
     }
@@ -305,6 +269,7 @@ def generate_all_kats(output_dir: Path) -> List[Path]:
                 "family": "beyond_lwe",
                 "suite_id": spec["suite_id"],
                 "suite_name": spec["suite_name"],
+                "wire_magic_hex": kat["beyond_lwe"]["wire_magic_hex"],
                 "ct_bytes": kat["beyond_lwe"]["ct_bytes"],
                 "sig_bytes": kat["beyond_lwe"]["sig_bytes"],
                 "sha3_512": _sha3_512_hex(out_path.read_bytes()),
@@ -315,6 +280,7 @@ def generate_all_kats(output_dir: Path) -> List[Path]:
                 "family": "structured_lattice",
                 "suite_id": spec["suite_id"],
                 "suite_name": spec["suite_name"],
+                "wire_magic_hex": kat["wire_packet"]["wire_magic_hex"],
                 "qlx_ct_bytes": kat["qlx"]["actual_ct_qlx_bytes"],
                 "qvs_sig_bytes": kat["qvs"]["actual_sig_bytes"],
                 "sha3_512": _sha3_512_hex(out_path.read_bytes()),

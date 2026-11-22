@@ -1,14 +1,30 @@
 """
-OpenQPEP by Calyx Labs Inc. — Release Candidate 1.0.0 (v1.0.0-rc)
+OpenQPEP by Calyx Labs Inc. — Official Release 1.0.0 (v1.0.0)
 Canonical Post-Quantum Hybrid Protocol Reference Engine.
 Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
 
-Wire Format: Strict Frozen Wire Format v3 (\x89QPE\x03\x00) & Compact TLV v3.1 (\x89QPE\x03\x01).
-KDF Envelope: Strict kdf_version: 2 (RFC 9106 QPKD-Argon2id + qSponge-512).
-Legacy -beta backwards compatibility has been completely removed for Release Candidate 1.0.0.
+Official Release 1.0.0 Architecture:
+  - Wire Format: Strict Official Wire Format v5 (\\x89QPE\\x05\\x00) & Compact TLV v5.1 (\\x89QPE\\x05\\x01).
+  - KDF Envelope: Mandatory kdf_version: 4 (RFC 9106 QPKD-Argon2id + qSponge-512, "OpenQPEP/1.0.0").
+  - Symmetric AEAD: CMT-4 Key-Committing Calyx-Cascade-512 (AES-256-GCM + ChaCha20-Poly1305 + qSponge-512).
+  - Zero Backwards Compatibility: ALL legacy Release Candidate (-rc), Production Candidate (-pc),
+    and Beta (-beta) wire frames, streams, and kdf_version < 4 key rings are strictly rejected
+    with QPEPLegacyProtocolError.
 """
-import os
+import base64
+import hashlib
+import hmac
 import json
+import os
+import zlib
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
 from .beyond_lwe_bridge import (
     BEYOND_LWE_SUITES,
     decrypt_beyond_lwe,
@@ -17,289 +33,103 @@ from .beyond_lwe_bridge import (
     sign_beyond_lwe,
     verify_beyond_lwe,
 )
-import zlib
-import base64
-import hashlib
-import hmac
-from datetime import datetime, timezone
-from dataclasses import dataclass
-from typing import Optional, Dict, Any, Tuple, List
-from pathlib import Path
-
-from cryptography.hazmat.primitives.asymmetric import x448, ed448
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
-
-from .passphrase import enforce_passphrase_policy, analyze_passphrase, QPEPPassphrasePolicyError
+from .constants import (
+    ALL_LEGACY_WIRE_MAGICS,
+    APP_NAME,
+    CALYX_HYPER_TESSERACT_HARDWARE_WARNING,
+    CHUNK_SIZE,
+    DEFAULT_SUITE,
+    LEGACY_BETA_WIRE_MAGICS,
+    LEGACY_PC_WIRE_MAGICS,
+    LEGACY_RC_WIRE_MAGICS,
+    MANDATORY_KDF_VERSION,
+    MAX_ARMOR_BYTES,
+    MAX_DECOMPRESSED_BYTES,
+    PACKET_TYPE_KEYRING,
+    PACKET_TYPE_SIGNATURE,
+    PACKET_TYPE_SINGLE,
+    PROJECT_NAME,
+    PROTOCOL_VERSION,
+    QPKRF_EXTENSION,
+    UNIVERSAL_VERSION,
+    UNIVERSAL_VERSION_LABEL,
+    WIRE_MAGIC_V5 as WIRE_MAGIC,
+)
 from .exceptions import (
     OpenQPEPError,
-    QPEPMacVerificationError,
     QPEPFaultGuardError,
-    QPEPWireFormatError,
-    QPEPLegacyProtocolError,
-    QPEPTruncationError,
     QPEPKeyRingError,
+    QPEPLegacyProtocolError,
+    QPEPMacVerificationError,
+    QPEPPassphrasePolicyError,
     QPEPSuiteError,
+    QPEPTruncationError,
+    QPEPWireFormatError,
 )
-from .primitives.cc512_aead import cc512_encrypt as _cc512_encrypt_mod, cc512_decrypt as _cc512_decrypt_mod
+from .kdf.argon2id_cascade import derive_qpkrf_keys_v4
+from .passphrase import analyze_passphrase, enforce_passphrase_policy
+from .primitives.cc512_aead import cc512_decrypt as _cc512_decrypt_mod
+from .primitives.cc512_aead import cc512_encrypt as _cc512_encrypt_mod
 from .primitives.consttime import ct_eq
-from .primitives.zeroize import SecretBuffer
-from .kdf.argon2id_cascade import derive_qpkrf_keys_v3
-from .qlx_lattice import QLXEngine, QVSEngine, QLX_TIERS, QVS_TIERS, qsponge_var, qsponge_512
-
-PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
-APP_NAME = "Calyx QPEP Client"
-UNIVERSAL_VERSION = "1.0.0-rc"
-UNIVERSAL_VERSION_LABEL = "Release Candidate 1.0.0"
-PROTOCOL_VERSION = "OpenQPEP/RC-1.0.0"
-DEFAULT_SUITE = "Signature QLX-4096 + QVS-256"
-QPKRF_EXTENSION = ".qpkrf"
-
-CALYX_HYPER_TESSERACT_HARDWARE_WARNING = (
-    "WARNING — HIGH-TIER HARDWARE REQUIRED FOR CALYX HYPER-TESSERACT (QLX-16384 + QVS-1024): "
-    "Calyx Hyper-Tesseract operates over a 16,384-dimensional 4-Manifold Coupled Module-LWE lattice (k=64 polynomials) "
-    "and a (16x14) QVS-1024 vector signature matrix (7,680 polynomial dimensions), executing over 320,000+ modular "
-    "NTT butterfly operations and allocating ~69.3 KB of raw secret lattice vectors per key ring. "
-    "Use ONLY on flagship smartphones (e.g., Samsung Galaxy Z Fold 8, Galaxy S25/S26 Ultra, Pixel 10 Pro with 12 GB+ RAM) "
-    "or high-RAM desktop/server PCs. Running Calyx Hyper-Tesseract on low-tier or budget mobile devices (<=6 GB RAM) "
-    "will cause severe UI freezes, Android Application Not Responding (ANR) timeouts, thermal throttling, or WebView "
-    "Out-Of-Memory (OOM) crashes. On standard or low-tier devices, use Calyx Signature (QLX-4096 + QVS-256) or QLX-1024 + QVS-87."
+from .primitives.hgc448 import (
+    ed448_keygen,
+    ed448_sign,
+    ed448_verify,
+    x448_exchange,
+    x448_keygen,
 )
+from .primitives.zeroize import SecretBuffer
+from .qlx_lattice import QLX_TIERS, QVS_TIERS, QLXEngine, QVSEngine, qsponge_512, qsponge_var
+from .wire.armor import FORBIDDEN_ARMOR_HEADERS, _compute_armor_crc, _validate_header_token
+from .wire.file_registry import SUPPORTED_FILE_EXTENSIONS, detect_file_extension_and_mime
+from .wire.framing import pack_wire_frame, unpack_wire_frame
 
-
-# Hardened 2026 Post-Quantum & AI-Cryptanalysis Immunity Profile for Signature QLX-4096 + QVS-256
+# Hardened Post-Quantum & AI-Cryptanalysis Immunity Profile for OpenQPEP Official Release 1.0.0
 QUANTUM_IMMUNITY_MATRIX: Dict[str, Dict[str, str]] = {
     "JVG_AND_SHOR": {
-        "threat": "Jesse-Victor-Gharabaghi (JVG) Hybrid QNTT Factorization & Shor's Algorithm",
+        "threat": "Hybrid QNTT Factorization & Shor's Algorithm",
         "mitigation": (
             "Anchors key encapsulation and signatures in 4096-dimensional Module-LWE (QLX-4096, k=16, n=256, q=3329) "
-            "and (8x7) Module-SIS/LWE (QVS-256, Q=8380417) fused with HGC-448 via 512-bit qSponge-512. "
-            "Eliminates reliance on RSA composite factorization or abelian period finding exploited by QNTT/JVG and IQFT/Shor."
+            "and (8x7) Module-SIS/LWE (QVS-256, Q=8380417) fused with HGC-448 via 512-bit qSponge-512, "
+            "plus 5 genuine Beyond-LWE post-quantum families (Binary Goppa Patterson, LRPC Rank-Metric, CSIDH-512, UOV, QHS-512)."
         ),
     },
     "GROVER_ENHANCED_BKZ_SIEVING": {
         "threat": "Quantum-Accelerated Lattice Sieving (Grover-Enhanced BKZ-beta)",
         "mitigation": (
-            "Scales module rank to k=16 (4,096 polynomial ring dimensions in QLX-4096) and (k=8, l=7) (3,840 total vector "
-            "dimensions in QVS-256), pushing required BKZ block sizes to beta > 1650 (>512-bit post-quantum work factor "
-            "even under quantum-walk and Grover-accelerated 2^(0.265*beta) sieving bounds)."
+            "Scales module rank to k=16 (4,096 dimensions in QLX-4096) and k=64 (16,384 dimensions in QLX-16384), "
+            "pushing required BKZ block sizes to beta > 1650 (>512-bit post-quantum work factor)."
         ),
     },
     "DIHEDRAL_COSET_PROBLEM_DCP": {
-        "threat": "Quantum Algorithms for the Dihedral Coset Problem (DCP / Extrapolated DCP)",
+        "threat": "Quantum Algorithms for the Dihedral Coset Problem (DCP)",
         "mitigation": (
-            "Applies Fujisaki-Okamoto (FO) IND-CCA2 re-encryption verification with H_ek transcript binding, lossy (du=11, dv=5) "
-            "rounding compression, and constant-time implicit rejection (CALYX-QLX-FO-REJECT|), preventing coherent quantum "
-            "coset state sampling and faulty-sample extrapolation reductions."
+            "Applies Fujisaki-Okamoto (FO) IND-CCA2 re-encryption verification with H_ek transcript binding, lossy compression, "
+            "and branchless constant-time implicit rejection (ct_cmov)."
         ),
     },
-    "CLAUDE_MYTHOS_HAWK256_AND_AES": {
-        "threat": "Anthropic Claude Mythos Preview (July 2026) HAWK-256 Lattice Symmetry & 7-Round AES Mobius Bridge",
+    "MULTI_KEY_AEAD_COLLISIONS": {
+        "threat": "Invisible Salamanders / Non-Key-Committing AEAD Multi-Key Forgery",
         "mitigation": (
-            "Replaces structured NTRU rank-2 isomorphisms (vulnerable to HAWK-256 Galois/rotational symmetry shortcuts) with "
-            "asymmetric (8x7) Module-SIS Fiat-Shamir with Aborts and per-coordinate domain-separated qSponge-XOF matrix expansion "
-            "(CALYX-QVS-MAT-A|), while Calyx-Cascade-512 (CC-512) cascades full 14-round AES-256-GCM inside full 20-round "
-            "ChaCha20-Poly1305 (512-bit independent symmetric keys across SPN + ARX families)."
+            "Upgrades Calyx-Cascade-512 (CC-512) to provably CMT-4 Key-Committing Cascade AEAD combining AES-256-GCM, "
+            "ChaCha20-Poly1305, and a 256-bit qSponge-512 key+nonce+AAD+ciphertext commitment tag verified before decryption."
         ),
     },
     "GROVER_SYMMETRIC_AND_HASH": {
         "threat": "Grover's Algorithm on Symmetric Ciphers & Hash Primitives",
         "mitigation": (
-            "Enforces 512-bit qSponge-512 (SHA3-512) and qSponge-XOF (SHAKE-256) over a 1600-bit Keccak state (zero SHA-256 usage) "
-            "together with 512-bit cascaded CC-512 payload encryption, preserving >=256 bits of post-quantum security under "
-            "Grover's O(2^(n/2)) quadratic speedup."
+            "Enforces 512-bit qSponge-512 (SHA3-512) and qSponge-XOF (SHAKE-256) over a 1600-bit Keccak state "
+            "together with 512-bit cascaded CMT-4 CC-512 payload encryption."
         ),
     },
     "SIDE_CHANNEL_AND_FAULT_INJECTION": {
         "threat": "Side-Channel Timing & Glitch/Rowhammer Fault Injection Attacks",
         "mitigation": (
-            "Enforces Verify-Before-Emit Fault-Guard inside QVSEngine.sign (verifying every lattice signature against pk before output), "
-            "constant-time hmac.compare_digest verification across all MACs/FO-CCA2 checks, and qSponge-XOF XOR secret-key masking "
-            "(CALYX-QPEP-SK-MASK|) at rest."
+            "Enforces Verify-Before-Emit Fault-Guard across QVS, UOV, and CSIDH-512 SeaSign signatures, "
+            "compile-time thread-safe C99 NTT tables, constant-time ct_eq/ct_cmov checks, and compiler-barrier openqpep_explicit_bzero."
         ),
     },
 }
-
-# Comprehensive Hardcoded Registry of Supported File Extensions & MIME Types for OpenQPEP File Encryption
-SUPPORTED_FILE_EXTENSIONS: Dict[str, str] = {
-    # Images & Graphics
-    ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".jpe": "image/jpeg", ".jfif": "image/jpeg",
-    ".png": "image/png", ".webp": "image/webp", ".gif": "image/gif", ".bmp": "image/bmp",
-    ".dib": "image/bmp", ".svg": "image/svg+xml", ".svgz": "image/svg+xml", ".ico": "image/x-icon",
-    ".heic": "image/heic", ".heif": "image/heif", ".avif": "image/avif", ".tif": "image/tiff",
-    ".tiff": "image/tiff", ".raw": "image/x-raw", ".cr2": "image/x-canon-cr2", ".nef": "image/x-nikon-nef",
-    ".arw": "image/x-sony-arw", ".dng": "image/x-adobe-dng", ".psd": "image/vnd.adobe.photoshop",
-    ".ai": "application/postscript", ".eps": "application/postscript",
-    # Documents, Office & Publishing
-    ".pdf": "application/pdf", ".txt": "text/plain", ".text": "text/plain", ".md": "text/markdown",
-    ".markdown": "text/markdown", ".rst": "text/x-rst", ".rtf": "application/rtf",
-    ".doc": "application/msword", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ".xls": "application/vnd.ms-excel", ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ".ppt": "application/vnd.ms-powerpoint", ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ".odt": "application/vnd.oasis.opendocument.text", ".ods": "application/vnd.oasis.opendocument.spreadsheet",
-    ".odp": "application/vnd.oasis.opendocument.presentation", ".pages": "application/x-iwork-pages-sffpages",
-    ".numbers": "application/x-iwork-numbers-sffnumbers", ".key": "application/x-iwork-keynote-sffkey",
-    ".epub": "application/epub+zip", ".mobi": "application/x-mobipocket-ebook", ".azw3": "application/vnd.amazon.ebook",
-    ".kpf": "application/octet-stream", ".tex": "application/x-tex", ".bib": "text/x-bibtex",
-    # Data, Config & Structured Text
-    ".csv": "text/csv", ".tsv": "text/tab-separated-values", ".json": "application/json",
-    ".jsonl": "application/json", ".ndjson": "application/json", ".xml": "application/xml",
-    ".yaml": "application/x-yaml", ".yml": "application/x-yaml", ".toml": "application/toml",
-    ".ini": "text/plain", ".cfg": "text/plain", ".conf": "text/plain", ".env": "text/plain",
-    ".properties": "text/plain", ".log": "text/plain", ".sql": "application/sql",
-    # Source Code & Web
-    ".html": "text/html", ".htm": "text/html", ".css": "text/css", ".scss": "text/x-scss",
-    ".less": "text/x-less", ".js": "application/javascript", ".mjs": "application/javascript",
-    ".cjs": "application/javascript", ".ts": "application/typescript", ".jsx": "text/jsx",
-    ".tsx": "text/tsx", ".py": "text/x-python", ".pyw": "text/x-python", ".ipynb": "application/x-ipynb+json",
-    ".java": "text/x-java-source", ".kt": "text/x-kotlin", ".kts": "text/x-kotlin",
-    ".scala": "text/x-scala", ".groovy": "text/x-groovy", ".c": "text/x-c", ".h": "text/x-c",
-    ".cpp": "text/x-c++", ".cc": "text/x-c++", ".cxx": "text/x-c++", ".hpp": "text/x-c++",
-    ".cs": "text/x-csharp", ".go": "text/x-go", ".rs": "text/rust", ".swift": "text/x-swift",
-    ".m": "text/x-objectivec", ".mm": "text/x-objectivec++", ".rb": "text/x-ruby",
-    ".php": "application/x-httpd-php", ".pl": "text/x-perl", ".lua": "text/x-lua",
-    ".r": "text/x-r", ".jl": "text/x-julia", ".dart": "application/vnd.dart",
-    ".sh": "application/x-sh", ".bash": "application/x-sh", ".zsh": "application/x-sh",
-    ".fish": "application/x-sh", ".bat": "application/x-msdos-program", ".cmd": "application/x-msdos-program",
-    ".ps1": "application/x-powershell", ".wasm": "application/wasm", ".sol": "text/plain",
-    # Archives, Packages & Disk Images
-    ".zip": "application/zip", ".tar": "application/x-tar", ".gz": "application/gzip",
-    ".tgz": "application/gzip", ".bz2": "application/x-bzip2", ".tbz2": "application/x-bzip2",
-    ".xz": "application/x-xz", ".txz": "application/x-xz", ".zst": "application/zstd",
-    ".7z": "application/x-7z-compressed", ".rar": "application/vnd.rar", ".cab": "application/vnd.ms-cab-compressed",
-    ".iso": "application/x-iso9660-image", ".img": "application/octet-stream", ".dmg": "application/x-apple-diskimage",
-    ".vhd": "application/x-virtualbox-vhd", ".vmdk": "application/x-vmdk", ".qcow2": "application/x-qemu-disk",
-    # Android, JVM & Executables
-    ".apk": "application/vnd.android.package-archive", ".aab": "application/x-authorware-bin",
-    ".apks": "application/zip", ".xapk": "application/zip", ".jar": "application/java-archive",
-    ".war": "application/java-archive", ".dex": "application/octet-stream", ".class": "application/java-vm",
-    ".so": "application/x-sharedlib", ".dll": "application/x-msdownload", ".exe": "application/x-msdownload",
-    ".msi": "application/x-msi", ".deb": "application/vnd.debian.binary-package",
-    ".rpm": "application/x-rpm", ".appimage": "application/x-executable", ".elf": "application/x-executable",
-    ".bin": "application/octet-stream", ".dat": "application/octet-stream", ".pak": "application/octet-stream",
-    # Databases & Scientific Data
-    ".db": "application/x-sqlite3", ".sqlite": "application/x-sqlite3", ".sqlite3": "application/x-sqlite3",
-    ".mdb": "application/x-msaccess", ".accdb": "application/x-msaccess", ".parquet": "application/vnd.apache.parquet",
-    ".feather": "application/octet-stream", ".avro": "application/octet-stream", ".orc": "application/octet-stream",
-    ".h5": "application/x-hdf5", ".hdf5": "application/x-hdf5", ".npy": "application/octet-stream",
-    ".npz": "application/zip", ".pt": "application/octet-stream", ".pth": "application/octet-stream",
-    ".onnx": "application/octet-stream", ".safetensors": "application/octet-stream", ".gguf": "application/octet-stream",
-    # Audio & Music
-    ".mp3": "audio/mpeg", ".wav": "audio/wav", ".flac": "audio/flac", ".aac": "audio/aac",
-    ".ogg": "audio/ogg", ".oga": "audio/ogg", ".opus": "audio/opus", ".m4a": "audio/mp4",
-    ".wma": "audio/x-ms-wma", ".aiff": "audio/x-aiff", ".mid": "audio/midi", ".midi": "audio/midi",
-    # Video & Multimedia
-    ".mp4": "video/mp4", ".m4v": "video/x-m4v", ".mkv": "video/x-matroska", ".webm": "video/webm",
-    ".mov": "video/quicktime", ".avi": "video/x-msvideo", ".wmv": "video/x-ms-wmv",
-    ".flv": "video/x-flv", ".ts": "video/mp2t", ".mts": "video/mp2t", ".3gp": "video/3gpp",
-    # Fonts
-    ".ttf": "font/ttf", ".otf": "font/otf", ".woff": "font/woff", ".woff2": "font/woff2",
-    # Cryptographic Keys, Certificates & OpenQPEP Formats
-    ".qpkrf": "application/x-calyx-qpkrf", ".qpep": "application/x-calyx-qpep", ".qpsig": "application/x-calyx-qpsig",
-    ".asc": "application/pgp-keys", ".pgp": "application/pgp-encrypted", ".gpg": "application/pgp-encrypted",
-    ".sig": "application/pgp-signature", ".pem": "application/x-pem-file", ".crt": "application/x-x509-ca-cert",
-    ".cer": "application/pkix-cert", ".der": "application/x-x509-ca-cert", ".p12": "application/x-pkcs12",
-    ".pfx": "application/x-pkcs12", ".jks": "application/x-java-keystore", ".keystore": "application/x-java-keystore",
-    ".key": "application/pkcs8", ".csr": "application/pkcs10", ".kdbx": "application/x-keepass2",
-}
-
-
-def detect_file_extension_and_mime(data: bytes, filename: Optional[str] = None) -> Tuple[str, str, str]:
-    """
-    Determines the exact (normalized_filename, extension, mime_type) for any file payload
-    using both the provided filename and binary magic-byte header inspection.
-    """
-    ext = ""
-    base_name = (filename or "").strip()
-    if base_name and "." in base_name:
-        candidate_ext = "." + base_name.rsplit(".", 1)[-1].lower().strip()
-        if candidate_ext != ".qpep" and len(candidate_ext) <= 14:
-            ext = candidate_ext
-
-    # Inspect binary magic-byte headers if extension is missing or generic (.bin / .txt / .qpep)
-    if not ext or ext in (".bin", ".dat", ".qpep"):
-        if data.startswith(b"\xff\xd8\xff"):
-            ext = ".jpg"
-        elif data.startswith(b"\x89PNG\r\n\x1a\n"):
-            ext = ".png"
-        elif data.startswith(b"GIF87a") or data.startswith(b"GIF89a"):
-            ext = ".gif"
-        elif len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
-            ext = ".webp"
-        elif data.startswith(b"BM"):
-            ext = ".bmp"
-        elif data.startswith(b"%PDF-"):
-            ext = ".pdf"
-        elif data.startswith(b"PK\x03\x04"):
-            if b"AndroidManifest.xml" in data[:4096] or b"classes.dex" in data[:4096]:
-                ext = ".apk"
-            elif b"word/" in data[:2048]:
-                ext = ".docx"
-            elif b"xl/" in data[:2048]:
-                ext = ".xlsx"
-            elif b"ppt/" in data[:2048]:
-                ext = ".pptx"
-            else:
-                ext = ".zip"
-        elif data.startswith(b"\x1f\x8b\x08"):
-            ext = ".gz"
-        elif data.startswith(b"7z\xbc\xaf\x27\x1c"):
-            ext = ".7z"
-        elif data.startswith(b"Rar!\x1a\x07"):
-            ext = ".rar"
-        elif data.startswith(b"SQLite format 3\x00"):
-            ext = ".sqlite"
-        elif data.startswith(b"ID3") or data.startswith(b"\xff\xfb") or data.startswith(b"\xff\xf3"):
-            ext = ".mp3"
-        elif len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WAVE":
-            ext = ".wav"
-        elif data.startswith(b"fLaC"):
-            ext = ".flac"
-        elif data.startswith(b"OggS"):
-            ext = ".ogg"
-        elif len(data) >= 12 and data[4:8] == b"ftyp":
-            ext = ".mp4"
-        elif data.startswith(b"\x1a\x45\xdf\xa3"):
-            ext = ".mkv"
-        elif data.startswith(b"\x7fELF"):
-            ext = ".elf"
-        elif data.startswith(b"dex\n035\x00"):
-            ext = ".dex"
-        elif b"-----BEGIN CALYX QPKRF" in data[:256] or b"-----BEGIN OPENQPEP QPKRF" in data[:256]:
-            ext = ".qpkrf"
-        elif not ext:
-            try:
-                data[:1024].decode("utf-8")
-                ext = ".txt"
-            except UnicodeDecodeError:
-                ext = ".bin"
-
-    mime_type = SUPPORTED_FILE_EXTENSIONS.get(ext, "application/octet-stream")
-    if not base_name or base_name in ("encrypted_payload.qpep", "inline_message.txt"):
-        stem = "decrypted_file" if ext != ".txt" else "message"
-        normalized_filename = f"{stem}{ext}"
-    elif base_name.lower().endswith(".qpep"):
-        stem = base_name[:-5]
-        if "." in stem:
-            normalized_filename = stem
-        else:
-            normalized_filename = f"{stem}{ext}"
-    elif not base_name.lower().endswith(ext):
-        normalized_filename = f"{base_name}{ext}"
-    else:
-        normalized_filename = base_name
-
-    return normalized_filename, ext, mime_type
-
-CHUNK_SIZE = 65536
-from .wire.framing import pack_wire_frame, unpack_wire_frame
-from .constants import (
-    LEGACY_BETA_WIRE_MAGICS,
-    LEGACY_PC_WIRE_MAGICS,
-    WIRE_MAGIC_V4 as WIRE_MAGIC,
-    SUPPORTED_WIRE_MAGICS,
-)
 
 
 def _b64e(data: bytes) -> str:
@@ -310,12 +140,57 @@ def _b64d(text: str) -> bytes:
     return base64.b64decode(text.encode("ascii"))
 
 
+def _safe_zlib_decompress(data: bytes, max_bytes: int = MAX_DECOMPRESSED_BYTES) -> bytes:
+    """Decompresses zlib payload with a hard byte ceiling to defeat decompression-bomb DoS attacks."""
+    dobj = zlib.decompressobj()
+    out = dobj.decompress(data, max_bytes + 1)
+    if len(out) > max_bytes or dobj.unconsumed_tail:
+        raise QPEPWireFormatError(
+            f"Decompressed payload exceeds safety ceiling ({max_bytes:,} bytes); decompression bomb rejected."
+        )
+    tail = dobj.flush(max_bytes + 1 - len(out))
+    if len(out) + len(tail) > max_bytes or not dobj.eof:
+        raise QPEPWireFormatError("Corrupted or oversized compressed OpenQPEP payload.")
+    return out + tail
+
+
+def _canonical_blwe_digest(public_bundle: Dict[str, Any]) -> bytes:
+    """Computes canonical 512-bit binding digest of beyond_lwe_public (empty marker for lattice suites)."""
+    blwe = public_bundle.get("beyond_lwe_public")
+    if not blwe:
+        return b"NONE"
+    return qsponge_512(
+        b"CALYX-QPEP-BLWE-BIND-v1.0.0|" + json.dumps(blwe, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    )
+
+
+def _compute_key_hash(
+    suite_id: str,
+    hgc_pk_bytes: bytes,
+    qlx_pk: bytes,
+    hgc_sig_pk_bytes: bytes,
+    qvs_pk: bytes,
+    blwe_digest: bytes,
+) -> str:
+    """Computes the canonical 64-char Key Hash cryptographically binding suite_id, lattice/HGC keys, and Beyond-LWE keys."""
+    return qsponge_512(
+        b"CALYX-QPEP-KEY-HASH-v1.0.0|"
+        + suite_id.encode("ascii")
+        + b"|"
+        + hgc_pk_bytes
+        + qlx_pk
+        + hgc_sig_pk_bytes
+        + qvs_pk
+        + blwe_digest
+    ).hex().upper()[:64]
+
+
 def _compute_keyring_integrity_mac(
     key_hash: str,
     created_at: str,
     name: str,
     email: str,
-    public_bundle: Dict[str, str],
+    public_bundle: Dict[str, Any],
 ) -> str:
     mac_input = json.dumps(
         {
@@ -328,21 +203,34 @@ def _compute_keyring_integrity_mac(
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
-    return qsponge_512(b"CALYX-QPKRF-INTEGRITY|" + mac_input).hex().upper()
+    return qsponge_512(b"CALYX-QPKRF-INTEGRITY-v1.0.0|" + mac_input).hex().upper()
 
 
-def _armor_wrap(header_label: str, metadata: Dict[str, str], payload_bytes: bytes) -> str:
+def _armor_wrap(
+    header_label: str,
+    metadata: Dict[str, str],
+    payload_bytes: bytes,
+    *,
+    packet_type: int = PACKET_TYPE_SINGLE,
+) -> str:
     """
-    Encapsulates payload_bytes into a binary OpenQPEP wire frame (WIRE_MAGIC + 16-byte nonce +
-    qSponge-XOF stream-whitened payload + 32-byte qSponge-512 frame MAC) before Base64 armoring
-    so raw Base64 decoding never exposes plaintext or JSON structure.
+    Encapsulates payload_bytes into Official Wire Format v5 (\\x89QPE\\x05\\x00) and zero-metadata
+    ASCII armor with mandatory 48-bit qSponge checksum (`={crc}`).
+    Filters forbidden cleartext identity headers on non-keyring blocks.
     """
-    wire_frame = pack_wire_frame(payload_bytes, header_label)
-
+    wire_frame = pack_wire_frame(payload_bytes, header_label, packet_type=packet_type)
     b64_raw = _b64e(wire_frame)
     lines = [b64_raw[i : i + 64] for i in range(0, len(b64_raw), 64)]
-    crc_digest = _b64e(qsponge_var(b"CALYX-ARMOR-CRC-v1|" + wire_frame, 6))
-    meta_lines = [f"{k}: {v}" for k, v in metadata.items()]
+    crc_digest = _compute_armor_crc(wire_frame)
+
+    is_keyring = "KEY RING" in header_label.upper()
+    meta_lines = []
+    for k, v in metadata.items():
+        if not is_keyring and k.lower() in FORBIDDEN_ARMOR_HEADERS:
+            continue
+        _validate_header_token(str(k), str(v))
+        meta_lines.append(f"{k}: {v}")
+
     body = "\n".join(
         [f"-----BEGIN {header_label}-----"]
         + meta_lines
@@ -354,19 +242,20 @@ def _armor_wrap(header_label: str, metadata: Dict[str, str], payload_bytes: byte
 
 
 def _armor_unwrap(armored_text: str, expected_label: Optional[str] = None) -> Tuple[str, Dict[str, str], bytes]:
+    if not isinstance(armored_text, str) or len(armored_text) > MAX_ARMOR_BYTES:
+        raise QPEPWireFormatError("ASCII armor input missing or exceeds maximum allowed size.")
     lines = [line.strip() for line in armored_text.strip().splitlines()]
     if not lines or not lines[0].startswith("-----BEGIN ") or not lines[-1].startswith("-----END "):
-        raise ValueError("Invalid OpenQPEP armor header/footer.")
+        raise QPEPWireFormatError("Invalid OpenQPEP armor header/footer.")
     begin_label = lines[0][len("-----BEGIN ") : -len("-----")]
     end_label = lines[-1][len("-----END ") : -len("-----")]
     if begin_label != end_label:
-        raise ValueError(f"Mismatched armor labels: {begin_label} vs {end_label}")
+        raise QPEPWireFormatError(f"Mismatched armor labels: {begin_label} vs {end_label}")
     if expected_label and begin_label != expected_label:
-        # Allow seamless alias between OPENQPEP and CALYX QPEP armor labels
         norm_begin = begin_label.replace("OPENQPEP", "CALYX QPEP").replace("CALYX QPEP QPKRF", "CALYX QPKRF")
         norm_exp = expected_label.replace("OPENQPEP", "CALYX QPEP").replace("CALYX QPEP QPKRF", "CALYX QPKRF")
         if norm_begin != norm_exp:
-            raise ValueError(f"Expected armor label '{expected_label}', got '{begin_label}'")
+            raise QPEPWireFormatError(f"Expected armor label '{expected_label}', got '{begin_label}'")
 
     metadata: Dict[str, str] = {}
     idx = 1
@@ -382,42 +271,55 @@ def _armor_unwrap(armored_text: str, expected_label: Optional[str] = None) -> Tu
     checksum_line = None
     for line in lines[idx:-1]:
         if line.startswith("="):
-            checksum_line = line[1:]
+            if checksum_line is not None:
+                raise QPEPWireFormatError("Duplicate OpenQPEP armor checksum line.")
+            checksum_line = line[1:].strip()
         elif line:
             b64_chunks.append(line)
 
-    raw_frame = _b64d("".join(b64_chunks))
-    if len(raw_frame) >= 6 and raw_frame[:6] in LEGACY_PC_WIRE_MAGICS:
+    if not b64_chunks:
+        raise QPEPWireFormatError("Empty OpenQPEP ASCII armor payload.")
+
+    try:
+        raw_frame = base64.b64decode("".join(b64_chunks), validate=True)
+    except Exception as exc:
+        raise QPEPWireFormatError("Corrupted Base64 encoding inside OpenQPEP ASCII armor.") from exc
+
+    # Reject ALL legacy pre-release magics (-rc, -pc, -beta) deterministically with QPEPLegacyProtocolError
+    if len(raw_frame) >= 6 and raw_frame[:6] in ALL_LEGACY_WIRE_MAGICS:
         raise QPEPLegacyProtocolError(
-            "Legacy Production Candidate (-pc) Wire Format v3/v3.1 (\\x89QPE\\x03\\x00 / \\x89QPE\\x03\\x01) is strictly rejected in Release Candidate v1.0.0 (Wire Format v4 \\x89QPE\\x04\\x00 required)."
-        )
-    if len(raw_frame) >= 6 and raw_frame[:6] in LEGACY_BETA_WIRE_MAGICS:
-        raise QPEPLegacyProtocolError(
-            "Legacy beta wire format is strictly rejected in OpenQPEP Release Candidate v1.0.0 (Wire Format v4 \\x89QPE\\x04\\x00 required)."
+            "Legacy pre-release (-rc / -pc / -beta) wire format is strictly rejected in "
+            "OpenQPEP Official Release 1.0.0 (zero backwards compatibility). Official Wire Format v5 (\\x89QPE\\x05\\x00) is required."
         )
     if not raw_frame.startswith(WIRE_MAGIC):
         raise QPEPLegacyProtocolError(
-            "Unsupported or legacy wire format. OpenQPEP Release Candidate 1.0.0 requires Wire Format v4 (\\x89QPE\\x04\\x00)."
+            "Unsupported or legacy wire format. OpenQPEP Official Release 1.0.0 requires Official Wire Format v5 (\\x89QPE\\x05\\x00)."
         )
-    if checksum_line:
-        expected_crc = _b64e(qsponge_var(b"CALYX-ARMOR-CRC-v1|" + raw_frame, 6))
-        if not hmac.compare_digest(checksum_line, expected_crc):
-            raise ValueError("OpenQPEP qSponge checksum mismatch (corrupted packet).")
-    payload_bytes, _wire_nonce = unpack_wire_frame(raw_frame, begin_label)
+
+    # Strictly enforce mandatory armor CRC verification in constant time
+    if not checksum_line:
+        raise QPEPMacVerificationError("Missing mandatory OpenQPEP ASCII armor checksum (=CRC).")
+    expected_crc = _compute_armor_crc(raw_frame)
+    if not ct_eq(checksum_line.encode("ascii", errors="ignore"), expected_crc.encode("ascii")):
+        raise QPEPMacVerificationError("OpenQPEP qSponge armor checksum mismatch (corrupted packet).")
+
+    payload_bytes, _ptype = unpack_wire_frame(raw_frame, begin_label)
     return begin_label, metadata, payload_bytes
 
 
 def _cc512_encrypt(plaintext: bytes, k_s1: bytes, k_s2: bytes, aad: bytes) -> Tuple[bytes, bytes, bytes]:
+    """Routes protocol CC-512 encryption through CMT-4 Key-Committing CC-512 AEAD."""
     n1 = os.urandom(12)
     n2 = os.urandom(12)
-    inner_ct = AESGCM(k_s1).encrypt(n1, plaintext, aad)
-    outer_ct = ChaCha20Poly1305(k_s2).encrypt(n2, inner_ct, aad)
-    return n1, n2, outer_ct
+    with SecretBuffer(k_s1 + k_s2) as kbuf:
+        ct = _cc512_encrypt_mod(kbuf.as_bytes(), n1 + n2, plaintext, aad)
+    return n1, n2, ct
 
 
 def _cc512_decrypt(outer_ct: bytes, k_s1: bytes, k_s2: bytes, n1: bytes, n2: bytes, aad: bytes) -> bytes:
-    inner_ct = ChaCha20Poly1305(k_s2).decrypt(n2, outer_ct, aad)
-    return AESGCM(k_s1).decrypt(n1, inner_ct, aad)
+    """Routes protocol CC-512 decryption through CMT-4 Key-Committing CC-512 AEAD."""
+    with SecretBuffer(k_s1 + k_s2) as kbuf:
+        return _cc512_decrypt_mod(kbuf.as_bytes(), n1 + n2, outer_ct, aad)
 
 
 @dataclass
@@ -429,7 +331,7 @@ class QPEPKeyRing:
     qlx_tier: str
     qvs_tier: str
     comment: str
-    public_bundle: Dict[str, str]
+    public_bundle: Dict[str, Any]
     encrypted_private_bundle: Optional[Dict[str, Any]]
     integrity_mac: str
 
@@ -440,7 +342,7 @@ class QPEPKeyRing:
 
 class CalyxQPEPProtocol:
     """
-    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Release Candidate 1.0.0).
+    Official Reference Implementation of OpenQPEP by Calyx Labs Inc. (Official Release 1.0.0).
     """
 
     @staticmethod
@@ -455,94 +357,85 @@ class CalyxQPEPProtocol:
         requested_suite = qlx_tier
         is_beyond_lwe = requested_suite in BEYOND_LWE_SUITES
         if qlx_tier not in QLX_TIERS:
+            if not is_beyond_lwe:
+                raise QPEPSuiteError(f"Unsupported OpenQPEP suite: {requested_suite}")
             qlx_tier = "QLX-4096"
         qvs_tier = QLX_TIERS[qlx_tier]["qvs_tier"]
+        suite_id = requested_suite if is_beyond_lwe else qlx_tier
+
         blwe_pub, blwe_priv = (
             generate_beyond_lwe_material(requested_suite, allow_low_ram_override=True)
             if is_beyond_lwe
             else (None, None)
         )
 
-        hgc_sk = x448.X448PrivateKey.generate()
-        hgc_pk = hgc_sk.public_key()
-        hgc_sk_bytes = hgc_sk.private_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PrivateFormat.Raw,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        hgc_pk_bytes = hgc_pk.public_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PublicFormat.Raw,
-        )
-
-        hgc_sig_sk = ed448.Ed448PrivateKey.generate()
-        hgc_sig_pk = hgc_sig_sk.public_key()
-        hgc_sig_sk_bytes = hgc_sig_sk.private_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PrivateFormat.Raw,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        hgc_sig_pk_bytes = hgc_sig_pk.public_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PublicFormat.Raw,
-        )
-
+        hgc_pk_bytes, hgc_sk_bytes = x448_keygen()
+        hgc_sig_pk_bytes, hgc_sig_sk_bytes = ed448_keygen()
         qlx_pk, qlx_sk = QLXEngine.keygen(tier=qlx_tier, policy_witness=policy_witness)
         qvs_pk, qvs_sk = QVSEngine.keygen(tier=qvs_tier, policy_witness=policy_witness)
 
-        full_hash = qsponge_512(
-            b"CALYX-QPEP-KEY-HASH-v1|" + hgc_pk_bytes + qlx_pk + hgc_sig_pk_bytes + qvs_pk
-        ).hex().upper()
-        key_hash = full_hash[:64]
-        created_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        cert_transcript = (
-            f"CALYX-QPEP-SELFCERT|{key_hash}|{created_at}|{name}|{email}|{qlx_tier}|{qvs_tier}|{comment}".encode("utf-8")
-            + hgc_pk_bytes
-            + qlx_pk
-            + hgc_sig_pk_bytes
-            + qvs_pk
-        )
-        sig_part1 = hgc_sig_sk.sign(cert_transcript)
-        sig_part2 = QVSEngine.sign(qvs_sk, qvs_pk, cert_transcript, tier=qvs_tier)
-        self_sig_blob = sig_part1 + sig_part2
-
-        public_bundle = {
-            "suite_id": requested_suite if is_beyond_lwe else qlx_tier,
+        public_bundle: Dict[str, Any] = {
+            "suite_id": suite_id,
             "qlx_tier": qlx_tier,
             "qvs_tier": qvs_tier,
             "hgc_448_public_b64": _b64e(hgc_pk_bytes),
             "qlx_public_b64": _b64e(qlx_pk),
             "hgc_sig_public_b64": _b64e(hgc_sig_pk_bytes),
             "qvs_public_b64": _b64e(qvs_pk),
-            "self_signature_b64": _b64e(self_sig_blob),
         }
         if is_beyond_lwe and blwe_pub is not None:
             public_bundle["beyond_lwe_public"] = blwe_pub
 
-        kdf_salt = os.urandom(32)
-        k_s1, k_s2, k_mac, kdf_v3_params = derive_qpkrf_keys_v3(passphrase, kdf_salt, qlx_tier=qlx_tier)
+        blwe_digest = _canonical_blwe_digest(public_bundle)
+        key_hash = _compute_key_hash(suite_id, hgc_pk_bytes, qlx_pk, hgc_sig_pk_bytes, qvs_pk, blwe_digest)
+        created_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        mask_stream = qsponge_var(b"CALYX-QPEP-SK-MASK|" + k_mac + key_hash.encode("ascii"), len(qlx_sk))
-        masked_qlx_sk = bytes(a ^ b for a, b in zip(qlx_sk, mask_stream))
+        cert_transcript = (
+            f"CALYX-QPEP-SELFCERT-v1.0.0|{suite_id}|{key_hash}|{created_at}|{name}|{email}|{qlx_tier}|{qvs_tier}|{comment}".encode("utf-8")
+            + hgc_pk_bytes
+            + qlx_pk
+            + hgc_sig_pk_bytes
+            + qvs_pk
+            + blwe_digest
+        )
 
-        priv_payload_obj = {
-            "hgc_448_private_b64": _b64e(hgc_sk_bytes),
-            "qlx_masked_private_b64": _b64e(masked_qlx_sk),
-            "hgc_sig_private_b64": _b64e(hgc_sig_sk_bytes),
-            "qvs_private_b64": _b64e(qvs_sk),
-        }
-        if is_beyond_lwe and blwe_priv is not None:
-            priv_payload_obj["beyond_lwe_private"] = blwe_priv
-        private_raw = json.dumps(priv_payload_obj, separators=(",", ":")).encode("utf-8")
+        with (
+            SecretBuffer(hgc_sk_bytes) as hgc_sk_buf,
+            SecretBuffer(hgc_sig_sk_bytes) as sig_sk_buf,
+            SecretBuffer(qlx_sk) as qlx_sk_buf,
+            SecretBuffer(qvs_sk) as qvs_sk_buf,
+        ):
+            sig_part1 = ed448_sign(sig_sk_buf.as_bytes(), cert_transcript)
+            sig_part2 = QVSEngine.sign(qvs_sk_buf.as_bytes(), qvs_pk, cert_transcript, tier=qvs_tier)
+            public_bundle["self_signature_b64"] = _b64e(sig_part1 + sig_part2)
 
-        aad = f"CALYX-QPEP-PRIVRING|{key_hash}".encode("utf-8")
-        n1, n2, ct_priv = _cc512_encrypt(private_raw, k_s1, k_s2, aad)
+            kdf_salt = os.urandom(32)
+            k_s1, k_s2, k_mac, kdf_v4_params = derive_qpkrf_keys_v4(passphrase, kdf_salt, qlx_tier=qlx_tier)
+
+            with SecretBuffer(k_s1) as ks1_buf, SecretBuffer(k_s2) as ks2_buf, SecretBuffer(k_mac) as kmac_buf:
+                mask_stream = qsponge_var(
+                    b"CALYX-QPEP-SK-MASK-v1.0.0|" + kmac_buf.as_bytes() + key_hash.encode("ascii"),
+                    len(qlx_sk_buf),
+                )
+                masked_qlx_sk = bytes(a ^ b for a, b in zip(qlx_sk_buf.as_bytes(), mask_stream))
+
+                priv_payload_obj: Dict[str, Any] = {
+                    "hgc_448_private_b64": _b64e(hgc_sk_buf.as_bytes()),
+                    "qlx_masked_private_b64": _b64e(masked_qlx_sk),
+                    "hgc_sig_private_b64": _b64e(sig_sk_buf.as_bytes()),
+                    "qvs_private_b64": _b64e(qvs_sk_buf.as_bytes()),
+                }
+                if is_beyond_lwe and blwe_priv is not None:
+                    priv_payload_obj["beyond_lwe_private"] = blwe_priv
+
+                with SecretBuffer(json.dumps(priv_payload_obj, separators=(",", ":")).encode("utf-8")) as priv_raw_buf:
+                    aad = f"CALYX-QPEP-PRIVRING-v1.0.0|{suite_id}|{key_hash}".encode("utf-8")
+                    n1, n2, ct_priv = _cc512_encrypt(priv_raw_buf.as_bytes(), ks1_buf.as_bytes(), ks2_buf.as_bytes(), aad)
 
         encrypted_private_bundle = {
-            "kdf_version": 3,
+            "kdf_version": MANDATORY_KDF_VERSION,
             "kdf_salt_b64": _b64e(kdf_salt),
-            "kdf_params": kdf_v3_params,
+            "kdf_params": kdf_v4_params,
             "cc512_n1_b64": _b64e(n1),
             "cc512_n2_b64": _b64e(n2),
             "ciphertext_b64": _b64e(ct_priv),
@@ -565,53 +458,52 @@ class CalyxQPEPProtocol:
 
     @staticmethod
     def verify_public_keyring_self_signature(keyring: QPEPKeyRing) -> bool:
-        expected_mac = _compute_keyring_integrity_mac(
-            keyring.key_hash,
-            keyring.created_at,
-            keyring.name,
-            keyring.email,
-            keyring.public_bundle,
-        )
-        if not hmac.compare_digest(keyring.integrity_mac, expected_mac):
-            return False
-
-        hgc_pk_bytes = _b64d(keyring.public_bundle["hgc_448_public_b64"])
-        qlx_pk = _b64d(keyring.public_bundle["qlx_public_b64"])
-        hgc_sig_pk_bytes = _b64d(keyring.public_bundle["hgc_sig_public_b64"])
-        qvs_pk = _b64d(keyring.public_bundle["qvs_public_b64"])
-        self_sig_blob = _b64d(keyring.public_bundle["self_signature_b64"])
-
-        # Verify Key Hash binding to the actual public keys
-        expected_hash = qsponge_512(
-            b"CALYX-QPEP-KEY-HASH-v1|" + hgc_pk_bytes + qlx_pk + hgc_sig_pk_bytes + qvs_pk
-        ).hex().upper()[:64]
-        if not hmac.compare_digest(keyring.key_hash, expected_hash):
-            return False
-
-        qvs_tier = keyring.qvs_tier
-        expected_sig_len = 114 + QVS_TIERS[qvs_tier]["sig_bytes"]
-        if len(self_sig_blob) != expected_sig_len:
-            return False
-        sig1 = self_sig_blob[:114]
-        sig2 = self_sig_blob[114:]
-
-        cert_transcript = (
-            f"CALYX-QPEP-SELFCERT|{keyring.key_hash}|{keyring.created_at}|{keyring.name}|{keyring.email}|{keyring.qlx_tier}|{keyring.qvs_tier}|{keyring.comment}".encode("utf-8")
-            + hgc_pk_bytes
-            + qlx_pk
-            + hgc_sig_pk_bytes
-            + qvs_pk
-        )
         try:
-            ed_pk = ed448.Ed448PublicKey.from_public_bytes(hgc_sig_pk_bytes)
-            ed_pk.verify(sig1, cert_transcript)
+            expected_mac = _compute_keyring_integrity_mac(
+                keyring.key_hash,
+                keyring.created_at,
+                keyring.name,
+                keyring.email,
+                keyring.public_bundle,
+            )
+            if not hmac.compare_digest(keyring.integrity_mac, expected_mac):
+                return False
+
+            suite_id = CalyxQPEPProtocol.get_keyring_suite_id(keyring)
+            hgc_pk_bytes = _b64d(keyring.public_bundle["hgc_448_public_b64"])
+            qlx_pk = _b64d(keyring.public_bundle["qlx_public_b64"])
+            hgc_sig_pk_bytes = _b64d(keyring.public_bundle["hgc_sig_public_b64"])
+            qvs_pk = _b64d(keyring.public_bundle["qvs_public_b64"])
+            self_sig_blob = _b64d(keyring.public_bundle["self_signature_b64"])
+            blwe_digest = _canonical_blwe_digest(keyring.public_bundle)
+
+            expected_hash = _compute_key_hash(suite_id, hgc_pk_bytes, qlx_pk, hgc_sig_pk_bytes, qvs_pk, blwe_digest)
+            if not hmac.compare_digest(keyring.key_hash, expected_hash):
+                return False
+
+            qvs_tier = keyring.qvs_tier
+            expected_sig_len = 114 + QVS_TIERS[qvs_tier]["sig_bytes"]
+            if len(self_sig_blob) != expected_sig_len:
+                return False
+            sig1 = self_sig_blob[:114]
+            sig2 = self_sig_blob[114:]
+
+            cert_transcript = (
+                f"CALYX-QPEP-SELFCERT-v1.0.0|{suite_id}|{keyring.key_hash}|{keyring.created_at}|{keyring.name}|{keyring.email}|{keyring.qlx_tier}|{keyring.qvs_tier}|{keyring.comment}".encode("utf-8")
+                + hgc_pk_bytes
+                + qlx_pk
+                + hgc_sig_pk_bytes
+                + qvs_pk
+                + blwe_digest
+            )
+            if not ed448_verify(hgc_sig_pk_bytes, sig1, cert_transcript):
+                return False
+            return QVSEngine.verify(qvs_pk, cert_transcript, sig2, tier=qvs_tier)
         except Exception:
             return False
 
-        return QVSEngine.verify(qvs_pk, cert_transcript, sig2, tier=qvs_tier)
-
     @staticmethod
-    def unlock_private_keys(keyring: QPEPKeyRing, passphrase: str) -> Dict[str, bytes]:
+    def unlock_private_keys(keyring: QPEPKeyRing, passphrase: str) -> Dict[str, Any]:
         enforce_passphrase_policy(passphrase)
         if not keyring.encrypted_private_bundle:
             raise ValueError("This QPKRF key ring contains only a public key.")
@@ -620,39 +512,47 @@ class CalyxQPEPProtocol:
         kdf_salt = _b64d(priv_enc["kdf_salt_b64"])
         kdf_params = priv_enc.get("kdf_params") or {}
         kdf_version = int(priv_enc.get("kdf_version") or kdf_params.get("kdf_version") or 0)
-        if kdf_version < 3:
+        if kdf_version < MANDATORY_KDF_VERSION:
             raise QPEPLegacyProtocolError(
-                "Legacy Production Candidate (-pc, kdf_version: 2) and beta (kdf_version: 1) key rings are strictly rejected in OpenQPEP Release Candidate 1.0.0 (kdf_version: 3 required)."
+                f"Legacy pre-release key ring (kdf_version: {kdf_version} from -rc / -pc / -beta) is strictly rejected "
+                f"in OpenQPEP Official Release 1.0.0 (zero backwards compatibility; mandatory kdf_version: {MANDATORY_KDF_VERSION})."
             )
-        k_s1, k_s2, k_mac, _ = derive_qpkrf_keys_v3(passphrase, kdf_salt, kdf_params=kdf_params)
-        aad = f"CALYX-QPEP-PRIVRING|{keyring.key_hash}".encode("utf-8")
 
-        try:
-            decrypted_json = _cc512_decrypt(
-                outer_ct=_b64d(priv_enc["ciphertext_b64"]),
-                k_s1=k_s1,
-                k_s2=k_s2,
-                n1=_b64d(priv_enc["cc512_n1_b64"]),
-                n2=_b64d(priv_enc["cc512_n2_b64"]),
-                aad=aad,
-            )
-        except Exception as exc:
-            raise ValueError("Invalid passphrase or tampered QPKRF private key ring.") from exc
+        k_s1, k_s2, k_mac, _ = derive_qpkrf_keys_v4(passphrase, kdf_salt, kdf_params=kdf_params)
+        suite_id = CalyxQPEPProtocol.get_keyring_suite_id(keyring)
+        aad = f"CALYX-QPEP-PRIVRING-v1.0.0|{suite_id}|{keyring.key_hash}".encode("utf-8")
 
-        parsed = json.loads(decrypted_json.decode("utf-8"))
-        masked_qlx_sk = _b64d(parsed["qlx_masked_private_b64"])
-        mask_stream = qsponge_var(b"CALYX-QPEP-SK-MASK|" + k_mac + keyring.key_hash.encode("ascii"), len(masked_qlx_sk))
-        qlx_sk = bytes(a ^ b for a, b in zip(masked_qlx_sk, mask_stream))
+        with SecretBuffer(k_s1) as ks1_buf, SecretBuffer(k_s2) as ks2_buf, SecretBuffer(k_mac) as kmac_buf:
+            try:
+                decrypted_json = _cc512_decrypt(
+                    outer_ct=_b64d(priv_enc["ciphertext_b64"]),
+                    k_s1=ks1_buf.as_bytes(),
+                    k_s2=ks2_buf.as_bytes(),
+                    n1=_b64d(priv_enc["cc512_n1_b64"]),
+                    n2=_b64d(priv_enc["cc512_n2_b64"]),
+                    aad=aad,
+                )
+            except Exception as exc:
+                raise ValueError("Invalid passphrase or tampered QPKRF private key ring.") from exc
 
-        out_keys: Dict[str, Any] = {
-            "hgc_448_private": _b64d(parsed["hgc_448_private_b64"]),
-            "qlx_private": qlx_sk,
-            "hgc_sig_private": _b64d(parsed["hgc_sig_private_b64"]),
-            "qvs_private": _b64d(parsed["qvs_private_b64"]),
-        }
-        if "beyond_lwe_private" in parsed:
-            out_keys["beyond_lwe_private"] = parsed["beyond_lwe_private"]
-        return out_keys
+            with SecretBuffer(decrypted_json) as dj_buf:
+                parsed = json.loads(dj_buf.as_bytes().decode("utf-8"))
+                masked_qlx_sk = _b64d(parsed["qlx_masked_private_b64"])
+                mask_stream = qsponge_var(
+                    b"CALYX-QPEP-SK-MASK-v1.0.0|" + kmac_buf.as_bytes() + keyring.key_hash.encode("ascii"),
+                    len(masked_qlx_sk),
+                )
+                qlx_sk = bytes(a ^ b for a, b in zip(masked_qlx_sk, mask_stream))
+
+                out_keys: Dict[str, Any] = {
+                    "hgc_448_private": _b64d(parsed["hgc_448_private_b64"]),
+                    "qlx_private": qlx_sk,
+                    "hgc_sig_private": _b64d(parsed["hgc_sig_private_b64"]),
+                    "qvs_private": _b64d(parsed["qvs_private_b64"]),
+                }
+                if "beyond_lwe_private" in parsed:
+                    out_keys["beyond_lwe_private"] = parsed["beyond_lwe_private"]
+                return out_keys
 
     @staticmethod
     def export_qpkrf(
@@ -661,23 +561,25 @@ class CalyxQPEPProtocol:
         include_private: bool = False,
         output_path: Optional[str | Path] = None,
     ) -> str:
-        """
-        Exports a Public or Private .qpkrf Key Ring File.
-        - Exporting a Public Key Ring does NOT require a passphrase.
-        - Exporting a Private Key Ring strictly requires and verifies the owner's QPKD-Argon2id passphrase.
-        """
         if include_private:
             if not passphrase:
                 raise QPEPPassphrasePolicyError("Exporting a private .qpkrf key ring requires the key's mandatory passphrase.")
             CalyxQPEPProtocol.unlock_private_keys(keyring, passphrase)
 
+        suite_id = CalyxQPEPProtocol.get_keyring_suite_id(keyring)
         ring_type = "PRIVATE_KEY_RING" if include_private else "PUBLIC_KEY_RING"
+        suite_desc = (
+            f"{suite_id} (Beyond-LWE) / CMT-4 CC-512"
+            if suite_id in BEYOND_LWE_SUITES
+            else f"{keyring.qlx_tier}+HGC-448 / {keyring.qvs_tier}+qSponge-512 / CMT-4 CC-512"
+        )
         envelope: Dict[str, Any] = {
-            "magic": "QPKRF-v1",
+            "magic": "QPKRF-v1.0.0",
             "protocol": PROJECT_NAME,
             "version": UNIVERSAL_VERSION,
             "ring_type": ring_type,
-            "suite": f"{keyring.qlx_tier}+HGC-448 / {keyring.qvs_tier}+qSponge-512 / CC-512",
+            "suite_id": suite_id,
+            "suite": suite_desc,
             "key_hash": keyring.key_hash,
             "created_at": keyring.created_at,
             "identity": {
@@ -700,27 +602,27 @@ class CalyxQPEPProtocol:
         metadata = {
             "Protocol": PROJECT_NAME,
             "Version": f"{PROTOCOL_VERSION} ({UNIVERSAL_VERSION_LABEL})",
-            "Suite": f"{keyring.qlx_tier}+HGC-448 / {keyring.qvs_tier}+qSponge-512 / CC-512",
+            "Suite": suite_desc,
             "Key-Hash": keyring.key_hash,
             "Identity": f"{keyring.name} <{keyring.email}>",
         }
-        armored = _armor_wrap(label, metadata, payload_bytes)
+        armored = _armor_wrap(label, metadata, payload_bytes, packet_type=PACKET_TYPE_KEYRING)
 
         if output_path is not None:
             out_p = Path(output_path)
             if out_p.suffix.lower() != QPKRF_EXTENSION:
                 raise ValueError(f"Exported key ring files MUST use the '{QPKRF_EXTENSION}' file extension.")
             out_p.write_text(armored, encoding="utf-8")
+            if include_private:
+                try:
+                    os.chmod(out_p, 0o600)
+                except OSError:
+                    pass
 
         return armored
 
     @staticmethod
     def import_qpkrf(armored_or_path: str | Path, passphrase: Optional[str] = None) -> QPEPKeyRing:
-        """
-        Imports a .qpkrf Key Ring File.
-        - Importing a Public Key Ring (receiver key) does NOT require a passphrase.
-        - Importing a Private Key Ring strictly requires and verifies the owner's QPKD-Argon2id passphrase.
-        """
         if isinstance(armored_or_path, Path) or (
             isinstance(armored_or_path, str)
             and "\n" not in armored_or_path
@@ -745,9 +647,11 @@ class CalyxQPEPProtocol:
 
         envelope = json.loads(payload_bytes.decode("utf-8"))
         env_ver = str(envelope.get("version") or "")
-        if "-pc" in env_ver.lower() or "-beta" in env_ver.lower():
+        low_ver = env_ver.lower()
+        if "-rc" in low_ver or "-pc" in low_ver or "-beta" in low_ver or low_ver.startswith("0."):
             raise QPEPLegacyProtocolError(
-                f"Legacy Production Candidate / beta .qpkrf key ring ({env_ver}) is strictly rejected in OpenQPEP Release Candidate v1.0.0."
+                f"Legacy pre-release .qpkrf key ring ({env_ver}) is strictly rejected in OpenQPEP Official Release 1.0.0 "
+                f"(zero backwards compatibility)."
             )
         identity = envelope["identity"]
         pub_b = envelope["public_bundle"]
@@ -756,8 +660,8 @@ class CalyxQPEPProtocol:
             created_at=envelope["created_at"],
             name=identity["name"],
             email=identity["email"],
-            qlx_tier=pub_b.get("qlx_tier", "QLX-1024"),
-            qvs_tier=pub_b.get("qvs_tier", "QVS-87"),
+            qlx_tier=pub_b.get("qlx_tier", "QLX-4096"),
+            qvs_tier=pub_b.get("qvs_tier", "QVS-256"),
             comment=identity.get("comment", ""),
             public_bundle=pub_b,
             encrypted_private_bundle=envelope.get("encrypted_private_bundle"),
@@ -784,53 +688,15 @@ class CalyxQPEPProtocol:
         compress: bool = True,
     ) -> str:
         """
-        Encrypts raw bytes using both the sender's Encrypting Key (unlocked via mandatory passphrase)
-        and the Recipient's Key (.qpkrf).
+        Encrypts raw bytes using BOTH the sender's Encrypting Key (embedded attached signature)
+        and the Recipient's Key (.qpkrf) across ALL 10 canonical suites (Lattice AND Beyond-LWE).
+        Emits ZERO cleartext sender/recipient identity headers.
         """
         enforce_passphrase_policy(passphrase)
         if not CalyxQPEPProtocol.verify_public_keyring_self_signature(recipient_keyring):
             raise ValueError("Recipient public key ring self-signature is invalid.")
 
-        # AUTO-DISPATCH BEYOND-LWE (AUD-06): never silently downgrade Beyond-LWE .qpkrf key rings
-        req_suite = CalyxQPEPProtocol.get_keyring_suite_id(recipient_keyring)
-        if req_suite in BEYOND_LWE_SUITES and recipient_keyring.public_bundle.get("beyond_lwe_public"):
-            return CalyxQPEPProtocol.encrypt_beyond_lwe_packet(plaintext, recipient_keyring)
         embedded_sig = CalyxQPEPProtocol.sign_bytes(plaintext, encrypting_keyring, passphrase)
-
-        qlx_tier = recipient_keyring.qlx_tier
-        recip_hgc_pk_bytes = _b64d(recipient_keyring.public_bundle["hgc_448_public_b64"])
-        recip_qlx_pk_bytes = _b64d(recipient_keyring.public_bundle["qlx_public_b64"])
-        recip_hgc_pk = x448.X448PublicKey.from_public_bytes(recip_hgc_pk_bytes)
-
-        eph_hgc_sk = x448.X448PrivateKey.generate()
-        eph_hgc_pk_bytes = eph_hgc_sk.public_key().public_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PublicFormat.Raw,
-        )
-        ss_hgc = eph_hgc_sk.exchange(recip_hgc_pk)
-        ct_qlx, ss_qlx = QLXEngine.encaps(recip_qlx_pk_bytes, tier=qlx_tier)
-
-        ss_hybrid = qsponge_var(
-            b"CALYX-QPEP-KEM-v1|"
-            + ss_qlx
-            + ss_hgc
-            + ct_qlx
-            + eph_hgc_pk_bytes
-            + recip_qlx_pk_bytes
-            + recip_hgc_pk_bytes,
-            64,
-        )
-
-        pkt_salt = os.urandom(32)
-        hkdf = HKDF(
-            algorithm=hashes.SHA3_512(),
-            length=128,
-            salt=pkt_salt,
-            info=b"CALYX-QPEP-CC512-SUBKEYS|" + recipient_keyring.key_hash.encode("ascii"),
-        )
-        okm = hkdf.derive(ss_hybrid)
-        k_s1, k_s2, k_transcript_mac = okm[:32], okm[32:64], okm[64:128]
-
         norm_fname, file_ext, mime_type = detect_file_extension_and_mime(plaintext, filename)
         inner_envelope = {
             "filename": norm_fname,
@@ -844,37 +710,76 @@ class CalyxQPEPProtocol:
             "embedded_signature": embedded_sig,
             "data_b64": _b64e(zlib.compress(plaintext, level=6) if compress else plaintext),
         }
-
         serialized_inner = json.dumps(inner_envelope, separators=(",", ":")).encode("utf-8")
 
-        chunks_out = []
-        total_len = len(serialized_inner)
-        offset = 0
-        chunk_idx = 0
-        while offset < total_len or (total_len == 0 and chunk_idx == 0):
-            piece = serialized_inner[offset : offset + CHUNK_SIZE]
-            offset += len(piece)
-            is_final = 1 if offset >= total_len else 0
-            aad = f"CALYX-QPEP-CC512|recip={recipient_keyring.key_hash}|idx={chunk_idx}|final={is_final}".encode("utf-8")
-            n1, n2, ct_chunk = _cc512_encrypt(piece, k_s1, k_s2, aad)
-            chunks_out.append(
-                {
-                    "idx": chunk_idx,
-                    "final": is_final,
-                    "cc512_n1_b64": _b64e(n1),
-                    "cc512_n2_b64": _b64e(n2),
-                    "ct_b64": _b64e(ct_chunk),
-                }
-            )
-            chunk_idx += 1
-            if total_len == 0:
-                break
+        # Unified authenticated Beyond-LWE dispatch: preserves embedded sender signature, filename & MIME!
+        req_suite = CalyxQPEPProtocol.get_keyring_suite_id(recipient_keyring)
+        if req_suite in BEYOND_LWE_SUITES and recipient_keyring.public_bundle.get("beyond_lwe_public"):
+            blwe_env = b"QPEP-BLWE-ENV-v1.0.0|" + serialized_inner
+            return CalyxQPEPProtocol.encrypt_beyond_lwe_packet(blwe_env, recipient_keyring)
 
-        transcript_bytes = json.dumps(chunks_out, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        transcript_tag = hmac.new(k_transcript_mac, b"CALYX-QPEP-TRANSCRIPT|" + transcript_bytes, hashlib.sha3_512).hexdigest().upper()
+        qlx_tier = recipient_keyring.qlx_tier
+        recip_hgc_pk_bytes = _b64d(recipient_keyring.public_bundle["hgc_448_public_b64"])
+        recip_qlx_pk_bytes = _b64d(recipient_keyring.public_bundle["qlx_public_b64"])
+
+        eph_hgc_pk_bytes, eph_hgc_sk_bytes = x448_keygen()
+        with SecretBuffer(eph_hgc_sk_bytes) as eph_buf:
+            ss_hgc = x448_exchange(eph_buf.as_bytes(), recip_hgc_pk_bytes)
+        ct_qlx, ss_qlx = QLXEngine.encaps(recip_qlx_pk_bytes, tier=qlx_tier)
+
+        with SecretBuffer(
+            qsponge_var(
+                b"CALYX-QPEP-KEM-v1.0.0|"
+                + ss_qlx
+                + ss_hgc
+                + ct_qlx
+                + eph_hgc_pk_bytes
+                + recip_qlx_pk_bytes
+                + recip_hgc_pk_bytes,
+                64,
+            )
+        ) as ss_hybrid_buf:
+            pkt_salt = os.urandom(32)
+            hkdf = HKDF(
+                algorithm=hashes.SHA3_512(),
+                length=128,
+                salt=pkt_salt,
+                info=b"CALYX-QPEP-CC512-SUBKEYS-v1.0.0|" + recipient_keyring.key_hash.encode("ascii"),
+            )
+            with SecretBuffer(hkdf.derive(ss_hybrid_buf.as_bytes())) as okm_buf:
+                okm = okm_buf.as_bytes()
+                k_s1, k_s2, k_transcript_mac = okm[:32], okm[32:64], okm[64:128]
+
+                chunks_out = []
+                total_len = len(serialized_inner)
+                offset = 0
+                chunk_idx = 0
+                while offset < total_len or (total_len == 0 and chunk_idx == 0):
+                    piece = serialized_inner[offset : offset + CHUNK_SIZE]
+                    offset += len(piece)
+                    is_final = 1 if offset >= total_len else 0
+                    aad = f"CALYX-QPEP-CC512-v1.0.0|recip={recipient_keyring.key_hash}|idx={chunk_idx}|final={is_final}".encode("utf-8")
+                    n1, n2, ct_chunk = _cc512_encrypt(piece, k_s1, k_s2, aad)
+                    chunks_out.append({
+                        "idx": chunk_idx,
+                        "final": is_final,
+                        "cc512_n1_b64": _b64e(n1),
+                        "cc512_n2_b64": _b64e(n2),
+                        "ct_b64": _b64e(ct_chunk),
+                    })
+                    chunk_idx += 1
+                    if total_len == 0:
+                        break
+
+                transcript_bytes = json.dumps(chunks_out, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                transcript_tag = hmac.new(
+                    k_transcript_mac,
+                    b"CALYX-QPEP-TRANSCRIPT-v1.0.0|" + transcript_bytes,
+                    hashlib.sha3_512,
+                ).hexdigest().upper()
 
         packet_obj = {
-            "magic": "QPEP-v1",
+            "magic": "QPEP-v1.0.0",
             "protocol": PROJECT_NAME,
             "version": UNIVERSAL_VERSION,
             "qlx_tier": qlx_tier,
@@ -890,8 +795,7 @@ class CalyxQPEPProtocol:
         metadata = {
             "Protocol": PROJECT_NAME,
             "Version": f"{PROTOCOL_VERSION} ({UNIVERSAL_VERSION_LABEL})",
-            "Suite": f"{qlx_tier}+HGC-448 / CC-512",
-            "Encrypting-Key-Hash": encrypting_keyring.key_hash,
+            "Suite": f"{qlx_tier}+HGC-448 / CMT-4 CC-512",
         }
         return _armor_wrap("CALYX QPEP ENCRYPTED PACKET", metadata, json.dumps(packet_obj).encode("utf-8"))
 
@@ -905,11 +809,54 @@ class CalyxQPEPProtocol:
         enforce_passphrase_policy(passphrase)
         priv_keys = CalyxQPEPProtocol.unlock_private_keys(recipient_private_keyring, passphrase)
 
-        # AUTO-DISPATCH BEYOND-LWE (AUD-06)
+        # Unified authenticated Beyond-LWE dispatch
         rec_suite = CalyxQPEPProtocol.get_keyring_suite_id(recipient_private_keyring)
         if rec_suite in BEYOND_LWE_SUITES and "-----BEGIN CALYX QPEP ENCRYPTED PACKET-----" not in armored_packet:
-            pt_blwe = CalyxQPEPProtocol.decrypt_beyond_lwe_packet(armored_packet, recipient_private_keyring, passphrase)
-            return pt_blwe, {"suite_id": rec_suite, "beyond_lwe": True, "sender_verified": True}
+            raw_blwe = CalyxQPEPProtocol.decrypt_beyond_lwe_packet(armored_packet, recipient_private_keyring, passphrase)
+            prefix = b"QPEP-BLWE-ENV-v1.0.0|"
+            if raw_blwe.startswith(prefix):
+                inner_envelope = json.loads(raw_blwe[len(prefix) :].decode("utf-8"))
+                raw_data = _b64d(inner_envelope["data_b64"])
+                plaintext = _safe_zlib_decompress(raw_data) if inner_envelope.get("compressed") else raw_data
+                actual_hash = qsponge_512(plaintext).hex().upper()
+                if not hmac.compare_digest(actual_hash, inner_envelope["plaintext_qsponge_512"]):
+                    raise ValueError("Plaintext qSponge-512 integrity check failed.")
+
+                effective_sender = sender_public_keyring
+                if effective_sender is None and inner_envelope.get("encrypting_key_hash") == recipient_private_keyring.key_hash:
+                    effective_sender = recipient_private_keyring
+                sig_verified = None
+                if "embedded_signature" in inner_envelope and effective_sender is not None:
+                    sig_verified, _, _ = CalyxQPEPProtocol.verify_signature(
+                        inner_envelope["embedded_signature"], signer_public_keyring=effective_sender
+                    )
+                norm_fname, file_ext, mime_type = detect_file_extension_and_mime(plaintext, inner_envelope.get("filename"))
+                return plaintext, {
+                    "suite_id": rec_suite,
+                    "beyond_lwe": True,
+                    "qlx_tier": recipient_private_keyring.qlx_tier,
+                    "qvs_tier": recipient_private_keyring.qvs_tier,
+                    "filename": norm_fname,
+                    "file_extension": inner_envelope.get("file_extension") or file_ext,
+                    "mime_type": inner_envelope.get("mime_type") or mime_type,
+                    "timestamp": inner_envelope.get("timestamp"),
+                    "plaintext_qsponge_512": actual_hash,
+                    "plaintext_size": inner_envelope.get("plaintext_size"),
+                    "encrypting_key_hash": inner_envelope.get("encrypting_key_hash"),
+                    "signature_verified": sig_verified,
+                    "sender_verified": bool(sig_verified) if sig_verified is not None else False,
+                }
+            # Direct low-level Beyond-LWE packet (from encrypt_beyond_lwe_packet)
+            actual_hash = qsponge_512(raw_blwe).hex().upper()
+            return raw_blwe, {
+                "suite_id": rec_suite,
+                "beyond_lwe": True,
+                "plaintext_qsponge_512": actual_hash,
+                "plaintext_size": len(raw_blwe),
+                "signature_verified": None,
+                "sender_verified": False,
+            }
+
         _, _, payload_bytes = _armor_unwrap(armored_packet, expected_label="CALYX QPEP ENCRYPTED PACKET")
         packet_obj = json.loads(payload_bytes.decode("utf-8"))
 
@@ -923,62 +870,67 @@ class CalyxQPEPProtocol:
         eph_hgc_pk_bytes = _b64d(packet_obj["ephemeral_hgc_448_pk_b64"])
         ct_qlx = _b64d(packet_obj["qlx_ct_b64"])
 
-        hgc_sk = x448.X448PrivateKey.from_private_bytes(priv_keys["hgc_448_private"])
-        eph_hgc_pk = x448.X448PublicKey.from_public_bytes(eph_hgc_pk_bytes)
-        ss_hgc = hgc_sk.exchange(eph_hgc_pk)
-        ss_qlx = QLXEngine.decaps(priv_keys["qlx_private"], ct_qlx, tier=qlx_tier)
+        with SecretBuffer(priv_keys["hgc_448_private"]) as hgc_sk_buf, SecretBuffer(priv_keys["qlx_private"]) as qlx_sk_buf:
+            ss_hgc = x448_exchange(hgc_sk_buf.as_bytes(), eph_hgc_pk_bytes)
+            ss_qlx = QLXEngine.decaps(qlx_sk_buf.as_bytes(), ct_qlx, tier=qlx_tier)
 
-        ss_hybrid = qsponge_var(
-            b"CALYX-QPEP-KEM-v1|"
-            + ss_qlx
-            + ss_hgc
-            + ct_qlx
-            + eph_hgc_pk_bytes
-            + recip_qlx_pk_bytes
-            + recip_hgc_pk_bytes,
-            64,
-        )
-
-        pkt_salt = _b64d(packet_obj["pkt_salt_b64"])
-        hkdf = HKDF(
-            algorithm=hashes.SHA3_512(),
-            length=128,
-            salt=pkt_salt,
-            info=b"CALYX-QPEP-CC512-SUBKEYS|" + recipient_private_keyring.key_hash.encode("ascii"),
-        )
-        okm = hkdf.derive(ss_hybrid)
-        k_s1, k_s2, k_transcript_mac = okm[:32], okm[32:64], okm[64:128]
-
-        chunks = packet_obj.get("chunks", [])
-        if not chunks:
-            raise QPEPWireFormatError("Malformed OpenQPEP packet: empty chunk list.")
-        if chunks[-1].get("final") != 1 or any(ch.get("final") != 0 for ch in chunks[:-1]):
-            raise ValueError("Stream truncation or invalid final frame flag detected.")
-
-        transcript_bytes = json.dumps(chunks, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        expected_tag = hmac.new(k_transcript_mac, b"CALYX-QPEP-TRANSCRIPT|" + transcript_bytes, hashlib.sha3_512).hexdigest().upper()
-        if not hmac.compare_digest(expected_tag, packet_obj["transcript_qsponge_512"]):
-            raise ValueError("Packet transcript qSponge-512 verification failed.")
-
-        reassembled = bytearray()
-        for expected_idx, ch in enumerate(chunks):
-            if ch["idx"] != expected_idx:
-                raise ValueError("Chunk sequence tampering detected.")
-            is_final = ch["final"]
-            aad = f"CALYX-QPEP-CC512|recip={recipient_private_keyring.key_hash}|idx={expected_idx}|final={is_final}".encode("utf-8")
-            pt_piece = _cc512_decrypt(
-                outer_ct=_b64d(ch["ct_b64"]),
-                k_s1=k_s1,
-                k_s2=k_s2,
-                n1=_b64d(ch["cc512_n1_b64"]),
-                n2=_b64d(ch["cc512_n2_b64"]),
-                aad=aad,
+        with SecretBuffer(
+            qsponge_var(
+                b"CALYX-QPEP-KEM-v1.0.0|"
+                + ss_qlx
+                + ss_hgc
+                + ct_qlx
+                + eph_hgc_pk_bytes
+                + recip_qlx_pk_bytes
+                + recip_hgc_pk_bytes,
+                64,
             )
-            reassembled.extend(pt_piece)
+        ) as ss_hybrid_buf:
+            pkt_salt = _b64d(packet_obj["pkt_salt_b64"])
+            hkdf = HKDF(
+                algorithm=hashes.SHA3_512(),
+                length=128,
+                salt=pkt_salt,
+                info=b"CALYX-QPEP-CC512-SUBKEYS-v1.0.0|" + recipient_private_keyring.key_hash.encode("ascii"),
+            )
+            with SecretBuffer(hkdf.derive(ss_hybrid_buf.as_bytes())) as okm_buf:
+                okm = okm_buf.as_bytes()
+                k_s1, k_s2, k_transcript_mac = okm[:32], okm[32:64], okm[64:128]
+
+                chunks = packet_obj.get("chunks", [])
+                if not chunks:
+                    raise QPEPWireFormatError("Malformed OpenQPEP packet: empty chunk list.")
+                if chunks[-1].get("final") != 1 or any(ch.get("final") != 0 for ch in chunks[:-1]):
+                    raise ValueError("Stream truncation or invalid final frame flag detected.")
+
+                transcript_bytes = json.dumps(chunks, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                expected_tag = hmac.new(
+                    k_transcript_mac,
+                    b"CALYX-QPEP-TRANSCRIPT-v1.0.0|" + transcript_bytes,
+                    hashlib.sha3_512,
+                ).hexdigest().upper()
+                if not hmac.compare_digest(expected_tag, packet_obj["transcript_qsponge_512"]):
+                    raise ValueError("Packet transcript qSponge-512 verification failed.")
+
+                reassembled = bytearray()
+                for expected_idx, ch in enumerate(chunks):
+                    if ch["idx"] != expected_idx:
+                        raise ValueError("Chunk sequence tampering detected.")
+                    is_final = ch["final"]
+                    aad = f"CALYX-QPEP-CC512-v1.0.0|recip={recipient_private_keyring.key_hash}|idx={expected_idx}|final={is_final}".encode("utf-8")
+                    pt_piece = _cc512_decrypt(
+                        outer_ct=_b64d(ch["ct_b64"]),
+                        k_s1=k_s1,
+                        k_s2=k_s2,
+                        n1=_b64d(ch["cc512_n1_b64"]),
+                        n2=_b64d(ch["cc512_n2_b64"]),
+                        aad=aad,
+                    )
+                    reassembled.extend(pt_piece)
 
         inner_envelope = json.loads(bytes(reassembled).decode("utf-8"))
         raw_data = _b64d(inner_envelope["data_b64"])
-        plaintext = zlib.decompress(raw_data) if inner_envelope.get("compressed") else raw_data
+        plaintext = _safe_zlib_decompress(raw_data) if inner_envelope.get("compressed") else raw_data
 
         actual_hash = qsponge_512(plaintext).hex().upper()
         if not hmac.compare_digest(actual_hash, inner_envelope["plaintext_qsponge_512"]):
@@ -998,6 +950,7 @@ class CalyxQPEPProtocol:
             plaintext, inner_envelope.get("filename")
         )
         meta_info = {
+            "suite_id": qlx_tier,
             "qlx_tier": qlx_tier,
             "qvs_tier": QLX_TIERS[qlx_tier]["qvs_tier"],
             "filename": norm_fname,
@@ -1048,7 +1001,9 @@ class CalyxQPEPProtocol:
             passphrase=passphrase,
             sender_public_keyring=sender_public_keyring,
         )
-        rec_name = meta.get("filename") or "decrypted_file.bin"
+        # Sanitize filename against path traversal
+        raw_name = Path(str(meta.get("filename") or "decrypted_file.bin")).name
+        rec_name = raw_name if raw_name and raw_name not in (".", "..") else "decrypted_file.bin"
         if output_path_or_dir is None:
             out_p = in_p.parent / rec_name
         else:
@@ -1090,29 +1045,28 @@ class CalyxQPEPProtocol:
     @staticmethod
     def sign_bytes(data: bytes, signer_private_keyring: QPEPKeyRing, passphrase: str) -> str:
         """
-        Creates an Attached OpenQPEP Signature (CALYX QPEP ATTACHED SIGNATURE) where the signed
-        message payload is encapsulated directly inside the signature packet alongside the QVS
-        and HGC-448 signature vectors. Detached signatures are prohibited in OpenQPEP.
+        Creates an Attached OpenQPEP Signature (CALYX QPEP ATTACHED SIGNATURE) over Wire Format v5.
+        Detached signatures are prohibited in OpenQPEP.
         """
         enforce_passphrase_policy(passphrase)
-        # AUTO-DISPATCH BEYOND-LWE (AUD-06)
         s_suite = CalyxQPEPProtocol.get_keyring_suite_id(signer_private_keyring)
         if s_suite in BEYOND_LWE_SUITES and signer_private_keyring.public_bundle.get("beyond_lwe_public"):
             return CalyxQPEPProtocol.sign_beyond_lwe_bytes(data, signer_private_keyring, passphrase)
+
         priv_keys = CalyxQPEPProtocol.unlock_private_keys(signer_private_keyring, passphrase)
         qvs_pk = _b64d(signer_private_keyring.public_bundle["qvs_public_b64"])
         qvs_tier = signer_private_keyring.qvs_tier
 
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         msg_digest = qsponge_512(data).hex().upper()
-        transcript = f"CALYX-QPEP-ATTACHED-SIG-v1|{signer_private_keyring.key_hash}|{timestamp}|{msg_digest}".encode("utf-8")
+        transcript = f"CALYX-QPEP-ATTACHED-SIG-v1.0.0|{signer_private_keyring.key_hash}|{timestamp}|{msg_digest}".encode("utf-8")
 
-        ed_sk = ed448.Ed448PrivateKey.from_private_bytes(priv_keys["hgc_sig_private"])
-        sig1 = ed_sk.sign(transcript)
-        sig2 = QVSEngine.sign(priv_keys["qvs_private"], qvs_pk, transcript, tier=qvs_tier)
+        with SecretBuffer(priv_keys["hgc_sig_private"]) as ed_buf, SecretBuffer(priv_keys["qvs_private"]) as qvs_buf:
+            sig1 = ed448_sign(ed_buf.as_bytes(), transcript)
+            sig2 = QVSEngine.sign(qvs_buf.as_bytes(), qvs_pk, transcript, tier=qvs_tier)
 
         sig_obj = {
-            "magic": "QPSIG-ATTACHED-v1",
+            "magic": "QPSIG-ATTACHED-v1.0.0",
             "protocol": PROJECT_NAME,
             "version": UNIVERSAL_VERSION,
             "signature_mode": "ATTACHED_ENVELOPE",
@@ -1133,7 +1087,12 @@ class CalyxQPEPProtocol:
             "Suite": f"{qvs_tier}+qSponge-512",
             "Timestamp": timestamp,
         }
-        return _armor_wrap("CALYX QPEP ATTACHED SIGNATURE", metadata, json.dumps(sig_obj).encode("utf-8"))
+        return _armor_wrap(
+            "CALYX QPEP ATTACHED SIGNATURE",
+            metadata,
+            json.dumps(sig_obj).encode("utf-8"),
+            packet_type=PACKET_TYPE_SIGNATURE,
+        )
 
     @staticmethod
     def verify_signature(
@@ -1141,17 +1100,27 @@ class CalyxQPEPProtocol:
         signer_public_keyring: Optional[QPEPKeyRing] = None,
         keyring_pool: Optional[List[QPEPKeyRing]] = None,
     ) -> Tuple[bool, Optional[bytes], Optional[QPEPKeyRing]]:
-        """
-        Verifies an OpenQPEP Attached Signature packet (no separate detached message parameter).
-        Extracts the embedded message from inside the signature packet, verifies the QVS + HGC-448
-        signature against signer_public_keyring or across keyring_pool (Auto mode), and returns
-        (is_valid, extracted_message_bytes, matched_keyring).
-        """
         try:
-            # AUTO-DISPATCH BEYOND-LWE (AUD-06)
-            if signer_public_keyring is not None and CalyxQPEPProtocol.get_keyring_suite_id(signer_public_keyring) in BEYOND_LWE_SUITES and "-----BEGIN CALYX QPEP ATTACHED SIGNATURE-----" not in armored_attached_signature:
+            if (
+                signer_public_keyring is not None
+                and CalyxQPEPProtocol.get_keyring_suite_id(signer_public_keyring) in BEYOND_LWE_SUITES
+                and "-----BEGIN CALYX QPEP ATTACHED SIGNATURE-----" not in armored_attached_signature
+            ):
                 ok_b, msg_b = CalyxQPEPProtocol.verify_beyond_lwe_signature(armored_attached_signature, signer_public_keyring)
                 return ok_b, (msg_b if ok_b else None), (signer_public_keyring if ok_b else None)
+
+            if (
+                signer_public_keyring is None
+                and keyring_pool is not None
+                and "-----BEGIN CALYX QPEP ATTACHED SIGNATURE-----" not in armored_attached_signature
+            ):
+                for cand in keyring_pool:
+                    if CalyxQPEPProtocol.get_keyring_suite_id(cand) in BEYOND_LWE_SUITES:
+                        ok_b, msg_b = CalyxQPEPProtocol.verify_beyond_lwe_signature(armored_attached_signature, cand)
+                        if ok_b:
+                            return True, msg_b, cand
+                return False, None, None
+
             _, _, payload_bytes = _armor_unwrap(
                 armored_attached_signature, expected_label="CALYX QPEP ATTACHED SIGNATURE"
             )
@@ -1177,10 +1146,15 @@ class CalyxQPEPProtocol:
                 if not CalyxQPEPProtocol.verify_public_keyring_self_signature(candidate):
                     continue
                 transcript = (
-                    f"CALYX-QPEP-ATTACHED-SIG-v1|{candidate.key_hash}|{sig_obj['timestamp']}|{actual_digest}".encode("utf-8")
+                    f"CALYX-QPEP-ATTACHED-SIG-v1.0.0|{candidate.key_hash}|{sig_obj['timestamp']}|{actual_digest}".encode("utf-8")
                 )
-                ed_pk = ed448.Ed448PublicKey.from_public_bytes(_b64d(candidate.public_bundle["hgc_sig_public_b64"]))
-                ed_pk.verify(_b64d(sig_obj["hgc_signature_b64"]), transcript)
+                ed_ok = ed448_verify(
+                    _b64d(candidate.public_bundle["hgc_sig_public_b64"]),
+                    _b64d(sig_obj["hgc_signature_b64"]),
+                    transcript,
+                )
+                if not ed_ok:
+                    continue
                 qvs_pk = _b64d(candidate.public_bundle["qvs_public_b64"])
                 if QVSEngine.verify(qvs_pk, transcript, _b64d(sig_obj["qvs_signature_b64"]), tier=candidate.qvs_tier):
                     return True, extracted_data, candidate
@@ -1205,8 +1179,6 @@ class CalyxQPEPProtocol:
         )
         return ok, (raw_bytes.decode("utf-8") if (ok and raw_bytes is not None) else None), kr
 
-
-# Provide official alias OpenQPEPProtocol alongside CalyxQPEPProtocol
     @staticmethod
     def encrypt_multi_recipient(
         payload: bytes,
@@ -1232,16 +1204,12 @@ class CalyxQPEPProtocol:
         from .wire.multi_recipient import decrypt_multi_recipient as _dec_mr
         return _dec_mr(armored_packet, recipient_keyring, passphrase)
 
-
     @staticmethod
     def get_keyring_suite_id(keyring: QPEPKeyRing) -> str:
         return str(keyring.public_bundle.get("suite_id") or keyring.public_bundle.get("qlx_tier") or "QLX-4096")
 
     @staticmethod
-    def encrypt_beyond_lwe_packet(
-        plaintext: bytes,
-        recipient_keyring: QPEPKeyRing,
-    ) -> str:
+    def encrypt_beyond_lwe_packet(plaintext: bytes, recipient_keyring: QPEPKeyRing) -> str:
         """Encrypts bytes directly using the recipient .qpkrf key ring's native Beyond-LWE suite."""
         suite_id = OpenQPEPProtocol.get_keyring_suite_id(recipient_keyring)
         blwe_pub = recipient_keyring.public_bundle.get("beyond_lwe_public")
@@ -1250,12 +1218,8 @@ class CalyxQPEPProtocol:
         return encrypt_beyond_lwe(suite_id, plaintext, blwe_pub)
 
     @staticmethod
-    def decrypt_beyond_lwe_packet(
-        armored_packet: str,
-        recipient_keyring: QPEPKeyRing,
-        passphrase: str,
-    ) -> bytes:
-        """Unlocks the recipient .qpkrf private key ring via Argon2id+qSponge-512 and decrypts Beyond-LWE packet."""
+    def decrypt_beyond_lwe_packet(armored_packet: str, recipient_keyring: QPEPKeyRing, passphrase: str) -> bytes:
+        """Unlocks the recipient .qpkrf private key ring via QPKD-Argon2id (kdf_version: 4) and decrypts Beyond-LWE packet."""
         suite_id = OpenQPEPProtocol.get_keyring_suite_id(recipient_keyring)
         priv = OpenQPEPProtocol.unlock_private_keys(recipient_keyring, passphrase)
         blwe_priv = priv.get("beyond_lwe_private")
@@ -1264,11 +1228,7 @@ class CalyxQPEPProtocol:
         return decrypt_beyond_lwe(suite_id, armored_packet, blwe_priv)
 
     @staticmethod
-    def sign_beyond_lwe_bytes(
-        data: bytes,
-        signer_private_keyring: QPEPKeyRing,
-        passphrase: str,
-    ) -> str:
+    def sign_beyond_lwe_bytes(data: bytes, signer_private_keyring: QPEPKeyRing, passphrase: str) -> str:
         """Signs bytes directly using the signer .qpkrf key ring's native Beyond-LWE signature engine."""
         suite_id = OpenQPEPProtocol.get_keyring_suite_id(signer_private_keyring)
         blwe_pub = signer_private_keyring.public_bundle.get("beyond_lwe_public")
@@ -1279,10 +1239,7 @@ class CalyxQPEPProtocol:
         return sign_beyond_lwe(suite_id, data, blwe_pub, blwe_priv)
 
     @staticmethod
-    def verify_beyond_lwe_signature(
-        armored_sig: str,
-        signer_public_keyring: QPEPKeyRing,
-    ) -> Tuple[bool, bytes]:
+    def verify_beyond_lwe_signature(armored_sig: str, signer_public_keyring: QPEPKeyRing) -> Tuple[bool, bytes]:
         """Verifies a native Beyond-LWE signature against the signer's .qpkrf public key ring."""
         suite_id = OpenQPEPProtocol.get_keyring_suite_id(signer_public_keyring)
         blwe_pub = signer_public_keyring.public_bundle.get("beyond_lwe_public")

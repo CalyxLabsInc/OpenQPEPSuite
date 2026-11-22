@@ -1,15 +1,14 @@
 """
-OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Release Candidate 1.0.0).
-Wraps GF(256) Shamir shares in whitened \x89QPE armor authenticated with per-shard
-qSponge-512 commitment MACs and a master secret commitment digest to detect any
-corrupted, mismatched, or tampered recovery shard.
+OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Official Release 1.0.0 / Wire v5).
+Wraps GF(256) Shamir shares in whitened \\x89QPE\\x05\\x00 armor authenticated with per-shard
+qSponge-512 commitment MACs and a master secret commitment digest.
 """
 import base64
 import json
 import os
 from typing import Any, Dict, List, Sequence, Tuple
 
-from ..constants import PROTOCOL_VERSION, UNIVERSAL_VERSION
+from ..constants import PACKET_TYPE_KEYRING, PROTOCOL_VERSION, UNIVERSAL_VERSION
 from ..exceptions import QPEPMacVerificationError, QPEPWireFormatError
 from ..primitives.consttime import ct_eq
 from ..primitives.qsponge import qsponge_512
@@ -22,7 +21,7 @@ QSHARE_ARMOR_LABEL = "CALYX QPEP RECOVERY SHARD"
 
 def _compute_share_commitment(group_id: str, share_index: int, share_bytes: bytes, secret_commit: str) -> str:
     return qsponge_512(
-        b"CALYX-QSHARE-COMMIT-v1.0.0-rc|"
+        b"CALYX-QSHARE-COMMIT-v1.0.0|"
         + group_id.encode("ascii")
         + bytes([share_index])
         + share_bytes
@@ -37,13 +36,9 @@ def create_recovery_shards(
     total_shares: int = 5,
     key_hash: str = "",
 ) -> List[str]:
-    """
-    Splits `secret` into `total_shares` verifiable .qshare armored recovery shards
-    requiring any `threshold` shards to reconstruct.
-    """
-    group_id = qsponge_512(b"CALYX-QSHARE-GROUP|" + os.urandom(32)).hex()[:24].upper()
+    group_id = qsponge_512(b"CALYX-QSHARE-GROUP-v1.0.0|" + os.urandom(32)).hex()[:24].upper()
     with SecretBuffer(secret) as sec_buf:
-        secret_commit = qsponge_512(b"CALYX-QSHARE-SECRET-COMMIT|" + group_id.encode("ascii") + sec_buf.as_bytes()).hex()
+        secret_commit = qsponge_512(b"CALYX-QSHARE-SECRET-COMMIT-v1.0.0|" + group_id.encode("ascii") + sec_buf.as_bytes()).hex()
         raw_shares = split_secret(sec_buf.as_bytes(), threshold=threshold, total_shares=total_shares)
 
     shards: List[str] = []
@@ -62,15 +57,13 @@ def create_recovery_shards(
             "secret_commitment_sha3_512": secret_commit,
             "share_commitment_mac": share_mac,
         }
-        shards.append(armor_wrap(QSHARE_ARMOR_LABEL, json.dumps(obj, separators=(",", ":")).encode("utf-8")))
+        shards.append(
+            armor_wrap(QSHARE_ARMOR_LABEL, json.dumps(obj, separators=(",", ":")).encode("utf-8"), packet_type=PACKET_TYPE_KEYRING)
+        )
     return shards
 
 
 def recover_secret_from_shards(armored_shards: Sequence[str]) -> Tuple[bytes, Dict[str, Any]]:
-    """
-    Verifies every shard's qSponge-512 commitment MAC, checks threshold & group consistency,
-    reconstructs the secret over GF(256), and verifies the final secret commitment digest.
-    """
     if not armored_shards:
         raise QPEPWireFormatError("No .qshare recovery shards provided.")
 
@@ -101,7 +94,7 @@ def recover_secret_from_shards(armored_shards: Sequence[str]) -> Tuple[bytes, Di
     selected = [(int(p["share_index"]), p["_share_bytes"]) for p in parsed[:threshold]]
     recovered = reconstruct_secret(selected)
 
-    actual_commit = qsponge_512(b"CALYX-QSHARE-SECRET-COMMIT|" + group_id.encode("ascii") + recovered).hex()
+    actual_commit = qsponge_512(b"CALYX-QSHARE-SECRET-COMMIT-v1.0.0|" + group_id.encode("ascii") + recovered).hex()
     if not ct_eq(actual_commit.encode("ascii"), secret_commit.encode("ascii")):
         raise QPEPMacVerificationError("Reconstructed secret failed final qSponge-512 commitment verification.")
 

@@ -1,15 +1,7 @@
 """
-OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Release Candidate 1.0.0.
-
-Automatically loads the compiled shared library (libopenqpep.so / .dylib / .dll) via ctypes
-with zero-copy array.array buffer marshaling when present, accelerating:
-  - 7-layer NTT_3329 / InvNTT_3329 / BaseMul / PolyAdd / PolySub
-  - 8-layer NTT_8380417 / InvNTT_8380417 / PointwiseMul (QVS-65 through QVS-1024)
-  - Centered Binomial Distribution CBD_1 / CBD_2 samplers
-  - Calyx Sovereign-Pentad (CSP-Omega) Plain-LWE inner loops
-
-If libopenqpep is not compiled or OPENQPEP_DISABLE_NATIVE=1 is set, seamlessly falls back
-to the bit-exact pure-Python reference engine with zero build dependencies.
+OpenQPEP Native C99 / SIMD Vectorized Acceleration Loader (libopenqpep) — Official Release 1.0.0.
+Loads libopenqpep.so / .dylib / .dll via ctypes with zero-copy array.array buffer marshaling.
+Seamlessly falls back to the bit-exact pure-Python reference engine when absent or disabled.
 """
 import array
 import ctypes
@@ -100,12 +92,17 @@ def _configure_signatures(lib: ctypes.CDLL) -> None:
     if hasattr(lib, "openqpep_explicit_bzero"):
         lib.openqpep_explicit_bzero.argtypes = [_c_void_p, ctypes.c_size_t]
         lib.openqpep_explicit_bzero.restype = None
-    if hasattr(lib, "openqpep_verify_wire_v4_magic"):
-        lib.openqpep_verify_wire_v4_magic.argtypes = [ctypes.c_char_p, ctypes.c_size_t]
-        lib.openqpep_verify_wire_v4_magic.restype = ctypes.c_int
+    if hasattr(lib, "openqpep_verify_wire_v5_magic"):
+        lib.openqpep_verify_wire_v5_magic.argtypes = [ctypes.c_char_p, ctypes.c_size_t]
+        lib.openqpep_verify_wire_v5_magic.restype = ctypes.c_int
+    if hasattr(lib, "openqpep_ct_eq"):
+        lib.openqpep_ct_eq.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t]
+        lib.openqpep_ct_eq.restype = ctypes.c_int
+    if hasattr(lib, "openqpep_ct_cmov"):
+        lib.openqpep_ct_cmov.argtypes = [ctypes.c_int, _c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t]
+        lib.openqpep_ct_cmov.restype = None
 
 
-# Attempt automatic load at import time
 _try_load_library()
 
 
@@ -114,7 +111,6 @@ def is_native_available() -> bool:
 
 
 def set_native_enabled(enabled: bool) -> None:
-    """Allows runtime toggling between libopenqpep C99 engine and pure-Python reference engine."""
     global _NATIVE_ENABLED
     _NATIVE_ENABLED = bool(enabled)
 
@@ -272,7 +268,15 @@ def native_explicit_bzero(addr: int, length: int) -> bool:
     return True
 
 
-def native_verify_wire_v4_magic(hdr: bytes) -> Optional[int]:
-    if not (_NATIVE_ENABLED and _LIB is not None and hasattr(_LIB, "openqpep_verify_wire_v4_magic")):
+def native_verify_wire_v5_magic(hdr: bytes) -> Optional[int]:
+    if not (_NATIVE_ENABLED and _LIB is not None and hasattr(_LIB, "openqpep_verify_wire_v5_magic")):
         return None
-    return int(_LIB.openqpep_verify_wire_v4_magic(hdr, len(hdr)))
+    return int(_LIB.openqpep_verify_wire_v5_magic(hdr, len(hdr)))
+
+
+def native_ct_eq(a: bytes, b: bytes) -> Optional[bool]:
+    if not (_NATIVE_ENABLED and _LIB is not None and hasattr(_LIB, "openqpep_ct_eq")):
+        return None
+    if len(a) != len(b):
+        return False
+    return bool(_LIB.openqpep_ct_eq(a, b, len(a)))

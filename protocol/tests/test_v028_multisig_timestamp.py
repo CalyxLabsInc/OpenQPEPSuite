@@ -30,7 +30,7 @@ class TestOpenQPEPv028MultisigAndTimestamp(unittest.TestCase):
 
     def test_01_two_of_three_threshold_multisig_cosigning(self):
         policy = create_multisig_policy(threshold=2, authorized_signers=self.pubs, policy_name="Calyx Release 2-of-3")
-        release_artifact = b"OpenQPEP Suite v1.0.0-rc Official Release Manifest SHA3-512"
+        release_artifact = b"OpenQPEP Official Release v1.0.0 Manifest SHA3-512"
 
         # 1st signature alone (1-of-3) must NOT satisfy threshold=2
         b1 = cosign_payload(release_artifact, self.m1, self.pw, policy)

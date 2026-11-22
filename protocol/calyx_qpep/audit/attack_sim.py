@@ -1,7 +1,7 @@
 """
-OpenQPEP Active Cryptographic Attack Simulator (Release Candidate 1.0.0).
+OpenQPEP Active Cryptographic Attack Simulator (Official Release 1.0.0).
 Simulates real-world adversarial attacks against OpenQPEP:
-  1. Ciphertext malleability / chosen-ciphertext attacks against the Fujisaki-Okamoto transform
+  1. Ciphertext malleability / chosen-ciphertext attacks against Fujisaki-Okamoto
   2. Rowhammer/glitch fault injection inside QVSEngine.sign (proving Fault-Guard aborts 100%)
   3. Suite downgrade attacks against .qpkrf integrity_mac & wire MAC
   4. Chunk truncation, reordering, duplication, and trailing-byte injection on streams
@@ -26,8 +26,7 @@ from ..wire.streaming import StreamingDecryptor, StreamingEncryptor
 
 
 def simulate_fo_cca2_malleability(tier: str = "QLX-768", trials: int = 20) -> Dict[str, Any]:
-    """Flips random bits across ct_qlx and verifies 100% deterministic FO implicit rejection."""
-    ek, dk = QLXEngine.keygen(tier, b"W" * 64)
+    ek, dk = QLXEngine.keygen(tier, os.urandom(64))
     ct, ss_real = QLXEngine.encaps(ek, tier)
     rejected = 0
     for i in range(trials):
@@ -41,8 +40,7 @@ def simulate_fo_cca2_malleability(tier: str = "QLX-768", trials: int = 20) -> Di
 
 
 def simulate_qvs_fault_injection(tier: str = "QVS-65", trials: int = 5) -> Dict[str, Any]:
-    """Injects simulated verification faults into QVSEngine.sign; Fault-Guard must abort 100%."""
-    pk, sk = QVSEngine.keygen(tier, b"W" * 64)
+    pk, sk = QVSEngine.keygen(tier, os.urandom(64))
     caught = 0
     with patch.object(QVSEngine, "verify", return_value=False):
         for i in range(trials):
@@ -54,7 +52,6 @@ def simulate_qvs_fault_injection(tier: str = "QVS-65", trials: int = 5) -> Dict[
 
 
 def simulate_stream_truncation_and_reorder() -> Dict[str, Any]:
-    """Tests truncation, chunk swap/reorder, and trailing-byte injection on chunked CC-512 streams."""
     key64 = os.urandom(64)
     payload = os.urandom(150 * 1024)
     enc_buf = io.BytesIO()
@@ -64,14 +61,12 @@ def simulate_stream_truncation_and_reorder() -> Dict[str, Any]:
     offsets = meta["chunk_offsets"]
 
     defended = 0
-    # 1. Truncation before final chunk
     try:
         with StreamingDecryptor(key64) as dec:
             dec.decrypt_stream(io.BytesIO(raw[: offsets[1]]), io.BytesIO())
     except QPEPTruncationError:
         defended += 1
 
-    # 2. Chunk swap (swap chunk 0 and chunk 1)
     swapped = raw[: offsets[0]] + raw[offsets[1] : offsets[2]] + raw[offsets[0] : offsets[1]] + raw[offsets[2] :]
     try:
         with StreamingDecryptor(key64) as dec:
@@ -79,7 +74,6 @@ def simulate_stream_truncation_and_reorder() -> Dict[str, Any]:
     except QPEPMacVerificationError:
         defended += 1
 
-    # 3. Trailing byte injection after final=1 chunk
     try:
         with StreamingDecryptor(key64) as dec:
             dec.decrypt_stream(io.BytesIO(raw + b"\x00"), io.BytesIO())
@@ -90,12 +84,10 @@ def simulate_stream_truncation_and_reorder() -> Dict[str, Any]:
 
 
 def simulate_suite_downgrade_attack() -> Dict[str, Any]:
-    """Attempts to tamper with suite metadata inside an exported .qpkrf key ring payload."""
     pw = "Calyx!@#$_2026DownAa99"
     kr = OpenQPEPProtocol.generate_keypair("DowngradeTarget", "dg@calyxlabsinc.org", pw, qlx_tier="QLX-1024")
     pub_armor = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
 
-    # Decode inner Base64 payload, mutate the suite/tier field, and re-wrap
     sep = pub_armor.find("\n\n")
     end = pub_armor.rfind("\n=")
     if end == -1:
@@ -107,7 +99,6 @@ def simulate_suite_downgrade_attack() -> Dict[str, Any]:
         doc["qlx_tier"] = "QLX-768"
         tampered_raw = json.dumps(doc).encode("utf-8")
     except Exception:
-        # Whitened binary .qpkrf: flip suite/metadata bytes directly in the wire frame
         tampered_raw = bytes([raw[0] ^ 0x01]) + raw[1:]
 
     tampered_b64 = base64.b64encode(tampered_raw).decode("ascii")

@@ -1,10 +1,10 @@
-# Security Policy — OpenQPEP Suite (`v1.0.0-rc`)
+# Security Policy — OpenQPEP Suite (`v1.0.0`)
 
 ## Supported Versions
-Only **Release Candidate 1.0.0 (`v1.0.0-rc`, `OpenQPEP/RC-1.0.0`)** on branch `rc` (and synchronized `pc`) is supported. All legacy `-pc` wire formats (`\x89QPE\x03\x00`, `\x89QPE\x03\x01`), legacy `-beta` wire formats (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`), and `kdf_version < 3` key rings are strictly rejected with `QPEPLegacyProtocolError`.
+Only **Production Candidate 1.2.0 (`v1.0.0`)** on branch `pc` is supported. All legacy `-beta` wire formats (`\x89QPE\x01\x01`, `\x89QPE\x01\x09`, `\x89QPE\x02\x00`) and `kdf_version: 1` key rings are strictly rejected.
 
 ## Self-Verification & Audit Tools
-Run the built-in deterministic 10-suite KAT verifier, 5-language interop matrix, and 79-test adversarial security audit suite directly from `protocol/`:
+Run the built-in deterministic KAT verifier and adversarial security audit suite directly from `protocol/`:
 ```bash
 cd protocol
 make -C calyx_qpep/native/csrc

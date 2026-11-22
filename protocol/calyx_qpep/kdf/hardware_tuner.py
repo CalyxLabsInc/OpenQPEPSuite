@@ -1,5 +1,5 @@
 """
-OpenQPEP Hardware Auto-Tuner for QPKD-Argon2id Key Derivation (Release Candidate 1.0.0).
+OpenQPEP Hardware Auto-Tuner for QPKD-Argon2id Key Derivation (Official Release 1.0.0 / kdf_version: 4).
 Calibrates memory-hard parameters (m_kib, t_cost, p_lanes) for standard devices
 (64 MiB, t=3, p=4), Calyx Hyper-Tesseract flagship hardware (256 MiB, t=4, p=4),
 or low-RAM constrained environments (32 MiB, t=3, p=2).
@@ -53,10 +53,10 @@ def detect_system_ram_mib() -> int:
 
 def select_kdf_profile(qlx_tier: str = "QLX-4096", override_ram_mib: int = 0) -> KDFHardwareProfile:
     """
-    Auto-tunes Argon2id parameters per OpenQPEP PC 1.2.0 specification:
+    Auto-tunes QPKD-Argon2id parameters per OpenQPEP Official Release 1.0.0 specification:
       - Calyx Hyper-Tesseract (QLX-16384): m = 262,144 KiB (256 MiB), t = 4, p = 4 (when RAM >= 4 GiB)
       - Standard devices (QLX-768 .. QLX-4096): m = 65,536 KiB (64 MiB), t = 3, p = 4
-      - Low-RAM constrained devices (< 2 GiB RAM): m = 32,768 KiB (32 MiB), t = 3, p = 2
+      - Low-RAM constrained devices (< 1.5 GiB usable RAM): m = 32,768 KiB (32 MiB), t = 3, p = 2
     """
     ram_mib = override_ram_mib if override_ram_mib > 0 else detect_system_ram_mib()
     cpus = max(1, os.cpu_count() or 2)
@@ -91,18 +91,19 @@ def select_kdf_profile(qlx_tier: str = "QLX-4096", override_ram_mib: int = 0) ->
 
 
 def benchmark_kdf(qlx_tier: str = "QLX-4096") -> Dict[str, object]:
-    """Benchmarks QPKD-Argon2id (kdf_version: 3) derivation latency on the current hardware."""
-    from .argon2id_cascade import derive_qpkrf_keys_v3
+    """Benchmarks QPKD-Argon2id (kdf_version: 4) derivation latency on the current hardware."""
+    from .argon2id_cascade import derive_qpkrf_keys_v4
 
     profile = select_kdf_profile(qlx_tier)
     salt = b"\x42" * 32
     t0 = time.perf_counter()
-    _k1, _k2, _kmac, params = derive_qpkrf_keys_v3(
+    _k1, _k2, _kmac, params = derive_qpkrf_keys_v4(
         "Calyx!@#$_2026BenchAa99", salt, qlx_tier=qlx_tier
     )
     elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     return {
         "qlx_tier": qlx_tier,
+        "kdf_version": params["kdf_version"],
         "profile": profile.profile_name,
         "backend": params["backend"],
         "m_kib": params["m_kib"],
