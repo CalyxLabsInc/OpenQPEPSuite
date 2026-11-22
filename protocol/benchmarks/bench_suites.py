@@ -26,7 +26,7 @@ from calyx_qpep.multivariate.qmq_512 import MultivariateQuadraticEngine
 from calyx_qpep.pentad import CalyxSovereignPentad
 
 QLX_SUITES = [
-    ("Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)", "QLX-4096", "QVS-256", "All Devices"),
+    ("Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", "QLX-4096", "QVS-256", "All Devices"),
     ("Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)", "QLX-768", "QVS-65", "All Devices"),
     ("Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", "QLX-1024", "QVS-87", "All Devices"),
     ("Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", "QLX-2048", "QVS-128", "All Devices"),
@@ -94,7 +94,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); assert MultivariateQuadraticEngine.verify(mq_pk, msg, mq_sig); ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
         "release": "v1.0.0",
-        "suite": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)",
+        "suite": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)",
         "hardware_tier": "All Devices",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
         "sign_ms": sign_ms, "verify_ms": ver_ms, "peak_rss_mib": _peak_rss_mib(),
@@ -136,7 +136,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); ok, _ = CalyxSovereignPentad.verify(p_sig, p_pub); assert ok; ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
         "release": "v1.0.0",
-        "suite": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)",
+        "suite": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)",
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
         "sign_ms": sign_ms, "verify_ms": ver_ms, "peak_rss_mib": _peak_rss_mib(),

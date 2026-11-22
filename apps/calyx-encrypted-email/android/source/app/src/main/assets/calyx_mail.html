@@ -326,16 +326,16 @@
       <div style="margin-bottom:10px;">
         <label class="mono" style="font-size:11px; color:var(--neon-blue); display:block; margin-bottom:5px;">OPENQPEP v1.0.0 POST-QUANTUM KEY SUITE</label>
         <select id="reg-tier" class="neon-select" onchange="toggleHyperNotice()">
-          <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)</option>
+          <option value="QLX-4096">Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)</option>
           <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)</option>
           <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)</option>
           <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)</option>
           <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)</option>
-          <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)</option>
+          <option value="CRT-RSD512" selected>Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)</option>
           <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)</option>
           <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)</option>
           <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)</option>
-          <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)</option>
+          <option value="CSP-Omega">Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)</option>
         </select>
         <div id="hyper-notice" class="hidden" style="margin-top:8px; padding:10px; border-radius:10px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.45); font-size:11.5px; color:#FDE68A;">
           <strong>High-Tier Hardware Notice (12 GB+ RAM Required):</strong> <code>Calyx Hyper-Tesseract</code>, <code>Calyx Goppa-Monolith</code>, <code>Calyx Unstructured-Citadel</code>, and <code>Calyx Sovereign-Pentad</code> require high-tier hardware (&ge;12 GB RAM) to prevent WebView OOM or ANR timeouts.</div>
@@ -477,12 +477,12 @@
       <div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:6px;">ONE-CLICK POST-QUANTUM KEY ROTATION &amp; .QREV REVOCATION</div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <select id="kr-rotate-tier" class="neon-select" style="flex:1; min-width:210px; font-size:12px;">
-          <option value="QLX-4096" selected>Calyx Signature: QLX-4096 + QVS-256</option>
+          <option value="QLX-4096">Calyx Lattice-4096: QLX-4096 + QVS-256</option>
           <option value="QLX-768">Calyx Velocity: QLX-768 + QVS-65</option>
           <option value="QLX-1024">Calyx Sovereign-Hybrid: QLX-1024 + QVS-87</option>
           <option value="QLX-2048">Calyx Ultra-Grid: QLX-2048 + QVS-128</option>
           <option value="CIF-SQI-512">Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512</option>
-          <option value="CRT-RSD512">Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512</option>
+          <option value="CRT-RSD512" selected>Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512</option>
           <option value="QLX-16384">Calyx Hyper-Tesseract: QLX-16384 + QVS-1024</option>
           <option value="CGM-8192">Calyx Goppa-Monolith: CGM-8192 + QHS-512</option>
           <option value="CULC-2048">Calyx Unstructured-Citadel: CULC-2048 + CGM-8192</option>
@@ -581,21 +581,27 @@ function getApiBaseUrl() {
 }
 
 const QLX_TIERS = {
-  "QLX-4096":    { id: "QLX-4096",    qvs_id: "QVS-256",  name: "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4, high_tier_only: false },
+  "QLX-4096":    { id: "QLX-4096",    qvs_id: "QVS-256",  name: "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)", suite_badge: "QLX-4096 + QVS-256 + CC-512", ct_bytes: 5792, wire_id: 4, high_tier_only: false },
   "QLX-768":     { id: "QLX-768",     qvs_id: "QVS-65",   name: "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)", suite_badge: "QLX-768 + QVS-65 + CC-512", ct_bytes: 1088, wire_id: 1, high_tier_only: false },
   "QLX-1024":    { id: "QLX-1024",    qvs_id: "QVS-87",   name: "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)", suite_badge: "QLX-1024 + QVS-87 + CC-512", ct_bytes: 1568, wire_id: 2, high_tier_only: false },
   "QLX-2048":    { id: "QLX-2048",    qvs_id: "QVS-128",  name: "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)", suite_badge: "QLX-2048 + QVS-128 + CC-512", ct_bytes: 2976, wire_id: 3, high_tier_only: false },
   "CIF-SQI-512": { id: "CIF-SQI-512", qvs_id: "QHS-512",  name: "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)", suite_badge: "CIF-SQI-512 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 9, high_tier_only: false },
-  "CRT-RSD512":  { id: "CRT-RSD512",  qvs_id: "QMQ-512",  name: "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)", suite_badge: "CRT-RSD512 + QMQ-512 + CC-512", ct_bytes: 5792, wire_id: 8, high_tier_only: false },
+  "CRT-RSD512":  { id: "CRT-RSD512",  qvs_id: "QMQ-512",  name: "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)", suite_badge: "CRT-RSD512 + QMQ-512 + CC-512", ct_bytes: 5792, wire_id: 8, high_tier_only: false },
   "QLX-16384":   { id: "QLX-16384",   qvs_id: "QVS-1024", name: "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)", suite_badge: "QLX-16384 + QVS-1024 + CC-512", ct_bytes: 23168, wire_id: 5, high_tier_only: true },
   "CGM-8192":    { id: "CGM-8192",    qvs_id: "QHS-512",  name: "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)", suite_badge: "CGM-8192 + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 7, high_tier_only: true },
   "CULC-2048":   { id: "CULC-2048",   qvs_id: "CGM-8192", name: "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)", suite_badge: "CULC-2048 + CGM-8192 + CC-512", ct_bytes: 5792, wire_id: 10, high_tier_only: true },
-  "CSP-Omega":   { id: "CSP-Omega",   qvs_id: "QHS-512",  name: "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)", suite_badge: "CSP-Omega + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 6, high_tier_only: true }
+  "CSP-Omega":   { id: "CSP-Omega",   qvs_id: "QHS-512",  name: "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)", suite_badge: "CSP-Omega + QHS-512 + CC-512", ct_bytes: 5792, wire_id: 6, high_tier_only: true }
 };
 
 function normalizeQlxTier(raw) {
   const s = String(raw || "").toUpperCase();
-  for (const k of Object.keys(QLX_TIERS)) { if (s.includes(k)) return k; }
+  for (const k of Object.keys(QLX_TIERS)) { if (s.includes(k.toUpperCase())) return k; }
+  if (s.includes("CSP-OMEGA") || s.includes("PENTAD")) return "CSP-Omega";
+  if (s.includes("CULC-2048") || s.includes("CITADEL")) return "CULC-2048";
+  if (s.includes("CGM-8192") || s.includes("GOPPA")) return "CGM-8192";
+  if (s.includes("CIF-SQI-512") || s.includes("ISOGENY")) return "CIF-SQI-512";
+  if (s.includes("CRT-RSD512") || s.includes("RANK") || s.includes("TENSOR")) return "CRT-RSD512";
+  if (s.includes("16384") || s.includes("TESSERACT")) return "QLX-16384";
   return "QLX-4096";
 }
 
@@ -1912,6 +1918,32 @@ if (state.token && state.account) {
 /* === OpenQPEP Official Release 1.0.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv100HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {

@@ -90,7 +90,7 @@ QLX_TIERS: Dict[str, Dict[str, object]] = {
         "k": 16, "du": 11, "dv": 5, "manifolds": 1, "cbd": 2,
         "qvs_tier": "QVS-256",
         "pk_bytes": 6176, "sk_bytes": 12384, "ct_bytes": 5792,
-        "display_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)",
+        "display_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
         "hardware_tier": "All Devices",
         "high_tier_only": False,
     },
@@ -127,7 +127,7 @@ QVS_TIERS: Dict[str, Dict[str, int]] = {
 # ---------------------------------------------------------------------------
 ALL_TEN_SUITES: Dict[str, Dict[str, object]] = {
     "QLX-4096": {
-        "display_name": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)",
+        "display_name": "Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)",
         "kem": "QLX-4096", "sig": "QVS-256", "family": "Structured Module-LWE + HGC-448",
         "hardware_tier": "All Devices", "high_tier_only": False, "default": True,
     },
@@ -152,7 +152,7 @@ ALL_TEN_SUITES: Dict[str, Dict[str, object]] = {
         "hardware_tier": "All Devices", "high_tier_only": False, "default": False,
     },
     "CRT-RSD512": {
-        "display_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)",
+        "display_name": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)",
         "kem": "CRT-RSD512", "sig": "QMQ-512", "family": "LRPC Rank-Metric Code + UOV Multivariate Quadratic",
         "hardware_tier": "All Devices", "high_tier_only": False, "default": False,
     },
@@ -172,7 +172,7 @@ ALL_TEN_SUITES: Dict[str, Dict[str, object]] = {
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)", "high_tier_only": True, "default": False,
     },
     "CSP-Omega": {
-        "display_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)",
+        "display_name": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)",
         "kem": "CSP-Omega (5-Family)", "sig": "QHS-512+QMQ-512+CIF-SQI-512", "family": "5-Family Beyond-LWE Combiner",
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)", "high_tier_only": True, "default": False,
     },

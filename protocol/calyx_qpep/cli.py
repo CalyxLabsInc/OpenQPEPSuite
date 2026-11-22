@@ -231,16 +231,16 @@ def _publish_entry_to_directory(entry: Dict[str, Any]) -> bool:
 def cmd_create_key(store: OpenQPEPKeyStore) -> None:
     bprint(f"\n--- OpenQPEP Guided Key Generation ({UNIVERSAL_VERSION_LABEL}) ---")
     bprint("Specify Key Type:")
-    bprint("  1. Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)")
+    bprint("  1. Calyx Lattice-4096: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)")
     bprint("  2. Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)")
     bprint("  3. Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)")
     bprint("  4. Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)")
     bprint("  5. Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)")
-    bprint("  6. Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)")
+    bprint("  6. Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)")
     bprint("  7. Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)")
     bprint("  8. Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)")
     bprint("  9. Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)")
-    bprint(" 10. Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)")
+    bprint(" 10. Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)")
     t_choice = binput("Enter option number (1-10, default 1):") or "1"
     tier_map = {
         "1": "QLX-4096", "2": "QLX-768", "3": "QLX-1024", "4": "QLX-2048", "5": "CIF-SQI-512",

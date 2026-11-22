@@ -36,7 +36,7 @@ from ..primitives.qsponge import qsponge_512
 from ..primitives.zeroize import SecretBuffer
 from ..wire.armor import armor_unwrap, armor_wrap
 
-PENTAD_SUITE_NAME = "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)"
+PENTAD_SUITE_NAME = "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)"
 PENTAD_MIN_RAM_MIB = 12288  # 12 GB flagship hardware guardrail
 PENTAD_ENC_LABEL = "CALYX QPEP SOVEREIGN-PENTAD PACKET"
 PENTAD_SIG_LABEL = "CALYX QPEP SOVEREIGN-PENTAD SIGNATURE"

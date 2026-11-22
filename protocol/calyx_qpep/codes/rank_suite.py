@@ -15,7 +15,7 @@ CRT_LABEL = "CALYX QPEP RANK-METRIC PACKET"
 
 
 class CalyxRankMetricSuite:
-    SUITE_NAME = "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)"
+    SUITE_NAME = "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)"
 
     @staticmethod
     def keygen() -> Tuple[bytes, bytes]:
