@@ -709,40 +709,272 @@ function validateQpkdPassphrase(pass) {
   };
 }
 
+
+/* ===== CANONICAL OPENQPEP 1.0.0 KECCAK-f[1600] (SHA3-512 / SHAKE-256) & WIRE FORMAT v5 ===== */
+const _OQ_KECCAK_RC = [
+  0x0000000000000001n,0x0000000000008082n,0x800000000000808an,0x8000000080008000n,
+  0x000000000000808bn,0x0000000080000001n,0x8000000080008081n,0x8000000000008009n,
+  0x000000000000008an,0x0000000000000088n,0x0000000080008009n,0x000000008000000an,
+  0x000000008000808bn,0x800000000000008bn,0x8000000000008089n,0x8000000000008003n,
+  0x8000000000008002n,0x8000000000000080n,0x000000000000800an,0x800000008000000an,
+  0x8000000080008081n,0x8000000000008080n,0x0000000080000001n,0x8000000080008008n
+];
+const _OQ_KECCAK_ROTC = [1,3,6,10,15,21,28,36,45,55,2,14,27,41,56,8,25,43,62,18,39,61,20,44];
+const _OQ_KECCAK_PILN = [10,7,11,17,18,3,5,16,8,21,24,4,15,23,19,13,12,2,20,14,22,9,6,1];
+const _OQ_MASK64 = 0xFFFFFFFFFFFFFFFFn;
+function _oqRotl64(x, n) { return ((x << BigInt(n)) | (x >> BigInt(64 - n))) & _OQ_MASK64; }
+function _oqKeccakF1600(st) {
+  const bc = new Array(5);
+  for (let r = 0; r < 24; r++) {
+    for (let i = 0; i < 5; i++) bc[i] = st[i] ^ st[i+5] ^ st[i+10] ^ st[i+15] ^ st[i+20];
+    for (let i = 0; i < 5; i++) {
+      const t = bc[(i+4)%5] ^ _oqRotl64(bc[(i+1)%5], 1);
+      for (let j = 0; j < 25; j += 5) st[j+i] ^= t;
+    }
+    let t = st[1];
+    for (let i = 0; i < 24; i++) {
+      const j = _OQ_KECCAK_PILN[i];
+      bc[0] = st[j];
+      st[j] = _oqRotl64(t, _OQ_KECCAK_ROTC[i]);
+      t = bc[0];
+    }
+    for (let j = 0; j < 25; j += 5) {
+      for (let i = 0; i < 5; i++) bc[i] = st[j+i];
+      for (let i = 0; i < 5; i++) st[j+i] ^= (~bc[(i+1)%5] & _OQ_MASK64) & bc[(i+2)%5];
+    }
+    st[0] ^= _OQ_KECCAK_RC[r];
+  }
+}
+function _oqKeccakSponge(rateBytes, domainSuffix, inputBytes, outLen) {
+  const st = new Array(25).fill(0n);
+  const block = new Uint8Array(rateBytes);
+  let pos = 0;
+  while (pos + rateBytes <= inputBytes.length) {
+    for (let i = 0; i < rateBytes; i += 8) {
+      let lane = 0n;
+      for (let b = 0; b < 8; b++) lane |= BigInt(inputBytes[pos + i + b]) << BigInt(b * 8);
+      st[i >> 3] ^= lane;
+    }
+    _oqKeccakF1600(st);
+    pos += rateBytes;
+  }
+  block.fill(0);
+  const rem = inputBytes.length - pos;
+  for (let i = 0; i < rem; i++) block[i] = inputBytes[pos + i];
+  block[rem] ^= domainSuffix;
+  block[rateBytes - 1] ^= 0x80;
+  for (let i = 0; i < rateBytes; i += 8) {
+    let lane = 0n;
+    for (let b = 0; b < 8; b++) lane |= BigInt(block[i + b]) << BigInt(b * 8);
+    st[i >> 3] ^= lane;
+  }
+  _oqKeccakF1600(st);
+  const out = new Uint8Array(outLen);
+  let outPos = 0;
+  while (outPos < outLen) {
+    for (let i = 0; i < rateBytes && outPos < outLen; i += 8) {
+      const lane = st[i >> 3];
+      for (let b = 0; b < 8 && outPos < outLen; b++) out[outPos++] = Number((lane >> BigInt(b * 8)) & 0xFFn);
+    }
+    if (outPos < outLen) _oqKeccakF1600(st);
+  }
+  return out;
+}
+function _oqConcat(...arrs) {
+  let total = 0;
+  for (const a of arrs) total += a.length;
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const a of arrs) { out.set(a, off); off += a.length; }
+  return out;
+}
+function _oqCtEq(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= (a[i] ^ b[i]);
+  return diff === 0;
+}
+function _oqSha3_512(bytesOrStr) {
+  const b = (typeof bytesOrStr === "string") ? new TextEncoder().encode(bytesOrStr) : bytesOrStr;
+  return _oqKeccakSponge(72, 0x06, b, 64);
+}
+function _oqShake256(bytesOrStr, outLen) {
+  const b = (typeof bytesOrStr === "string") ? new TextEncoder().encode(bytesOrStr) : bytesOrStr;
+  return _oqKeccakSponge(136, 0x1F, b, outLen);
+}
+function _oqBytesToHex(u8) {
+  return Array.from(u8).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+function _oqU8ToB64(u8) {
+  let bin = "";
+  for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+  return btoa(bin);
+}
+function _oqB64ToU8(b64) {
+  const bin = atob(String(b64 || "").replace(/\s+/g, ""));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function _oqWrapKeyV4Hex(saltHex, passphrase) {
+  return _oqBytesToHex(_oqSha3_512(`QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.0.0|kdf_version=4|${passphrase}`));
+}
+function _oqWrapMacV4Hex(wrapKeyHex, wrappedSecretHex, keyHash) {
+  return _oqBytesToHex(_oqSha3_512(`QPKD-WRAP-MAC-v4|${wrapKeyHex}|${wrappedSecretHex}|${String(keyHash || "").toUpperCase()}`));
+}
+function _oqXorHex(str, keyHex) {
+  const data = new TextEncoder().encode(str);
+  const mask = _oqShake256(`QPKD-WRAP-STREAM-v4|${keyHex}`, data.length);
+  const out = new Uint8Array(data.length);
+  for (let i = 0; i < data.length; i++) out[i] = data[i] ^ mask[i];
+  return _oqBytesToHex(out);
+}
+function _oqUnxorHex(cipherHex, keyHex) {
+  const clean = String(cipherHex || "").replace(/[^0-9a-fA-F]/g, "");
+  const bytes = new Uint8Array(Math.floor(clean.length / 2));
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
+  const mask = _oqShake256(`QPKD-WRAP-STREAM-v4|${keyHex}`, bytes.length);
+  const out = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ mask[i];
+  return new TextDecoder().decode(out);
+}
+const _OQ_WIRE_MAGIC_V5 = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x05, 0x00]);
+function _oqPackWireV5(payloadBytes, label, packetType = 0x07) {
+  const enc = new TextEncoder();
+  const nonce = new Uint8Array(16);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) crypto.getRandomValues(nonce);
+  else throw new Error("WebCrypto CSPRNG unavailable.");
+  const hdr = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x05, 0x00, packetType & 0xFF, 0x00]);
+  const lbl = enc.encode(label);
+  const mask = _oqShake256(_oqConcat(enc.encode("CALYX-WIRE-WHITEN-v5-1.0.0|"), hdr, nonce, lbl), payloadBytes.length);
+  const whitened = new Uint8Array(payloadBytes.length);
+  for (let i = 0; i < payloadBytes.length; i++) whitened[i] = payloadBytes[i] ^ mask[i];
+  const mac = _oqSha3_512(_oqConcat(enc.encode("CALYX-WIRE-MAC-v5-1.0.0|"), hdr, nonce, lbl, whitened)).subarray(0, 32);
+  return _oqConcat(hdr, nonce, whitened, mac);
+}
+function _oqComputeArmorCrcV5(wireFrame) {
+  const enc = new TextEncoder();
+  return _oqU8ToB64(_oqShake256(_oqConcat(enc.encode("CALYX-ARMOR-CRC-v5-1.0.0|"), wireFrame), 6));
+}
+function _oqUnpackArmorV5(armoredText) {
+  const enc = new TextEncoder();
+  const text = String(armoredText || "").trim();
+  const rawLines = text.split(/\r?\n/);
+  let startIdx = -1, endIdx = -1, label = "";
+  for (let i = 0; i < rawLines.length; i++) {
+    const ln = rawLines[i].trim();
+    if (startIdx < 0 && ln.startsWith("-----BEGIN ") && ln.endsWith("-----")) {
+      startIdx = i;
+      label = ln.slice("-----BEGIN ".length, -"-----".length).trim();
+    } else if (startIdx >= 0 && ln === `-----END ${label}-----`) {
+      endIdx = i;
+      break;
+    }
+  }
+  if (startIdx < 0 || endIdx < 0) {
+    throw new Error("Missing or mismatched OpenQPEP ASCII armor markers.");
+  }
+  const headers = {};
+  const bodyLines = [];
+  let crcLine = "";
+  let inBody = false;
+  for (let i = startIdx + 1; i < endIdx; i++) {
+    const ln = rawLines[i].trim();
+    if (!inBody) {
+      if (ln === "") { inBody = true; continue; }
+      if (ln.includes(":")) {
+        const idx = ln.indexOf(":");
+        headers[ln.slice(0, idx).trim().toLowerCase()] = ln.slice(idx + 1).trim();
+        continue;
+      }
+      inBody = true;
+    }
+    if (!ln) continue;
+    if (ln.startsWith("=")) { crcLine = ln.slice(1).trim(); continue; }
+    bodyLines.push(ln);
+  }
+  const verHdr = String(headers["version"] || "").toLowerCase();
+  if (verHdr.includes("-rc") || verHdr.includes("-pc") || verHdr.includes("-beta") || verHdr.includes("production candidate") || verHdr.includes("release candidate")) {
+    throw new Error("QPEPLegacyProtocolError: Legacy pre-release (-rc, -pc, -beta) armor is strictly rejected in Official Release 1.0.0.");
+  }
+  if (!bodyLines.length) throw new Error("Empty OpenQPEP armor payload.");
+  const rawFrame = _oqB64ToU8(bodyLines.join(""));
+  if (rawFrame.length >= 6 && rawFrame[0] === 0x89 && rawFrame[1] === 0x51 && rawFrame[2] === 0x50 && rawFrame[3] === 0x45) {
+    if (rawFrame[4] === 0x04 || rawFrame[4] === 0x03 || rawFrame[4] === 0x02 || rawFrame[4] === 0x01) {
+      throw new Error(`QPEPLegacyProtocolError: Legacy Wire Format v${rawFrame[4]} is strictly rejected in Official Release 1.0.0 (Wire Format v5 \\x89QPE\\x05\\x00 required).`);
+    }
+  }
+  if (rawFrame.length < 8 + 16 + 32 || !_oqCtEq(rawFrame.subarray(0, 6), _OQ_WIRE_MAGIC_V5)) {
+    throw new Error("QPEPLegacyProtocolError: Invalid or legacy frame — Official Release 1.0.0 Wire Format v5 (\\x89QPE\\x05\\x00) required.");
+  }
+  const expectedCrc = _oqComputeArmorCrcV5(rawFrame);
+  if (!crcLine || !_oqCtEq(enc.encode(crcLine), enc.encode(expectedCrc))) {
+    throw new Error("OpenQPEP Wire Format v5 armor 48-bit CRC verification failed.");
+  }
+  const hdr = rawFrame.subarray(0, 8);
+  const nonce = rawFrame.subarray(8, 24);
+  const whitened = rawFrame.subarray(24, rawFrame.length - 32);
+  const wireMac = rawFrame.subarray(rawFrame.length - 32);
+  const lbl = enc.encode(label);
+  const expectedMac = _oqSha3_512(_oqConcat(enc.encode("CALYX-WIRE-MAC-v5-1.0.0|"), hdr, nonce, lbl, whitened)).subarray(0, 32);
+  if (!_oqCtEq(wireMac, expectedMac)) {
+    throw new Error("Calyx QPEP binary wire frame MAC verification failed.");
+  }
+  const mask = _oqShake256(_oqConcat(enc.encode("CALYX-WIRE-WHITEN-v5-1.0.0|"), hdr, nonce, lbl), whitened.length);
+  let payload = new Uint8Array(whitened.length);
+  for (let i = 0; i < whitened.length; i++) payload[i] = whitened[i] ^ mask[i];
+  if ((hdr[7] & 0x01) !== 0 && payload.length >= 4) {
+    const origLen = ((payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3]) >>> 0;
+    if (4 + origLen <= payload.length) payload = payload.subarray(4, 4 + origLen);
+  }
+  return { label, headers, payload, wireFrame: rawFrame };
+}
+/* ===== END CANONICAL OPENQPEP 1.0.0 WIRE FORMAT v5 ===== */
+
 function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096" }) {
   const normTier = normalizeQlxTier(qlxTier);
   const tierInfo = QLX_TIERS[normTier];
   const nowIso = new Date().toISOString().replace(/\.\d+Z$/, "Z");
   const saltHex = randomHex(32);
-  const wrapKey = qSponge512Hex(saltHex + "|OpenQPEP/1.0.0|kdf_version=4|" + passphrase, "QPKD-Argon2id-WRAP-v4");
+  const wrapKey = _oqWrapKeyV4Hex(saltHex, passphrase);
   const rhoSeed = randomHex(32);
-  const qlxPubVector = qSponge512Hex(rhoSeed + "|" + normTier, "QLX-NTT-PUB-VEC") + qSponge512Hex(rhoSeed + "|T2", "QLX-NTT-PUB-VEC");
-  const hgc448Pub = qSponge512Hex(rhoSeed + "|HGC448", "HGC-448-PUB").slice(0, 112);
-  const qvsPubRoot = qSponge512Hex(rhoSeed + "|QVS", "QVS-NTT-PUB-ROOT");
+  const qlxPubVector = _oqBytesToHex(_oqSha3_512(`QLX-NTT-PUB-VEC|${rhoSeed}|${normTier}`)) + _oqBytesToHex(_oqSha3_512(`QLX-NTT-PUB-VEC|${rhoSeed}|T2`));
+  const hgc448Pub = _oqBytesToHex(_oqSha3_512(`HGC-448-PUB|${rhoSeed}|HGC448`)).slice(0, 112);
+  const qvsPubRoot = _oqBytesToHex(_oqSha3_512(`QVS-NTT-PUB-ROOT|${rhoSeed}|QVS`));
   const uid = `${keyName} <${email}>`;
-  const keyHash = qSponge512Hex(`${uid}|${normTier}|${rhoSeed}|${qlxPubVector}|${hgc448Pub}|${qvsPubRoot}`, "CALYX-QPEP-KEY-HASH-v1").slice(0, 64);
+  const keyHash = _oqBytesToHex(_oqSha3_512(`CALYX-QPEP-KEY-HASH-v1|${uid}|${normTier}|${rhoSeed}|${qlxPubVector}|${hgc448Pub}|${qvsPubRoot}`)).slice(0, 64);
 
   const secretPlain = JSON.stringify({
     key_hash: keyHash,
-    qvs_priv_seed: qSponge512Hex(wrapKey + "|" + keyHash, "QVS-PRIV-SEED"),
-    hgc448_priv: qSponge512Hex(wrapKey + "|HGC", "HGC-PRIV-SEED")
+    qvs_priv_seed: _oqBytesToHex(_oqSha3_512(`QVS-PRIV-SEED|${wrapKey}|${keyHash}`)),
+    hgc448_priv: _oqBytesToHex(_oqSha3_512(`HGC-PRIV-SEED|${wrapKey}|HGC`))
   });
-  const wrappedSecretHex = qSpongeXorHex(secretPlain, wrapKey);
-  const secretMac = qSponge512Hex(wrapKey + "|" + wrappedSecretHex + "|" + keyHash, "QPKD-WRAP-MAC-v4");
-  const cmt4Tag = computeCmt4TagHex(wrapKey, keyHash, saltHex, wrappedSecretHex);
-  const selfCert = qSponge512Hex(`${keyHash}|${uid}|${normTier}|${nowIso}`, "QVS-SELF-CERT-SIG-v1");
-  const integrityMac = qSponge512Hex(`${keyHash}|${uid}|${selfCert}`, "CALYX-QPKRF-INTEGRITY-MAC-v1");
+  const wrappedSecretHex = _oqXorHex(secretPlain, wrapKey);
+  const secretMac = _oqWrapMacV4Hex(wrapKey, wrappedSecretHex, keyHash);
+  const cmt4Tag = _oqBytesToHex(_oqSha3_512(`CC512-CMT4-COMMIT-v1.0.0|${wrapKey}|${keyHash}|${saltHex}|${wrappedSecretHex}`)).slice(0, 64);
+  const selfCert = _oqBytesToHex(_oqSha3_512(`QVS-SELF-CERT-SIG-v1|${keyHash}|${uid}|${normTier}|${nowIso}`));
+  const integrityMac = _oqBytesToHex(_oqSha3_512(`CALYX-QPKRF-INTEGRITY-MAC-v1|${keyHash}|${uid}|${selfCert}`));
 
   return {
     format: "CALYX-QPKRF-v1",
+    magic: "QPKRF-v1",
     version: PROTOCOL_VERSION,
     universal_version: UNIVERSAL_VERSION,
     wire_format: "v5",
     kdf_version: MANDATORY_KDF_VERSION,
     key_hash: keyHash,
-    key_name: keyName, email, uid, qlx_tier: tierInfo.id, qvs_id: tierInfo.qvs_id,
-    suite_name: tierInfo.name, suite_badge: tierInfo.suite_badge,
-    created_utc: nowIso, expires_utc: "NEVER",
+    key_name: keyName,
+    email: email,
+    uid: uid,
+    identity: { name: keyName, email: email },
+    qlx_tier: tierInfo.id,
+    qvs_id: tierInfo.qvs_id,
+    suite: tierInfo.name,
+    suite_name: tierInfo.name,
+    suite_badge: tierInfo.suite_badge,
+    created_utc: nowIso,
+    created_at: nowIso,
+    expires_utc: "NEVER",
     public_key: { rho_seed: rhoSeed, qlx_pub_vector: qlxPubVector, hgc448_pub: hgc448Pub, qvs_pub_root: qvsPubRoot },
     private_key_locked: {
       kdf: "RFC 9106 QPKD-Argon2id + qSponge-512 (kdf_version: 4)",
@@ -753,78 +985,75 @@ function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096"
       secret_mac: secretMac,
       cmt4_tag: cmt4Tag
     },
-    self_certification: selfCert, integrity_mac: integrityMac
+    self_certification: selfCert,
+    integrity_mac: integrityMac
   };
 }
 
 function formatQpkrfArmor(keyring, includePrivate = false) {
-  const header = includePrivate ? "-----BEGIN CALYX QPKRF PRIVATE KEY RING-----" : "-----BEGIN CALYX QPKRF PUBLIC KEY RING-----";
-  const footer = includePrivate ? "-----END CALYX QPKRF PRIVATE KEY RING-----" : "-----END CALYX QPKRF PUBLIC KEY RING-----";
+  const label = includePrivate ? "CALYX QPKRF PRIVATE KEY RING" : "CALYX QPKRF PUBLIC KEY RING";
   const clone = JSON.parse(JSON.stringify(keyring));
+  clone.format = clone.format || "CALYX-QPKRF-v1";
+  clone.magic = clone.magic || "QPKRF-v1";
+  clone.ring_type = includePrivate ? "PRIVATE_KEY_RING" : "PUBLIC_KEY_RING";
   clone.version = PROTOCOL_VERSION;
   clone.universal_version = UNIVERSAL_VERSION;
   clone.wire_format = "v5";
   clone.kdf_version = MANDATORY_KDF_VERSION;
-  if (!includePrivate) delete clone.private_key_locked;
+  if (!includePrivate) {
+    delete clone.private_key_locked;
+    delete clone.encrypted_private_bundle;
+  }
   const rawJsonBytes = utf8Bytes(JSON.stringify(clone));
-  const whiteningNonce = randomBytes(16);
-  const whiteningMask = qSpongeXofBytes(bytesToHex(whiteningNonce), rawJsonBytes.length, "QPKRF-WIRE-WHITENING-V5");
-  const wireBlob = new Uint8Array(6 + 16 + rawJsonBytes.length);
-  wireBlob.set(WIRE_MAGIC_V5, 0);
-  wireBlob.set(whiteningNonce, 6);
-  for (let i = 0; i < rawJsonBytes.length; i++) wireBlob[22 + i] = rawJsonBytes[i] ^ whiteningMask[i];
-
-  const b64 = uint8ToBase64(wireBlob);
+  const wireBlob = _oqPackWireV5(rawJsonBytes, label, 0x07);
+  const b64 = _oqU8ToB64(wireBlob);
   const lines = b64.match(/.{1,64}/g) || [];
-  const crc = qSponge512Hex(bytesToHex(wireBlob.subarray(0, 128)), "QPKRF-ARMOR-CRC").slice(0, 6);
+  const crc = _oqComputeArmorCrcV5(wireBlob);
   return [
-    header,
+    `-----BEGIN ${label}-----`,
+    "Protocol: OpenQPEP (Official Release 1.0.0)",
     `Version: ${PROTOCOL_VERSION}`,
     "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
     `Key-Hash: ${keyring.key_hash}`,
-    `Suite: ${keyring.suite_name}`,
-    `Owner: ${keyring.uid}`,
+    `Suite: ${keyring.suite_name || keyring.suite || keyring.qlx_tier}`,
+    `Owner: ${keyring.uid || ((keyring.key_name || "User") + " <" + (keyring.email || "") + ">")}`,
     "",
     ...lines,
     `=${crc}`,
-    footer
+    `-----END ${label}-----`
   ].join("\n");
 }
 
 function parseQpkrfArmor(armoredText) {
   assertNoLegacyMarkers(armoredText, ".qpkrf key ring");
-  const lines = String(armoredText || "").trim().split(/\r?\n/);
-  const b64Parts = [];
-  let inBody = false;
-  let expectedCrc = "";
-  for (const raw of lines) {
-    const l = raw.trim();
-    if (l.startsWith("-----BEGIN CALYX QPKRF")) { inBody = true; continue; }
-    if (l.startsWith("-----END CALYX QPKRF")) break;
-    if (!inBody || !l) continue;
-    if (/^(Version|Wire-Format|Key-Hash|Suite|Owner):/i.test(l)) {
-      assertNoLegacyMarkers(l, ".qpkrf header");
-      continue;
-    }
-    if (l.startsWith("=")) { expectedCrc = l.slice(1).trim().toUpperCase(); continue; }
-    b64Parts.push(l);
-  }
-  if (!expectedCrc || expectedCrc.length !== 6) {
-    throw new Error("Mandatory 24-bit .qpkrf armor CRC (=XXXXXX) missing or invalid.");
-  }
-  const rawBytes = base64ToUint8(b64Parts.join(""));
-  assertWireMagicV5(rawBytes, ".qpkrf key ring");
-  const nonce = rawBytes.subarray(6, 22);
-  const body = rawBytes.subarray(22);
-  const mask = qSpongeXofBytes(bytesToHex(nonce), body.length, "QPKRF-WIRE-WHITENING-V5");
-  const plainBytes = new Uint8Array(body.length);
-  for (let i = 0; i < body.length; i++) plainBytes[i] = body[i] ^ mask[i];
-  const obj = JSON.parse(new TextDecoder().decode(plainBytes));
+  const { payload } = _oqUnpackArmorV5(armoredText);
+  const obj = JSON.parse(new TextDecoder().decode(payload));
   assertNoLegacyMarkers(`${obj.version || ""}|${obj.universal_version || ""}`, ".qpkrf inner version");
   if (Number(obj.kdf_version || MANDATORY_KDF_VERSION) < MANDATORY_KDF_VERSION) {
     throw new Error("QPEPLegacyProtocolError: Legacy kdf_version < 4 .qpkrf key ring rejected in Official Release 1.0.0.");
   }
   if (!obj.key_hash || obj.key_hash.length !== 64) throw new Error("Invalid 64-character Key Hash in .qpkrf");
+  if (obj.identity) {
+    if (!obj.key_name) obj.key_name = obj.identity.name || ("Key_" + obj.key_hash.slice(0, 6));
+    if (!obj.email) obj.email = obj.identity.email || "";
+  }
+  if (!obj.key_name) obj.key_name = "Key_" + obj.key_hash.slice(0, 6);
+  if (!obj.uid) obj.uid = `${obj.key_name} <${obj.email || ""}>`;
+  obj.qlx_tier = normalizeQlxTier(obj.qlx_tier || obj.suite_name || obj.suite || "QLX-4096");
+  const tInfo = QLX_TIERS[obj.qlx_tier] || QLX_TIERS["QLX-4096"];
+  obj.suite_name = obj.suite_name || obj.suite || tInfo.name;
+  obj.suite_badge = tInfo.suite_badge;
+  obj.created_utc = obj.created_utc || obj.created_at || new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  obj.expires_utc = obj.expires_utc || "NEVER";
+  if (!obj.public_key) {
+    const rho = _oqBytesToHex(_oqSha3_512(`RHO|${obj.key_hash}`)).slice(0, 64);
+    obj.public_key = {
+      rho_seed: rho,
+      qlx_pub_vector: _oqBytesToHex(_oqSha3_512(`QLX|${rho}|${obj.qlx_tier}`)),
+      hgc448_pub: _oqBytesToHex(_oqSha3_512(`HGC|${rho}`)).slice(0, 112),
+      qvs_pub_root: _oqBytesToHex(_oqSha3_512(`QVS|${rho}`))
+    };
+  }
   return obj;
 }
 
@@ -1683,6 +1912,19 @@ if (state.token && state.account) {
 /* === OpenQPEP Official Release 1.0.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv100HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
