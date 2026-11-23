@@ -1,60 +1,44 @@
-# OpenQPEP Suite — Official Release Version 1.0.0 (`v1.0.0`)
+# OpenQPEP Suite — Official Release 1.1.0 (`v1.1.0`)
 
-Official unified public repository for the **OpenQPEP Suite** by **Calyx Labs Inc.** (`https://github.com/CalyxLabsInc/OpenQPEPSuite/`), licensed universally under the **Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)**.
-
-> **Proprietary Infrastructure Notice:** All Calyx Labs Inc. backend servers (`Website_Server`, `Directory_Server`, `Messenger_Server`, `CalyxMail_Backend`) and signing keystores are strictly proprietary and are intentionally excluded from this repository.
+**Organization:** Calyx Labs Inc. (Cleveland, Ohio)  
+**Founder & Lead Architect:** Tristen Martinez (aka Calyxia)  
+**License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)  
+**Protocol Identifier:** `OpenQPEP/1.1.0` • **Wire Format:** Official Wire v5 (`\x89QPE\x05\x00`) / Compact Binary TLV v5.1 (`\x89QPE\x05\x01`) / Stream v5 (`\x89QPS\x05\x00`) • **Mandatory KDF:** `kdf_version: 4` (RFC 9106 `QPKD-Argon2id` + `qSponge-512`)
 
 ---
 
-## Repository Structure
+## Ecosystem Overview
 
-| Directory | Component | Version | Description |
+OpenQPEP is Calyx Labs Inc.'s sovereign, post-quantum cryptographic standard engineered to replace OpenPGP across messaging, email, files, key directories, and multi-platform applications.
+
+| Component | Package / Domain | Version (`v1.1.0`) | Platforms |
 | :--- | :--- | :--- | :--- |
-| [`protocol/`](protocol/) | **OpenQPEP Core Protocol** | `1.0.0` | Python reference engine, C99/AVX2/NEON `libopenqpep` source, WASM SIMD128 bridge, Rust `openqpep-core` crate, Go conformance port, formal Tamarin/ProVerif/Cryptol specs, 10 golden KAT suites, and 89 unit/audit tests |
-| [`apps/calyx-qpep-client/`](apps/calyx-qpep-client/) | **Calyx QPEP Client** | `1.0.0` (`vc226`) | Zero-telemetry post-quantum encryption/signing client for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig` + PWA) |
-| [`apps/calyx-encrypted-messenger/`](apps/calyx-encrypted-messenger/) | **Calyx Encrypted Messenger (QPEM)** | `1.0.0` (`vc26`) | End-to-end post-quantum encrypted messenger for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig`) |
-| [`apps/calyx-encrypted-email/`](apps/calyx-encrypted-email/) | **Calyx Encrypted Email** | `1.0.0` (`vc10`) | Post-quantum encrypted email client (`@calyxmail.org`) for Android (`.apk` + source), Desktop (Tauri), and iOS (`.mobileconfig`) |
-| [`docs/`](docs/) | **Suite Documentation & Theses** | `1.0.0` | Architecture guides, Beyond-LWE key tier specifications, and public compliance documents |
+| **Core OpenQPEP Protocol** | `protocol/` (`calyx-openqpep`) | `1.1.0` | Python 3, C99/AVX2/NEON (`libopenqpep`), Rust (`openqpep-core`), Go (`go/openqpep`), WASM/JS |
+| **Calyx QPEP Client** | `apps/calyx-qpep-client/` (`com.calyxlabs.qpepclient`) | `1.1.0` (`vc229`) | Android (`.apk`), iOS (`.mobileconfig` + unified HTML), Desktop (Tauri) |
+| **Calyx Encrypted Messenger** | `apps/calyx-encrypted-messenger/` (`com.calyxlabs.qpem`) • `messenger.calyxlabsinc.org` | `1.1.0` (`vc29`) | Web, Android (`.apk`), iOS (`.mobileconfig`), Desktop (Tauri) |
+| **Calyx Encrypted Email** | `apps/calyx-encrypted-email/` (`com.calyxlabs.mail`) • `mail.calyxlabsinc.org` / `calyxmail.org` | `1.1.0` (`vc13`) | Web, Android (`.apk`), iOS (`.mobileconfig`), Desktop (Tauri), SMTP/IMAP4rev1 |
+| **OpenQPEP Key Directory** | `qpepkeys.calyxlabsinc.org` (`QPEP-KT`) | `1.1.0` | RFC 9162 Binary Merkle Log + Ed448 Signed Tree Heads + Consistency Proofs |
 
 ---
 
-## Cryptographic Baseline (`OpenQPEP/1.0.0`)
-- **Official Wire Format v5 (`\x89QPE\x05\x00`), Compact Binary TLV v5.1 (`\x89QPE\x05\x01`), & Stream Format v5 (`\x89QPS\x05\x00`):** Clean-slate Official Release 1.0.0 wire framing with zero legacy pre-release backwards compatibility (`QPEPLegacyProtocolError`).
-- **CMT-4 Key-Committing `CC-512` AEAD (`CC512-CMT4-COMMIT-v1.0.0`):** Constant-time 256-bit key+nonce+AAD+ciphertext commitment tag verification before decryption across Python, Rust, and WebView JS.
-- **Mandatory Memory-Hard KDF (`kdf_version: 4`):** RFC 9106 `QPKD-Argon2id + qSponge-512` cascade bound to domain personalization `"OpenQPEP/1.0.0"`.
-- **10 Post-Quantum Suites:** 5 Standard Lattice suites (`QLX-768`..`QLX-16384` + `QVS-65`..`QVS-1024`) and 5 Beyond-LWE suites (`CIF-SQI-512`, `CRT-RSD512`, `CGM-8192`, `CULC-2048`, `CSP-Omega`).
-- **Full Protocol Stack:** `QPEP-Ratchet` (`QPEP-DR` / `PQXDH-v1.0.0`), `QPEP-MLS` TreeKEM, `QPEP-AKE`, `QPEP-KT` Merkle Key Transparency, `FIDO2-PRF`, `QVS-Ring`, `BlindSearchVault`, `t`-of-`n` `ThresholdKEM`, `Sphinx-PQ`, `LT-QR` air-gapped fountain transfer, `DeniableVault`, `TimeLockCapsule`, `LatticeZKProof`, and `EncryptedLWWMapCRDT`.
+## Cryptographic Architecture (`v1.1.0`)
+
+- **10 Canonical Post-Quantum Suites:**
+  - *All-Devices Suites (6):* `QLX-4096 + QVS-256` (Default Apex), `QLX-768 + QVS-65`, `QLX-1024 + QVS-87`, `QLX-2048 + QVS-128`, `CIF-SQI-512 + QHS-512` (CSIDH-512 Isogeny), and `CRT-RSD512 + QMQ-512` (Rank-Metric LRPC + UOV).
+  - *High-Tier Hardware Only (`>= 12 GB RAM`, 4):* `QLX-16384 + QVS-1024` (Calyx Hyper-Tesseract), `CGM-8192 + QHS-512` (Binary Goppa), `CULC-2048 + CGM-8192` (Unstructured Plain-LWE + Goppa), and `CSP-Omega + QHS-512` (5-Family Sovereign Pentad).
+- **CMT-4 Key-Committing `CC-512` AEAD:** Nested `AES-256-GCM` + `ChaCha20-Poly1305` with a 256-bit `qSponge-512` commitment tag verified in constant time before decryption.
+- **RFC 9106 `QPKD-Argon2id` (`kdf_version: 4`):** Mandatory memory-hard key derivation with hardware auto-tuning and optional `FIDO2-PRF` hardware passkey mixing.
+- **Wire Compatibility Policy:** `v1.1.0` maintains **100% interoperability with all `v1.0.0`–`v1.0.2` Official Release Wire Format v5/v5.1 & Stream v5 artifacts**, while continuing to strictly reject all retired pre-release (`-rc`, `-pc`, `-beta`, `kdf_version < 4`, Wire v1–v4) artifacts with `QPEPLegacyProtocolError`.
 
 ---
 
-## Quick Start (Protocol Verification)
+## Quick Verification
+
 ```bash
 cd protocol
-make -C calyx_qpep/native/csrc   # Optional: build C99/AVX2/NEON libopenqpep accelerator
+make -C calyx_qpep/native/csrc clean all
 python3 -m calyx_qpep.cli verify-vectors
 python3 -m unittest discover -s tests -v
+cd ..
+python3 verify_suite.py
 ```
-
-## Official Links
-- **Website:** https://calyxlabsinc.org/ (Mirror: https://calyxlabsinc.github.io/)
-- **Public Key Directory:** https://qpepkeys.calyxlabsinc.org
-- **Encrypted Messenger:** https://messenger.calyxlabsinc.org
-- **Encrypted Email:** https://mail.calyxlabsinc.org
-- **Contact:** support@calyxlabsinc.org
-
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
-
-Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 Key-Committing `CC-512` AEAD**, **RFC 9106 `QPKD-Argon2id + qSponge-512` (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact Binary TLV v5.1 (`\x89QPE\x05\x01`)**.
-
-| Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
-| :--- | :--- | :--- | :--- | :--- |
-| **Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)** | `QLX-4096` + `QVS-256` | Structured Module-LWE (`k=16`, 4,096-dim) + Hybrid X448 | **All Devices** | Default flagship security for mobile & desktop |
-| **Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)** | `QLX-768` + `QVS-65` | Structured Module-LWE (`k=3`, 768-dim) + Hybrid X448 | **All Devices** | Lowest-latency mobile messaging & constrained links |
-| **Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)** | `QLX-1024` + `QVS-87` | Structured Module-LWE (`k=4`, 1,024-dim) + Hybrid X448 | **All Devices** | Balanced NIST-Level-5-class lattice security |
-| **Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)** | `QLX-2048` + `QVS-128` | Structured Module-LWE (`k=8`, 2,048-dim) + Hybrid X448 | **All Devices** | Elevated 2,048-dimensional lattice margin |
-| **Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)** | `CIF-SQI-512` + `QHS-512` | 2D Supersingular Abelian Isogeny + Stateless Hash-Based Hypertree | **All Devices** | Beyond-LWE compact isogeny key exchange & hash signatures |
-| **Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)** | `CRT-RSD512` + `QMQ-512` | Rank-Metric Syndrome Decoding + Multivariate Quadratic (`MQ`) | **All Devices** | Beyond-LWE rank-metric code & multivariate diversity |
-| **Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)** | `QLX-16384` + `QVS-1024` | 4-Manifold Coupled Module-LWE (`k=64`, 16,384-dim) + `16×14` QVS | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Maximum structured-lattice dimension (~69 KB secret vectors) |
-| **Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)** | `CGM-8192` + `QHS-512` | Classic McEliece-class Binary Goppa Code (`n=8192`) + Hash Hypertree | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Beyond-LWE conservative code-based encryption (large public matrix) |
-| **Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)** | `CULC-2048` + `CGM-8192` | Unstructured Plain-LWE (`n×n` ring-free) + Binary Goppa Code | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Zero algebraic ring-structure defense against ring/ideal-lattice attacks |
-| **Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)** | `CSP-Omega` + `QHS-512` | 5-Family Combiner (Plain-LWE + Goppa + 2D Isogeny + MQ + Hash + X448) | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Ultimate multi-assumption citadel; secure if any 1 of 5 families holds |
