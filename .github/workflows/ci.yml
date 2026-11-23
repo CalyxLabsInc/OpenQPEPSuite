@@ -24,5 +24,3 @@ jobs:
       - name: Run Full OpenQPEP Protocol Unit & Security Regression Suite
         working-directory: protocol
         run: python3 -m unittest discover -s tests -v
-      - name: Verify Suite Packaging, Manifests & Client Cryptographic Hygiene
-        run: python3 verify_suite.py

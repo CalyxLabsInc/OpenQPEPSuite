@@ -8,14 +8,13 @@ Only the **Official Public Stable Release line (`v1.0.0`–`v1.1.0`, currently O
 - All retired legacy pre-release formats (`-rc`, `-pc`, `-beta`, Wire v1–v4, `kdf_version < 4`) are strictly rejected with `QPEPLegacyProtocolError`.
 
 ## Self-Verification & Audit Tools
-Run the built-in deterministic KAT verifier, full protocol security regression suite, and unified ecosystem verifier directly from the repository root:
+Run the built-in deterministic KAT verifier and full protocol security regression suite directly from the repository root:
 ```bash
 cd protocol
 make -C calyx_qpep/native/csrc clean all
 python3 -m calyx_qpep.cli verify-vectors
+OPENQPEP_DISABLE_NATIVE=1 python3 -m calyx_qpep.cli verify-vectors
 python3 -m unittest discover -s tests -v
-cd ..
-python3 verify_suite.py
 ```
 
 ## Responsible Disclosure

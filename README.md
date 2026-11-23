@@ -38,7 +38,6 @@ OpenQPEP is Calyx Labs Inc.'s sovereign, post-quantum cryptographic standard eng
 cd protocol
 make -C calyx_qpep/native/csrc clean all
 python3 -m calyx_qpep.cli verify-vectors
+OPENQPEP_DISABLE_NATIVE=1 python3 -m calyx_qpep.cli verify-vectors
 python3 -m unittest discover -s tests -v
-cd ..
-python3 verify_suite.py
 ```
