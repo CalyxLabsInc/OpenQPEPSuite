@@ -54,7 +54,7 @@ class TestOpenQPEPOfficialRelease100Graduation(unittest.TestCase):
 
     def test_01_official_wire_v5_and_hard_legacy_prerelease_rejection(self):
         self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
-        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.1")
         self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.1")
 
         # Full Wire Format v5 (\x89QPE\x05\x00)
@@ -105,7 +105,7 @@ class TestOpenQPEPOfficialRelease100Graduation(unittest.TestCase):
         hw_prf = os.urandom(32)
         k1_a, k2_a, km_a, params_a = derive_qpkrf_keys_v4(self.PASS, salt, qlx_tier="QLX-768")
         self.assertEqual(params_a["kdf_version"], 4)
-        self.assertEqual(params_a["personalization"], "OpenQPEP/1.0.0")
+        self.assertEqual(params_a["personalization"], "OpenQPEP/1.0.1")
         self.assertFalse(params_a["fido2_prf_bound"])
 
         k1_hw, k2_hw, km_hw, params_hw = derive_qpkrf_keys_v4(self.PASS, salt, qlx_tier="QLX-768", fido2_prf_secret=hw_prf)

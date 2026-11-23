@@ -22,7 +22,7 @@ class TestOpenQPEPProtocol(unittest.TestCase):
 
     def test_universal_version_0_1_6(self):
         self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
-        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.1")
 
     def test_hardcoded_passphrase_policy(self):
         with self.assertRaises(QPEPPassphrasePolicyError):
@@ -39,7 +39,7 @@ class TestOpenQPEPProtocol(unittest.TestCase):
         pub_str = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
         self.assertIn("Key-Hash:", pub_str)
         self.assertIn("OpenQPEP by Calyx Labs Inc.", pub_str)
-        self.assertIn("Official Release 1.0.0", pub_str)
+        self.assertIn("Official Release 1.0.1", pub_str)
         imported_pub = OpenQPEPProtocol.import_qpkrf(pub_str)
         self.assertFalse(imported_pub.has_private_key)
         self.assertEqual(imported_pub.key_hash, kr.key_hash)
