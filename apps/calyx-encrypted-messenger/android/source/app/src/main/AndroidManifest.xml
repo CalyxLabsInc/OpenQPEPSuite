@@ -2,8 +2,8 @@
 <!-- OpenQPEP v1.0.0 (Official Release 1.0.0) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.calyxlabs.qpem"
-    android:versionCode="27"
-    android:versionName="1.0.1">
+    android:versionCode="28"
+    android:versionName="1.0.2">
 
     <uses-sdk
         android:minSdkVersion="29"

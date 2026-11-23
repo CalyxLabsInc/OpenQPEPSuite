@@ -36,7 +36,7 @@ class TestOpenQPEPv023Argon2idKDF(unittest.TestCase):
         priv = kr.encrypted_private_bundle
         self.assertEqual(priv["kdf_version"], 4)
         self.assertEqual(priv["kdf_params"]["algorithm"], "QPKD-Argon2id+qSponge-512")
-        self.assertEqual(priv["kdf_params"]["personalization"], "OpenQPEP/1.0.1")
+        self.assertEqual(priv["kdf_params"]["personalization"], "OpenQPEP/1.0.2")
         self.assertEqual(priv["kdf_params"]["m_kib"], 65536)
         self.assertEqual(len(_b64d(priv["kdf_salt_b64"])), 32)
 
