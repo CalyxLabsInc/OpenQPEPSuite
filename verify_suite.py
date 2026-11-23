@@ -12,6 +12,9 @@ import zipfile
 from pathlib import Path
 
 SUITE_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(SUITE_ROOT / "tools"))
+from calyx_apk_signer import verify_apk
+
 EXPECTED_VER = "1.1.0"
 
 
@@ -51,10 +54,15 @@ def main() -> int:
         check(f'version = "{EXPECTED_VER}"' in d_cargo, f"{app_dir} desktop/Cargo.toml version mismatch")
         check(d_tauri.get("version") == EXPECTED_VER, f"{app_dir} desktop/tauri.conf.json version mismatch")
 
-        # Verify APK integrity + v1 signing files + clean HTML asset
+        # Verify APK integrity: zipalign (-p 4), AXML manifest, JAR v1, APK Sig Scheme v2 + v3 + Verity Padding, and clean HTML asset
         apk_path = base / "android" / apk_fn
         check(apk_path.is_file(), f"Missing APK: {apk_path}")
         if apk_path.is_file():
+            try:
+                apk_meta = verify_apk(apk_path, expected_vc=int(vc), expected_vn=EXPECTED_VER)
+                check(apk_meta["sig_block_bytes"] % 4096 == 0, f"{apk_fn} APK Sig Block not 4096-aligned")
+            except Exception as exc:
+                check(False, f"{apk_fn} failed full APK v1/v2/v3/zipalign/AXML verification: {exc}")
             with zipfile.ZipFile(apk_path, "r") as zf:
                 names = set(zf.namelist())
                 for req_entry in ("META-INF/MANIFEST.MF", "META-INF/CERT.SF", "META-INF/CERT.RSA", apk_html_entry):
