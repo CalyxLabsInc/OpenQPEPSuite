@@ -1,4 +1,4 @@
-/* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) */
+/* OpenQPEP Official Release 1.1.0 (OpenQPEP/1.1.0) */
 package com.calyxlabs.qpem;
 
 import android.app.Activity;
@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,13 @@ public class MainActivity extends Activity implements Runnable {
     private String lastUrl = "";
     private String pendingTarget = "";
     private String pendingData = "";
+
+    private final class CalyxHardwareBridge {
+        @JavascriptInterface
+        public double getDeviceRamGiB() {
+            return MainActivity.this.getDeviceRamGiB();
+        }
+    }
 
     private void hideSystemBars() {
         Window w = getWindow();
@@ -57,6 +65,7 @@ public class MainActivity extends Activity implements Runnable {
         ws.setMediaPlaybackRequiresUserGesture(false);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
         wv.setWebChromeClient(new CalyxChromeClient());
+        wv.addJavascriptInterface(new CalyxHardwareBridge(), "CalyxHardwareBridge");
         wv.setSystemUiVisibility(0x1706);
         setContentView(wv);
         hideSystemBars();
@@ -164,7 +173,7 @@ public class MainActivity extends Activity implements Runnable {
         } catch (Exception ignored) {}
     }
 
-    /* OpenQPEP v1.0.0-rc: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
+    /* OpenQPEP Official Release 1.1.0: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
     private double getDeviceRamGiB() {
         android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(android.content.Context.ACTIVITY_SERVICE);
         if (am == null) return 0.0;

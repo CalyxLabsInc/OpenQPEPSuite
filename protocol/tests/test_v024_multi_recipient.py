@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Release Candidate 1.0.0 Anonymous Mixed-Tier Multi-Recipient Encryption
+Unit tests for OpenQPEP Official Release 1.1.0 Anonymous Mixed-Tier Multi-Recipient Encryption
 & Traffic-Analysis Padding (calyx_qpep/wire/).
 """
 import unittest

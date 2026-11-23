@@ -1,7 +1,7 @@
-# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.0.0`)
+# 01 — OpenQPEP Mathematical & Cryptographic Specification (`v1.1.0`)
 
-**Protocol:** `OpenQPEP/1.0.0` (`Official Release 1.0.0`)  
-**API Stability:** `v1.0.0-stable`  
+**Protocol:** `OpenQPEP/1.1.0` (`Official Release 1.1.0`)  
+**API Stability:** `v1.1.0-stable`  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
@@ -43,7 +43,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 3. Mandatory `kdf_version: 4` (`QPKD-Argon2id + qSponge-512`) & CMT-4 Key-Committing `CC-512`
 
 - **Passphrase Policy Witness (64 Bytes):** Hardcoded non-bypassable policy (`>= 12` chars, `>= 2` digits, `>= 4` specials, `>= 2` uppercase, `>= 4` lowercase) hashed into a 64-byte witness absorbed directly into key derivation.
-- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 4`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3..4`, `p = 4`, 256-bit salt, `"personalization": "OpenQPEP/1.0.0"`, optional `FIDO2-PRF` hardware passkey secret). All legacy `kdf_version < 4` key rings (`1`, `2`, `3`) are **strictly rejected** in Official Release `1.0.0` with `QPEPLegacyProtocolError`.
+- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 4`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3..4`, `p = 4`, 256-bit salt, `"personalization": "OpenQPEP/1.1.0"`, optional `FIDO2-PRF` hardware passkey secret). All legacy `kdf_version < 4` key rings (`1`, `2`, `3`) are **strictly rejected** in Official Release `1.0.0` with `QPEPLegacyProtocolError`.
 - **CMT-4 Key-Committing Calyx-Cascade-512 (`CC-512`):** Derives independent subkeys `(k_aes, k_chacha, k_commit)` via `qSponge-XOF`, cascades `AES-256-GCM` inside `ChaCha20-Poly1305`, and appends a 32-byte `qSponge-512` CMT-4 key+nonce+AAD+ciphertext commitment tag (`CC512_OVERHEAD_BYTES = 64`) verified in constant time *before* AEAD decryption — completely defeating Invisible Salamanders / multi-key AEAD collision attacks.
 
 ---
@@ -51,7 +51,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 4. Native C99 / SIMD Acceleration (`libopenqpep`)
 Hot inner loops (`NTT_3329`, `NTT_8380417`, `CBD_1`/`CBD_2`, Plain-LWE, branchless `openqpep_gf256_mul`, compiler-barrier `openqpep_explicit_bzero`, constant-time `openqpep_ct_eq`, `openqpep_ct_cmov`, and `openqpep_verify_wire_v5_magic`) compile cleanly with `-O3 -std=c99 -Wall -Wextra -Werror` and `-mavx2` (x86_64) or `-march=armv8-a` (ARM64) via `make -C calyx_qpep/native/csrc`, delivering 100% bit-exact KAT parity against the pure-Python reference engine.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.0`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact TLV v5.1 (`\x89QPE\x05\x01`)**.
 

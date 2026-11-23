@@ -1,8 +1,8 @@
 """
-OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc) Verification Tests:
+OpenQPEP Official Release 1.1.0 (v1.1.0) Verification Tests:
   - Native C99 / AVX2 Acceleration (libopenqpep) bit-for-bit parity with pure-Python reference
-  - Strict Wire Format v3 (\x89QPE\x03\x00) emission & STRICT REJECTION of all legacy -beta wire magics
-  - Calyx Sovereign-Pentad (CSP-Omega) Wire Format v3 + Plain-LWE native acceleration
+  - Strict Wire Format v5 (\x89QPE\x05\x00) emission & STRICT REJECTION of all legacy -beta wire magics
+  - Calyx Sovereign-Pentad (CSP-Omega) Wire Format v5 + Plain-LWE native acceleration
   - Dual-engine KAT verification under both Native C99 and Pure-Python engines
 """
 import base64
@@ -82,8 +82,8 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
         self.assertLess(t_nat, t_py)
 
     def test_03_wire_format_v3_and_strict_beta_magic_rejection(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.2")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.2")
+        self.assertEqual(UNIVERSAL_VERSION, "1.1.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.1.0")
         payload = b"OpenQPEP Official Release 1.0.0 strict wire v5 payload"
         label = "CALYX QPEP MESSAGE"
 

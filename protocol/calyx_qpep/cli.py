@@ -614,7 +614,7 @@ def cmd_inspect_packet(raw_or_path: str = "") -> None:
 def cmd_verify_vectors(vectors_dir: str = "") -> int:
     from .vectors.kat_verifier import verify_all_kats
     target = Path(vectors_dir) if vectors_dir else (Path(__file__).resolve().parent.parent / "vectors")
-    bprint(f"Verifying OpenQPEP Official Release 1.0.0 Deterministic KAT Vectors in: {target}")
+    bprint(f"Verifying OpenQPEP {UNIVERSAL_VERSION_LABEL} Deterministic KAT Vectors in: {target}")
     ok, lines = verify_all_kats(target)
     for line in lines:
         print(f"{GREEN if line.startswith('[PASS]') else RED}{line}{RESET}")

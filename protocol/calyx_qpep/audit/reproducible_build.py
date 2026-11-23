@@ -1,10 +1,12 @@
-"""OpenQPEP Official Release 1.0.0 — Deterministic Reproducible Build Manifest & SPDX-2.3 SBOM Generator."""
+"""OpenQPEP Official Release 1.1.0 — Deterministic Reproducible Build Manifest & SPDX-2.3 SBOM Generator."""
 import hashlib
 from pathlib import Path
 from typing import Any, Dict
 
+from ..constants import UNIVERSAL_VERSION
 
-def generate_spdx_sbom(repo_root: Path, version: str = "1.0.0") -> Dict[str, Any]:
+
+def generate_spdx_sbom(repo_root: Path, version: str = UNIVERSAL_VERSION) -> Dict[str, Any]:
     files = []
     for p in sorted(repo_root.rglob("*.py")):
         if "__pycache__" in p.parts:

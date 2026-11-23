@@ -1,6 +1,6 @@
 # OpenQPEP Official Wire Format v5 (`\x89QPE\x05\x00`), Compact TLV v5.1 (`\x89QPE\x05\x01`) & Stable API Specification
 
-**Version:** Official Release 1.0.0 (`OpenQPEP/1.0.0`, `v1.0.0`)  
+**Version:** Official Release 1.1.0 (`OpenQPEP/1.1.0`, `v1.0.0`)  
 **Publisher:** Calyx Labs Inc. (Cleveland, Ohio)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
@@ -8,7 +8,7 @@
 
 ## 1. Unified Binary Wire Format v5 (`\x89QPE\x05\x00`) & Compact TLV v5.1 (`\x89QPE\x05\x01`)
 
-All OpenQPEP Official Release 1.0.0 packets—single-recipient, multi-recipient broadcast, streaming AEAD, Post-Quantum Double Ratchet, $m$-of-$n$ threshold multisig, Calyx Sovereign-Pentad (`CSP-Omega`), key rings (`.qpkrf`), revocations (`.qrev`), Shamir shards (`.qshare`), attached signatures, and `QPEP-MLS` group packets—share one frozen Official binary envelope:
+All OpenQPEP Official Release 1.1.0 packets—single-recipient, multi-recipient broadcast, streaming AEAD, Post-Quantum Double Ratchet, $m$-of-$n$ threshold multisig, Calyx Sovereign-Pentad (`CSP-Omega`), key rings (`.qpkrf`), revocations (`.qrev`), Shamir shards (`.qshare`), attached signatures, and `QPEP-MLS` group packets—share one frozen Official binary envelope:
 
 | Byte Offset | Length | Field | Description |
 |---|---|---|---|
@@ -23,14 +23,14 @@ All OpenQPEP Official Release 1.0.0 packets—single-recipient, multi-recipient 
 `StreamingEncryptor` / `StreamingDecryptor` emit and require `STREAM_MAGIC_V5 = b"\x89QPS\x05\x00"` with full-ciphertext `qSponge-512` Merkle leaves and CMT-4 Key-Committing `CC-512`.
 
 ### Zero Legacy Pre-Release Compatibility (`QPEPLegacyProtocolError`)
-Official Release 1.0.0 is the clean-slate public starting point of the OpenQPEP ecosystem. **All** pre-release Release Candidate (`-rc`: `\x89QPE\x04\x00`, `\x89QPE\x04\x01`, `kdf_version: 3`), Production Candidate (`-pc`: `\x89QPE\x03\x00`, `\x89QPE\x03\x01`, `kdf_version: 2`), Beta (`-beta`: `\x89QPE\x01\x01`, `\x01\x09`, `\x02\x00`, `kdf_version: 1`), and legacy stream (`\x89QPS\x02\x07`) artifacts are strictly rejected with `QPEPLegacyProtocolError`.
+Official Release 1.1.0 is the clean-slate public starting point of the OpenQPEP ecosystem. **All** pre-release Release Candidate (`-rc`: `\x89QPE\x04\x00`, `\x89QPE\x04\x01`, `kdf_version: 3`), Production Candidate (`-pc`: `\x89QPE\x03\x00`, `\x89QPE\x03\x01`, `kdf_version: 2`), Beta (`-beta`: `\x89QPE\x01\x01`, `\x01\x09`, `\x02\x00`, `kdf_version: 1`), and legacy stream (`\x89QPS\x02\x07`) artifacts are strictly rejected with `QPEPLegacyProtocolError`.
 
 ---
 
 ## 2. CMT-4 Key-Committing `CC-512` AEAD & Mandatory `kdf_version: 4`
 
 - **CMT-4 Key-Committing `CC-512`:** Derives `(k_aes, k_chacha, k_commit)` via `qSponge-XOF("CALYX-CC512-CMT4-KEYS-v1.0.0|" || key64 || nonce24, 96)`, nests `AES-256-GCM` inside `ChaCha20-Poly1305`, and appends a 256-bit `qSponge-512` key+nonce+AAD+ciphertext commitment tag verified in constant time prior to decryption (64 B total overhead).
-- **Mandatory `kdf_version: 4`:** RFC 9106 `QPKD-Argon2id + qSponge-512` bound to `"personalization": "OpenQPEP/1.0.0"`, mandatory 64-byte structural passphrase witness, and optional `FIDO2-PRF` hardware passkey secret.
+- **Mandatory `kdf_version: 4`:** RFC 9106 `QPKD-Argon2id + qSponge-512` bound to `"personalization": "OpenQPEP/1.1.0"`, mandatory 64-byte structural passphrase witness, and optional `FIDO2-PRF` hardware passkey secret.
 
 ---
 
@@ -40,7 +40,7 @@ Compiles cleanly with `-O3 -std=c99 -fPIC -Wall -Wextra -Werror` (AVX2 on `x86_6
 
 ---
 
-## 4. All 10 Official OpenQPEP Post-Quantum Suites (`v1.0.0`)
+## 4. All 10 Official OpenQPEP Post-Quantum Suites (`v1.1.0`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 Key-Committing CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact TLV v5.1 (`\x89QPE\x05\x01`)**.
 

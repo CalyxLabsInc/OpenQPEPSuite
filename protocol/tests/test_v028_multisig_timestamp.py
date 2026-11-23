@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP Release Candidate 1.0.0:
+Unit tests for OpenQPEP Official Release 1.1.0:
   - m-of-n Threshold Multi-Party Cosigning Bundles (2-of-3 QVS + Ed448)
   - Duplicate cosigner & unauthorized signer rejection
   - Cryptographic Timestamp Proofs (Hash-Chain Anchor + TSA QVS + Ed448 Attestation)

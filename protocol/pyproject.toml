@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "calyx-openqpep"
-version = "1.0.2"
-description = "OpenQPEP Official Release 1.0.0 (v1.0.0) by Calyx Labs Inc. — Worldwide Post-Quantum Encryption Protocol (10 Suites, CMT-4 CC-512, Wire Format v5/v5.1, QPKD-Argon2id kdf_version: 4, C99/AVX2/NEON)"
+version = "1.1.0"
+description = "OpenQPEP Official Release 1.1.0 (v1.1.0) by Calyx Labs Inc. — Worldwide Post-Quantum Encryption Protocol (10 Suites, CMT-4 CC-512, Wire Format v5/v5.1, QPKD-Argon2id kdf_version: 4, C99/AVX2/NEON)"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "CPOSLS-1.0"}

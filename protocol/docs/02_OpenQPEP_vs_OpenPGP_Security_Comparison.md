@@ -1,18 +1,18 @@
-# 02 — OpenQPEP (`v1.0.0`) vs. Legacy OpenPGP Security Comparison
+# 02 — OpenQPEP (`v1.1.0`) vs. Legacy OpenPGP Security Comparison
 
-**Protocol:** `OpenQPEP/1.0.0` (`Official Release 1.0.0`)  
-**API Stability:** `v1.0.0-stable`  
+**Protocol:** `OpenQPEP/1.1.0` (`Official Release 1.1.0`)  
+**API Stability:** `v1.1.0-stable`  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
 ---
 
 ## Side-by-Side Cryptographic & Architectural Comparison
 
-| Security Property | Legacy OpenPGP (RFC 4880 / 9580) | OpenQPEP Official Release 1.0.0 (`v1.0.0`) |
+| Security Property | Legacy OpenPGP (RFC 4880 / 9580) | OpenQPEP Official Release 1.1.0 (`v1.1.0`) |
 | :--- | :--- | :--- |
 | **Quantum Resistance** | Vulnerable classical RSA / ECC (broken by Shor's algorithm) | **10 Post-Quantum Suites:** 5 Module-LWE + `HGC-448` tiers (`QLX-768`..`QLX-16384`) + **5 genuine Beyond-LWE suites** (`CSP-Omega` 5-Family Citadel, `CGM-8192` Goppa Patterson, `CRT-RSD512` LRPC Rank-Metric + UOV, `CIF-SQI-512` CSIDH-512 Isogeny, `CULC-2048` Unstructured-Citadel) |
 | **Symmetric Cipher & Key Commitment** | Single-cipher CFB / OCB / EAX (vulnerable to Invisible Salamanders) | **CMT-4 Key-Committing `CC-512` (`AES-256-GCM` + `ChaCha20-Poly1305` + 32-byte `qSponge-512` CMT-4 commitment tag)** with independent 256-bit keys and nonces |
-| **Secret Key KDF** | Weak S2K / iterated SHA-1/SHA-256; allows empty passphrases | **Mandatory `kdf_version: 4` (`RFC 9106 QPKD-Argon2id + qSponge-512`)** bound to `"OpenQPEP/1.0.0"` with hardcoded 12+ char passphrase witness & optional `FIDO2-PRF` hardware passkey secret; all legacy `kdf_version < 4` rejected |
+| **Secret Key KDF** | Weak S2K / iterated SHA-1/SHA-256; allows empty passphrases | **Mandatory `kdf_version: 4` (`RFC 9106 QPKD-Argon2id + qSponge-512`)** bound to `"OpenQPEP/1.1.0"` with hardcoded 12+ char passphrase witness & optional `FIDO2-PRF` hardware passkey secret; all legacy `kdf_version < 4` rejected |
 | **Metadata Privacy** | Cleartext Key IDs in packet headers & ASCII armor | **Zero cleartext identity headers** (including zero `Encrypting-Key-Hash:` in encrypted packets), `qSponge-XOF` wire whitening, blinded 64-bit multi-recipient slot tags, power-of-2 dummy slots, and `4/16/64 KiB` bucket padding |
 | **Wire Format & Parser Hardening** | Decades of legacy packet versions, decompression bombs, malleable CRC | **Strict Official Wire Format v5 (`\x89QPE\x05\x00`), Compact TLV v5.1 (`\x89QPE\x05\x01`), & Stream v5 (`\x89QPS\x05\x00`)** — zero `-rc`, `-pc`, or `-beta` backwards compatibility (`QPEPLegacyProtocolError`), mandatory constant-time armor CRC, duplicate-TLV rejection, and 128 MiB decompression-bomb ceiling |
 | **Forward Secrecy & PCS** | None (static key compromise decrypts all historical traffic) | Native **`QPEP-Ratchet`** (atomic AEAD-before-commit state + rotating-ephemeral hybrid `QLX` + `HGC-448` PCS), **`QPEP-MLS`** $O(\log N)$ group TreeKEM with per-`(epoch, sender)` replay defense, and **`QPEP-AKE`** bidirectional PQ-Noise-XX |
@@ -20,7 +20,7 @@
 | **Large-File & Privacy Tools** | Whole-file streaming without random-access seek | $O(1)$-RAM 64 KiB streaming AEAD + **full-ciphertext Merkle-tree seekable byte-range decryption**, genuine Module-SIS **`QVS-Ring`**, fixed-size **`Sphinx-PQ`** onion packets, masked-header **`DeniableVault`**, **`TimeLockCapsule`**, **`LT-QR`** air-gap fountain |
 | **Auditability & Verification** | Fragmented test suites | **10 bit-exact `v1.0.0` KAT suites** (Native C99 & Pure-Python parity), adversarial unit & cryptanalytic verification suite (fuzzer, attack simulator, DudeCT Welch's $t$-test, 5-language interop matrix), Tamarin/ProVerif/Cryptol formal models, and SPDX SBOM |
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.0`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact TLV v5.1 (`\x89QPE\x05\x01`)**.
 

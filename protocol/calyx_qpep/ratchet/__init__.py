@@ -1,4 +1,4 @@
-"""OpenQPEP Post-Quantum Double Ratchet (QPEP-Ratchet) for Forward Secrecy & PCS (Release Candidate 1.0.0)."""
+"""OpenQPEP Post-Quantum Double Ratchet (QPEP-Ratchet) for Forward Secrecy & PCS (Official Release 1.1.0)."""
 from .kdf_chain import kdf_root_step, kdf_chain_step
 from .pq_rekey import generate_ephemeral_ratchet_keypair, perform_pq_rekey_encaps, perform_pq_rekey_decaps
 from .session_state import (

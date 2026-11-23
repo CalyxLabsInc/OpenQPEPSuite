@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP v1.0.0-rc (Production Candidate Version 1.2.0):
+Unit tests for OpenQPEP Official Release 1.1.0:
   1. End-to-End Beyond-LWE native .qpkrf v3 keygen, public/private armor round-trip,
      and encrypt/decrypt/sign/verify parity for all 5 Beyond-LWE suites.
   2. All 10 canonical deterministic KAT vectors verified bit-for-bit.

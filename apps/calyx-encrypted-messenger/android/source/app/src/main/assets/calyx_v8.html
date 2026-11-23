@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://calyxlabsinc.org; connect-src 'self' https://qpepkeys.calyxlabsinc.org https://messenger.calyxlabsinc.org https://mail.calyxlabsinc.org https://calyxlabsinc.org; object-src 'none'; base-uri 'none'; frame-ancestors 'none';" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Calyx Encrypted Messenger — OpenQPEP v1.0.2 (messenger.calyxlabsinc.org)</title>
+  <title>Calyx Encrypted Messenger — OpenQPEP v1.1.0 (messenger.calyxlabsinc.org)</title>
   <style>
     :root {
       --bg-obsidian: #03060C;
@@ -429,7 +429,7 @@
   <input id="sc-code-image-input" type="file" accept="image/*" class="hidden" onchange="handleScCodeImageSelected(event)" />
 
   <!-- ===================================================================== -->
-  <!-- SCREEN A: WELCOME & CREATE QPEP KEY ACCOUNT WIZARD (OPENQPEP v1.0.2)   -->
+  <!-- SCREEN A: WELCOME & CREATE QPEP KEY ACCOUNT WIZARD (OPENQPEP v1.1.0)   -->
   <!-- ===================================================================== -->
   <div id="screen-auth" class="hidden" style="flex:1; overflow-y:auto; padding:24px 18px 40px;">
     <div style="max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:18px;">
@@ -452,9 +452,9 @@
 
       <!-- STEP 0: Landing Welcome Card ("Create Account" or "Import Existing .qpkrf Key") -->
       <div id="auth-step-landing" class="neon-card" style="padding:20px; display:flex; flex-direction:column; gap:14px;">
-        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF IDENTITY GATEWAY • OPENQPEP v1.0.2</div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">QUANTUM-PROOF IDENTITY GATEWAY • OPENQPEP v1.1.0</div>
         <div style="font-size:13px; color:#CBD5E1; line-height:1.5;">
-          Every message and file in Calyx Encrypted Messenger is encrypted end-to-end using <strong>OpenQPEP v1.0.2 (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512)</strong> and addressed by your unique <strong>64-character Key Hash</strong>.
+          Every message and file in Calyx Encrypted Messenger is encrypted end-to-end using <strong>OpenQPEP v1.1.0 (Signature QLX-4096 + QVS-256 | HGC-448 | CC-512 | qSponge-512)</strong> and addressed by your unique <strong>64-character Key Hash</strong>.
         </div>
 
         <button type="button" class="neon-btn" onclick="openCreateAccountStep(1)" style="width:100%;">
@@ -510,7 +510,7 @@
           <span class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">STEP 2 OF 3 • QLX + QVS KEY PARAMETERS</span>
           <button type="button" onclick="openCreateAccountStep(1)" style="background:none; border:none; color:#93C5FD; font-size:12px; cursor:pointer;">← Back</button>
         </div>
-        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Select OpenQPEP v1.0.2 Key Suite</h2>
+        <h2 style="margin:0; font-size:18px; color:#F0F9FF;">Select OpenQPEP v1.1.0 Key Suite</h2>
         <p style="margin:0; font-size:12px; color:#93C5FD;">
           Choose the Quantum Lattice Exchange (QLX) + Quantum Vector Signature (QVS) security tier for your `.qpkrf` key ring:
         </p>
@@ -547,7 +547,7 @@
         </div>
 
         <div style="background:#040A17; border:1px solid #1E3A5F; border-radius:12px; padding:12px; font-size:12px; color:#93C5FD;">
-          <div class="mono" style="color:#00E5FF; font-weight:700; margin-bottom:4px;">INCLUDED OPENQPEP v1.0.2 PRIMITIVES:</div>
+          <div class="mono" style="color:#00E5FF; font-weight:700; margin-bottom:4px;">INCLUDED OPENQPEP v1.1.0 PRIMITIVES:</div>
           <div>• Apex / Hyper KEM: Calyx Hyper-Tesseract QLX-16384 (4-Manifold, k=64) &amp; Signature QLX-4096 (k=16) + HGC-448</div>
           <div>• Cipher: Cascaded Dual-Stream Calyx-Cascade-512 (CC-512)</div>
           <div>• Signatures: QVS-1024 (16×14) / QVS-256 / 128 / 87 / 65 (Verify-Before-Emit Guard) + Ed448</div>
@@ -619,7 +619,7 @@
         <div style="min-width:0;">
           <div style="font-size:18px; font-weight:800; color:#00E5FF; letter-spacing:0.2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Calyx Messenger</div>
           <div id="server-status-line" class="mono" style="font-size:10px; color:#10B981; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            <span class="live-dot"></span>OPENQPEP v1.0.2 • REAL-TIME SYNC ACTIVE
+            <span class="live-dot"></span>OPENQPEP v1.1.0 • REAL-TIME SYNC ACTIVE
           </div>
         </div>
       </div>
@@ -774,7 +774,7 @@
     </div>
 
     <!-- ================================================================= -->
-    <!-- TAB 3: SETTINGS & OPENQPEP v1.0.2 ARCHITECTURE                    -->
+    <!-- TAB 3: SETTINGS & OPENQPEP v1.1.0 ARCHITECTURE                    -->
     <!-- ================================================================= -->
     <div id="tab-settings" class="hidden" style="flex:1; overflow-y:auto; padding:16px 16px 104px; display:flex; flex-direction:column; gap:16px;">
 
@@ -809,20 +809,20 @@
           Official Network Endpoint: <strong style="color:#00E5FF;">messenger.calyxlabsinc.org</strong>
         </div>
         <div id="settings-sync-log" class="mono" style="font-size:11px; color:#10B981; background:#040914; padding:10px 12px; border-radius:10px; border:1px solid #162642;">
-          Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.0.2).
+          Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.0).
         </div>
       </div>
 
       <!-- Technical Architecture & Specification -->
       <div class="neon-card" style="padding:18px; display:flex; flex-direction:column; gap:12px; border-color:#00E5FF;">
         <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">TECHNICAL ARCHITECTURE &amp; SPECIFICATION</div>
-        <h3 style="margin:0; font-size:17px; color:#F0F9FF;">About Calyx Encrypted Messenger &amp; OpenQPEP v1.0.2</h3>
+        <h3 style="margin:0; font-size:17px; color:#F0F9FF;">About Calyx Encrypted Messenger &amp; OpenQPEP v1.1.0</h3>
         <p style="margin:0; font-size:12px; color:#CBD5E1; line-height:1.55;">
-          <strong>Calyx Encrypted Messenger</strong> (<code>com.calyxlabs.qpem</code>) is powered 100% by <strong>OpenQPEP (Calyx QPEP Official Release 1.0.2)</strong> (<a href="https://github.com/CalyxLabsInc/OpenQPEP/" target="_blank" style="color:#00E5FF;">github.com/CalyxLabsInc/OpenQPEP</a>), engineered by <strong>Tristen Martinez</strong> at <strong>Calyx Labs Inc.</strong>
+          <strong>Calyx Encrypted Messenger</strong> (<code>com.calyxlabs.qpem</code>) is powered 100% by <strong>OpenQPEP (Calyx QPEP Official Release 1.1.0)</strong> (<a href="https://github.com/CalyxLabsInc/OpenQPEP/" target="_blank" style="color:#00E5FF;">github.com/CalyxLabsInc/OpenQPEP</a>), engineered by <strong>Tristen Martinez</strong> at <strong>Calyx Labs Inc.</strong>
         </p>
         <div style="font-size:12px; color:#93C5FD; line-height:1.55; display:flex; flex-direction:column; gap:8px;">
           <div>
-            <strong>ALL 10 OPENQPEP v1.0.2 POST-QUANTUM SUITES:</strong><br/>
+            <strong>ALL 10 OPENQPEP v1.1.0 POST-QUANTUM SUITES:</strong><br/>
 • <strong>Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices):</strong> 4,096-dim structured lattice (k=16) + QVS-256 + Hybrid X448.<br/>
 • <strong>Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices):</strong> 768-dim mobile-first structured lattice (k=3).<br/>
 • <strong>Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices):</strong> 1,024-dim balanced lattice (k=4).<br/>
@@ -858,7 +858,7 @@
           TM
         </div>
         <h2 id="profile-display-name" style="margin:0; font-size:22px; font-weight:800; color:#F0F9FF;">--</h2>
-        <div style="font-size:13px; color:#00E5FF; font-weight:600; margin-top:3px;">online • OpenQPEP v1.0.2 Verified Key</div>
+        <div style="font-size:13px; color:#00E5FF; font-weight:600; margin-top:3px;">online • OpenQPEP v1.1.0 Verified Key</div>
       </div>
 
       <!-- 3-Button Row -->
@@ -902,7 +902,7 @@
 
         <div style="border-bottom:1px solid #162642; padding-bottom:12px;">
           <div id="profile-suite" class="mono" style="font-size:13px; font-weight:700; color:#00E5FF;">--</div>
-          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Active OpenQPEP v1.0.2 Cryptographic Suite</div>
+          <div style="font-size:12px; color:#93C5FD; margin-top:2px;">Active OpenQPEP v1.1.0 Cryptographic Suite</div>
         </div>
 
         <div>
@@ -1040,7 +1040,7 @@
 
     <!-- Encryption Banner -->
     <div style="background:#061124; border-bottom:1px solid #142847; padding:6px 14px; display:flex; align-items:center; justify-content:space-between; font-size:11px; color:#93C5FD;">
-      <span class="mono" id="thread-crypto-banner">E2EE: OpenQPEP v1.0.2 • QLX-4096 + QVS-256 + CC-512</span>
+      <span class="mono" id="thread-crypto-banner">E2EE: OpenQPEP v1.1.0 • QLX-4096 + QVS-256 + CC-512</span>
       <button type="button" onclick="sendMyPublicKeyCardInChat()" class="mono" style="background:none; border:none; color:#00E5FF; font-size:11px; font-weight:700; cursor:pointer;">+ Share My .qpkrf</button>
     </div>
 
@@ -1050,7 +1050,7 @@
     <!-- Message Composer Bar -->
     <div style="background:#050B16; border-top:1px solid rgba(0,229,255,0.28); padding:10px 12px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
       <button type="button" onclick="sendMyPublicKeyCardInChat()" title="Share Public .qpkrf Key Ring" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">🔑</button>
-      <button type="button" onclick="triggerChatFileAttachment()" title="Encrypt &amp; Send File (OpenQPEP v1.0.2 Multi-Extension Safe)" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">📎</button>
+      <button type="button" onclick="triggerChatFileAttachment()" title="Encrypt &amp; Send File (OpenQPEP v1.1.0 Multi-Extension Safe)" style="width:38px; height:38px; border-radius:50%; background:#0A1528; border:1px solid rgba(0,229,255,0.35); color:#00E5FF; font-size:15px; cursor:pointer; flex-shrink:0;">📎</button>
       <input
         id="thread-msg-input"
         type="text"
@@ -1258,12 +1258,12 @@
 
 <script>
 /* =========================================================================
-   OPENQPEP (CALYX QPEP Official Release 1.0.2) CLIENT ENGINE + MESSENGER STATE
+   OPENQPEP (CALYX QPEP Official Release 1.1.0) CLIENT ENGINE + MESSENGER STATE
    Package : com.calyxlabs.qpem ("Calyx Encrypted Messenger")
    Web App : https://messenger.calyxlabsinc.org
    ========================================================================= */
 
-const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Official Release 1.0.2)";
+const PROTOCOL_VERSION = "OpenQPEP by Calyx Labs Inc. (Official Release 1.1.0)";
 const PRODUCTION_SERVER_URL = "https://messenger.calyxlabsinc.org";
 const STORAGE_KEY = "CALYX_QPEM_PRODUCTION_V4";
 const PREV_STORAGE_KEYS = ["CALYX_QPEM_PRODUCTION_V3", "CALYX_QPEM_PRODUCTION_V2", "CALYX_QPEM_STATE_V1"];
@@ -1288,7 +1288,7 @@ const LEGACY_PLACEHOLDER_HASHES = new Set([
 ]);
 const LEGACY_PLACEHOLDER_NAMES = new Set(["CalyxLabsInc", "OpenQPEPBot", "ObsidianRelay"]);
 
-/* OpenQPEP Official Release 1.0.2 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
+/* OpenQPEP Official Release 1.1.0 Key Suites (including Flagship Signature QLX-4096 + QVS-256) */
 const QLX_TIERS = {
     "CIF-SQI-512": {
     id: "CIF-SQI-512",
@@ -1455,7 +1455,7 @@ function formatMessageSuiteBadge(rawTier) {
   return (QLX_TIERS[norm] && QLX_TIERS[norm].suite_badge) || "QLX-4096 + QVS-256 + CC-512";
 }
 
-/* OpenQPEP Official Release 1.0.2 Multi-Extension Binary File Preservation Table */
+/* OpenQPEP Official Release 1.1.0 Multi-Extension Binary File Preservation Table */
 const SUPPORTED_FILE_EXTENSIONS = {
   ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json",
   ".csv": "text/csv", ".xml": "application/xml", ".yaml": "application/x-yaml",
@@ -1750,7 +1750,7 @@ function _oqB64ToU8(b64) {
   return out;
 }
 function _oqWrapKeyV4Hex(saltHex, passphrase) {
-  return _oqBytesToHex(_oqSha3_512(`QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.0.0|kdf_version=4|${passphrase}`));
+  return _oqBytesToHex(_oqSha3_512(`QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.1.0|kdf_version=4|${passphrase}`));
 }
 function _oqWrapMacV4Hex(wrapKeyHex, wrappedSecretHex, keyHash) {
   return _oqBytesToHex(_oqSha3_512(`QPKD-WRAP-MAC-v4|${wrapKeyHex}|${wrappedSecretHex}|${String(keyHash || "").toUpperCase()}`));
@@ -1828,17 +1828,17 @@ function _oqUnpackArmorV5(armoredText) {
   }
   const verHdr = String(headers["version"] || "").toLowerCase();
   if (verHdr.includes("-rc") || verHdr.includes("-pc") || verHdr.includes("-beta") || verHdr.includes("production candidate") || verHdr.includes("release candidate")) {
-    throw new Error("QPEPLegacyProtocolError: Legacy pre-release (-rc, -pc, -beta) armor is strictly rejected in Official Release 1.0.2.");
+    throw new Error("QPEPLegacyProtocolError: Legacy pre-release (-rc, -pc, -beta) armor is strictly rejected in Official Release 1.1.0.");
   }
   if (!bodyLines.length) throw new Error("Empty OpenQPEP armor payload.");
   const rawFrame = _oqB64ToU8(bodyLines.join(""));
   if (rawFrame.length >= 6 && rawFrame[0] === 0x89 && rawFrame[1] === 0x51 && rawFrame[2] === 0x50 && rawFrame[3] === 0x45) {
     if (rawFrame[4] === 0x04 || rawFrame[4] === 0x03 || rawFrame[4] === 0x02 || rawFrame[4] === 0x01) {
-      throw new Error(`QPEPLegacyProtocolError: Legacy Wire Format v${rawFrame[4]} is strictly rejected in Official Release 1.0.2 (Wire Format v5 \\x89QPE\\x05\\x00 required).`);
+      throw new Error(`QPEPLegacyProtocolError: Legacy Wire Format v${rawFrame[4]} is strictly rejected in Official Release 1.1.0 (Wire Format v5 \\x89QPE\\x05\\x00 required).`);
     }
   }
   if (rawFrame.length < 8 + 16 + 32 || !_oqCtEq(rawFrame.subarray(0, 6), _OQ_WIRE_MAGIC_V5)) {
-    throw new Error("QPEPLegacyProtocolError: Invalid or legacy frame — Official Release 1.0.2 Wire Format v5 (\\x89QPE\\x05\\x00) required.");
+    throw new Error("QPEPLegacyProtocolError: Invalid or legacy frame — Official Release 1.1.0 Wire Format v5 (\\x89QPE\\x05\\x00) required.");
   }
   const expectedCrc = _oqComputeArmorCrcV5(rawFrame);
   if (!crcLine || !_oqCtEq(enc.encode(crcLine), enc.encode(expectedCrc))) {
@@ -1972,7 +1972,7 @@ function formatQpkrfArmor(keyring, includePrivate = false) {
   const crc = _oqComputeArmorCrcV5(wireFrame);
   return [
     `-----BEGIN ${label}-----`,
-    "Protocol: OpenQPEP (Official Release 1.0.2)",
+    "Protocol: OpenQPEP (Official Release 1.1.0)",
     `Version: ${PROTOCOL_VERSION}`,
     "Wire-Format: v5 (\\x89QPE\\x05\\x00)",
     `Key-Hash: ${keyring.key_hash}`,
@@ -1992,7 +1992,7 @@ function parseQpkrfArmor(armoredText) {
     throw new Error("Invalid 64-character QPEP Key Hash inside .qpkrf key ring.");
   }
   if (Number(obj.kdf_version || 4) < 4) {
-    throw new Error("QPEPLegacyProtocolError: Legacy kdf_version < 4 .qpkrf key ring rejected in Official Release 1.0.2.");
+    throw new Error("QPEPLegacyProtocolError: Legacy kdf_version < 4 .qpkrf key ring rejected in Official Release 1.1.0.");
   }
   if (obj.identity) {
     if (!obj.key_name) obj.key_name = obj.identity.name || ("Key_" + obj.key_hash.slice(0, 6));
@@ -2072,7 +2072,7 @@ function encryptQpepChatMessage(plaintext, senderKeyring, recipientContact, file
     `${senderTierInfo.qvs_id}-CONJUNCTIVE-SIG`
   );
   if (qvsSigHex !== verifySigHex) {
-    throw new Error("OpenQPEP v1.0.2 QVS Verify-Before-Emit Fault-Injection Guard triggered.");
+    throw new Error("OpenQPEP v1.1.0 QVS Verify-Before-Emit Fault-Injection Guard triggered.");
   }
 
   /* 3. Encrypt ALL metadata (sender_key_name, timestamp_utc, suite, plaintext, file_envelope) inside CC-512 inner envelope */
@@ -2528,7 +2528,7 @@ async function completeCreateAccount() {
   await syncAccountWithServer(keyring);
 
   enterMainMessenger();
-  showToast(`Created QPEP v1.0.2 Account @${keyring.key_name} (${keyring.suite_badge})`);
+  showToast(`Created QPEP v1.1.0 Account @${keyring.key_name} (${keyring.suite_badge})`);
 }
 
 function loginExistingAccount(keyHash) {
@@ -2726,7 +2726,7 @@ function renderContactsTab() {
         <div class="mono" style="font-size:11px; color:#93C5FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">
           Key Hash: ${c.key_hash}
         </div>
-        <div style="font-size:11px; color:#5B82B0; margin-top:2px;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP v1.0.2 Verified")}</div>
+        <div style="font-size:11px; color:#5B82B0; margin-top:2px;">${escapeHtml(formatMessageSuiteBadge(c.qlx_tier))} • ${escapeHtml(c.last_seen || "OpenQPEP v1.1.0 Verified")}</div>
       </div>
     </div>
   `).join("");
@@ -3130,7 +3130,7 @@ function renderActiveThreadMessages() {
   if (msgs.length === 0) {
     box.innerHTML = `
       <div class="neon-card" style="padding:18px; text-align:center; margin:auto; max-width:340px;">
-        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">END-TO-END OPENQPEP v1.0.2 ENCRYPTION</div>
+        <div class="mono" style="font-size:11px; color:#00E5FF; font-weight:700;">END-TO-END OPENQPEP v1.1.0 ENCRYPTION</div>
         <div style="font-size:13px; color:#93C5FD; margin-top:6px; line-height:1.45;">
           Messages in this chat are encapsulated to Key Hash <code class="mono" style="color:#00E5FF;">#${peerHash.slice(0, 12)}...</code> using <strong>${escapeHtml(formatMessageSuiteBadge(acc.qlx_tier))}</strong>.
         </div>
@@ -3147,7 +3147,7 @@ function renderActiveThreadMessages() {
     /* Check marks ONLY under sent messages (m.outgoing === true); NEVER under received messages */
     const checkMarkHtml = m.outgoing ? renderOutgoingCheckMarkHtml(m) : "";
 
-    /* Optional binary-safe encrypted file attachment card (OpenQPEP v1.0.2) */
+    /* Optional binary-safe encrypted file attachment card (OpenQPEP v1.1.0) */
     const fileCardHtml = m.file_attachment ? `
       <div style="margin-top:8px; padding:8px 10px; background:rgba(3,6,12,0.55); border:1px solid rgba(0,229,255,0.38); border-radius:10px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
         <div style="min-width:0;">
@@ -3276,7 +3276,7 @@ function handleChatAttachmentSelected(event) {
       dataB64: uint8ToBase64(uint8)
     };
     sendEncryptedChatMessage(attachmentObj);
-    showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext}) via OpenQPEP v1.0.2!`);
+    showToast(`Encrypted & sent ${attachmentObj.filename} (${info.ext}) via OpenQPEP v1.1.0!`);
   };
   reader.readAsArrayBuffer(file);
   event.target.value = "";
@@ -3323,14 +3323,14 @@ function inspectMessagePacket(idx) {
     ? (Number(m.read_status) === 1 ? "READ (Neon Pink ✓✓)" : (Number(m.delivered) === 1 ? "DELIVERED (Blue ✓✓)" : "SENT (Blue ✓)"))
     : "RECEIVED & VERIFIED";
   openGenericModal(
-    "OPENQPEP v1.0.2 PACKET & QVS SIGNATURE INSPECTOR",
+    "OPENQPEP v1.1.0 PACKET & QVS SIGNATURE INSPECTOR",
     `Encrypted .qpep Wire Packet`,
     `
       <div class="mono" style="font-size:11px; color:#93C5FD; margin-bottom:8px; line-height:1.5;">
         Sender Key Hash: <span style="color:#00E5FF;">${m.sender_hash}</span><br/>
         Recipient Key Hash: <span style="color:#00E5FF;">${m.recipient_hash}</span><br/>
         Sender Key Suite: <span style="color:#00E5FF;">${escapeHtml(m.suite_badge || formatMessageSuiteBadge(m.sender_qlx_tier))}</span><br/>
-        Wire Format: <span style="color:#10B981;">Official Release 1.0.2 Wire Format v5 (\\x89QPE\\x05\\x00) (Metadata Encrypted)</span><br/>
+        Wire Format: <span style="color:#10B981;">Official Release 1.1.0 Wire Format v5 (\\x89QPE\\x05\\x00) (Metadata Encrypted)</span><br/>
         Delivery State: <span style="color:${Number(m.read_status) === 1 ? '#FF2A9D' : '#00E5FF'};">${statusStr}</span>
       </div>
       <textarea readonly class="neon-input mono selectable" style="height:145px; font-size:10px; margin-bottom:10px;">${escapeHtml(m.packet)}</textarea>
@@ -4230,7 +4230,7 @@ async function realTimeSyncTick() {
               qlx_tier: peerTierFromServer,
               suite_name: QLX_TIERS[peerTierFromServer].name,
               suite_badge: formatMessageSuiteBadge(peerTierFromServer),
-              last_seen: "online • OpenQPEP v1.0.2 Verified",
+              last_seen: "online • OpenQPEP v1.1.0 Verified",
               public_qpkrf: peerQpkrfFromServer
             };
             appState.contacts.unshift(existingContact);
@@ -4330,14 +4330,14 @@ async function realTimeSyncTick() {
     }
 
     if (statusEl) {
-      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.0.2 • REAL-TIME SYNC ACTIVE`;
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.0 • REAL-TIME SYNC ACTIVE`;
     }
     if (logEl) {
-      logEl.textContent = "Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.0.2).";
+      logEl.textContent = "Real-Time Stream Active • Connected to messenger.calyxlabsinc.org (OpenQPEP v1.1.0).";
     }
   } catch (e) {
     if (statusEl) {
-      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.0.2 • messenger.calyxlabsinc.org`;
+      statusEl.innerHTML = `<span class="live-dot"></span>OPENQPEP v1.1.0 • messenger.calyxlabsinc.org`;
     }
   } finally {
     isSyncingNow = false;
@@ -4378,204 +4378,9 @@ document.addEventListener("visibilitychange", () => {
 </script>
 <script>
 
-/* === OpenQPEP v1.0.2 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
+/* === OpenQPEP v1.1.0 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv120HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
-  function detectDeviceRamInfo() {
-    try {
-      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
-        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
-        if (gb > 0) return { gb: gb, capped: false };
-      }
-      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
-        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
-        return { gb: navigator.deviceMemory, capped: true };
-      }
-    } catch (e) {}
-    return { gb: 0, capped: true };
-  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
@@ -4629,13 +4434,13 @@ document.addEventListener("visibilitychange", () => {
 })();
 
 
-/* === OpenQPEP v1.0.2 (v1.3.0-pc - v2.0.0-pc Graduation): QPEP-KT Shield, QPEP-Ratchet PCS, QPEP-MLS 256-Member Groups & Sphinx-PQ Sealed Sender === */
-(function initOpenQPEPRC100MessengerStack() {
-  window.OPENQPEP_RELEASE = "v1.0.2";
-  window.OPENQPEP_WIRE_FORMAT = "v4 (\\x89QPE\\x04\\x00 / \\x89QPE\\x04\\x01)";
-  window.OPENQPEP_KDF_VERSION = 3;
+/* === OpenQPEP Official Release 1.1.0: QPEP-KT Shield, QPEP-Ratchet PCS, QPEP-MLS 256-Member Groups & Sphinx-PQ Sealed Sender === */
+(function initOpenQPEPOfficial110MessengerStack() {
+  window.OPENQPEP_RELEASE = "v1.1.0";
+  window.OPENQPEP_WIRE_FORMAT = "v5 (\\x89QPE\\x05\\x00 / \\x89QPE\\x05\\x01)";
+  window.OPENQPEP_KDF_VERSION = 4;
 
-  // v1.3.0-pc: Green KT-Verified Shield for Contacts
+  // Official Release 1.1.0: Green KT-Verified Shield for Contacts
   window.QPEPKTVerifier = {
     async verifyContactKey(keyHash) {
       try {
@@ -4648,7 +4453,7 @@ document.addEventListener("visibilitychange", () => {
     }
   };
 
-  // v1.4.0-pc: Post-Quantum Double Ratchet (QPEP-Ratchet) with automatic KEM PCS re-encapsulation every N messages or 24h
+  // Official Release 1.1.0: Post-Quantum Double Ratchet (QPEP-Ratchet) with automatic KEM PCS re-encapsulation every N messages or 24h
   const ratchetThreads = {};
   window.QPEPRatchetEngine = {
     stepThread(peerHash, rekeyIntervalMsgs = 10) {
@@ -4667,7 +4472,7 @@ document.addEventListener("visibilitychange", () => {
     }
   };
 
-  // v1.4.0-pc: Encrypted Group Rooms (QPEP-MLS TreeKEM up to 256 members)
+  // Official Release 1.1.0: Encrypted Group Rooms (QPEP-MLS TreeKEM up to 256 members)
   window.QPEPMLSGroupEngine = {
     MAX_MEMBERS: 256,
     async createGroupRoom(groupName, creatorKeyHash, memberKeyHashes, qlxTier = "QLX-4096") {
@@ -4701,7 +4506,7 @@ document.addEventListener("visibilitychange", () => {
     }
   };
 
-  // v1.4.0-pc: Disappearing Messages (TTL) & Sphinx-PQ Sealed Sender
+  // Official Release 1.1.0: Disappearing Messages (TTL) & Sphinx-PQ Sealed Sender
   window.SphinxPQSealedSender = {
     wrapMetadata(senderKeyHash, recipientKeyHash, encryptedPacket, ttlSeconds = 0) {
       return {
@@ -4710,7 +4515,7 @@ document.addEventListener("visibilitychange", () => {
         encrypted_packet: encryptedPacket,
         ttl_seconds: Number(ttlSeconds) || 0,
         sealed_sender: true,
-        sphinx_onion_header: btoa(JSON.stringify({ mode: "sphinx-pq-rc100", hop_count: 3, ttl: Number(ttlSeconds) || 0 }))
+        sphinx_onion_header: btoa(JSON.stringify({ mode: "sphinx-pq-v110", hop_count: 3, ttl: Number(ttlSeconds) || 0 }))
       };
     }
   };
@@ -4719,10 +4524,10 @@ document.addEventListener("visibilitychange", () => {
 </script>
 <script>
 
-/* === Calyx Encrypted Messenger Official Release 1.0.2 Features (Wire v5, CMT-4, Safety Number, Burn Now) === */
-(function initCalyxMessengerOfficialV100() {
-  window.OPENQPEP_OFFICIAL_VERSION = "1.0.2";
-  window.OPENQPEP_PROTOCOL_ID = "OpenQPEP/1.0.2";
+/* === Calyx Encrypted Messenger Official Release 1.1.0 Features (Wire v5, CMT-4, Safety Number, Burn Now) === */
+(function initCalyxMessengerOfficialV110() {
+  window.OPENQPEP_OFFICIAL_VERSION = "1.1.0";
+  window.OPENQPEP_PROTOCOL_ID = "OpenQPEP/1.1.0";
   window.OPENQPEP_WIRE_MAGIC_V5 = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x05, 0x00]);
   window.OPENQPEP_WIRE_MAGIC_V5_1 = new Uint8Array([0x89, 0x51, 0x50, 0x45, 0x05, 0x01]);
   window.OPENQPEP_STREAM_MAGIC_V5 = new Uint8Array([0x89, 0x51, 0x50, 0x53, 0x05, 0x00]);
@@ -4731,7 +4536,7 @@ document.addEventListener("visibilitychange", () => {
   window.assertNoLegacyProtocol = function (payloadStr) {
     const s = String(payloadStr || "");
     if (/OpenQPEP\/(?:RC-|PC-|Beta-)|1\.0\.0-rc|1\.[012]\.\d+-pc|-beta|"kdf_version"\s*:\s*[123]\b/i.test(s)) {
-      throw new Error("QPEPLegacyProtocolError: Pre-release (-rc, -pc, -beta) artifacts are strictly rejected in Official Release 1.0.2.");
+      throw new Error("QPEPLegacyProtocolError: Pre-release (-rc, -pc, -beta) artifacts are strictly rejected in Official Release 1.1.0.");
     }
   };
 
@@ -4739,30 +4544,31 @@ document.addEventListener("visibilitychange", () => {
     const pair = [[String(handleA || "").toLowerCase(), String(hashA || "").toUpperCase()],
                   [String(handleB || "").toLowerCase(), String(hashB || "").toUpperCase()]].sort((a, b) => (a[0] + a[1]).localeCompare(b[0] + b[1]));
     const input = "OpenQPEP-SafetyNumber-v1.0.0|" + pair[0][0] + "|" + pair[0][1] + "|" + pair[1][0] + "|" + pair[1][1];
-    let acc = 0x811c9dc5;
-    let digits = "";
+    const digestHex = (typeof qSponge512Hex === "function")
+      ? qSponge512Hex(input, "CALYX-SAFETY-NUMBER-v5")
+      : (typeof sha3_512 === "function" ? sha3_512(input) : "");
+    const groups = [];
     for (let block = 0; block < 12; block++) {
-      let h = (acc ^ (block * 0x9e3779b9)) >>> 0;
-      for (let i = 0; i < input.length; i++) {
-        h = Math.imul(h ^ input.charCodeAt(i), 0x01000193) >>> 0;
-      }
-      digits += String(h % 100000).padStart(5, "0") + (block < 11 ? " " : "");
+      const hexChunk = digestHex.slice(block * 8, block * 8 + 8);
+      const val = parseInt(hexChunk, 16) >>> 0;
+      groups.push(String(val % 100000).padStart(5, "0"));
     }
-    return digits;
+    return groups.join(" ");
   };
 
-  window.burnMessageNowV100 = async function (messageId) {
+  window.burnMessageNowV100 = async function (messageId, requesterKeyHash) {
+    const reqKh = requesterKeyHash || (window.activeKey && window.activeKey.key_hash) || "";
     const res = await fetch("/api/v1/messages/burn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message_id: String(messageId || "") })
+      body: JSON.stringify({ message_id: String(messageId || ""), requester_key_hash: String(reqKh || "") })
     });
     return res.json();
   };
 
   window.inspectMessageCryptoV100 = function (suiteName, chainIndex) {
     return {
-      protocol: "OpenQPEP/1.0.2",
+      protocol: "OpenQPEP/1.1.0",
       wire_format: "Official Wire Format v5 (\\x89QPE\\x05\\x00)",
       aead: "CMT-4 Key-Committing CC-512 (CC512-CMT4-COMMIT-v1.0.0)",
       kdf_version: 4,

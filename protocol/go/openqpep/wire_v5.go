@@ -1,5 +1,5 @@
-// Package openqpep provides the Go Official Release 1.0.0 (v1.0.0) conformance port (CPOSLS-1.0).
-// Hard Clean Break: Zero Backwards Compatibility with any legacy -rc, -pc, or -beta frames.
+// Package openqpep provides the Go Official Release 1.1.0 (v1.1.0) conformance port (CPOSLS-1.0).
+// Wire Format v5/v5.1 compatible with OpenQPEP Official Releases 1.0.x+; zero compatibility with legacy -rc, -pc, or -beta frames.
 package openqpep
 
 import (
@@ -9,7 +9,7 @@ import (
 
 const (
 	QlxQ            = 3329
-	ProtocolVersion = "OpenQPEP/1.0.0"
+	ProtocolVersion = "OpenQPEP/1.1.0"
 	MandatoryKDFV4  = 4
 )
 

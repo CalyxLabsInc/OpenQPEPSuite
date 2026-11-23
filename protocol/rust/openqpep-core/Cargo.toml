@@ -1,10 +1,10 @@
-# OpenQPEP Official Release 1.0.0 (v1.0.0)
+# OpenQPEP Official Release 1.1.0 (v1.1.0)
 [package]
 name = "openqpep-core"
-version = "1.0.2"
+version = "1.1.0"
 edition = "2021"
 license = "LicenseRef-CPOSLS-1.0"
-description = "Memory-safe Rust core for OpenQPEP Official Release 1.0.0 (NTT_3329, Wire Format v5/v5.1, zeroize, PyO3/UniFFI/WASM)"
+description = "Memory-safe Rust core for OpenQPEP Official Release 1.1.0 (NTT_3329, Wire Format v5/v5.1, zeroize, PyO3/UniFFI/WASM)"
 repository = "https://github.com/CalyxLabsInc/OpenQPEP"
 
 [lib]

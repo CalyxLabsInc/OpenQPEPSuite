@@ -1,4 +1,4 @@
-"""OpenQPEP Deterministic Known Answer Tests (KATs) & Cross-Language Vectors (Release Candidate 1.0.0)."""
+"""OpenQPEP Deterministic Known Answer Tests (KATs) & Cross-Language Vectors (Official Release 1.1.0)."""
 from .drbg import QSpongeDRBG, deterministic_urandom
 from .kat_generator import SUITE_KAT_SPECS, generate_suite_kat, generate_all_kats
 from .kat_verifier import verify_kat_file, verify_all_kats

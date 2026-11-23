@@ -1,18 +1,25 @@
-# OpenQPEP Suite Official Release 1.0.2 (v1.0.2)
+# OpenQPEP Suite Official Release 1.1.0 (v1.1.0)
 name: OpenQPEP Suite CI
 on: [push, pull_request]
 jobs:
-  test:
+  protocol-and-suite:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: protocol
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: make -C calyx_qpep/native/csrc
-      - run: pip install -e .
-      - run: python3 -m calyx_qpep.cli verify-vectors
-      - run: python3 -m unittest discover -s tests -v
+      - name: Build Native C99/AVX2 libopenqpep (-Wall -Wextra -Werror)
+        working-directory: protocol
+        run: make -C calyx_qpep/native/csrc clean all
+      - name: Install OpenQPEP Protocol Package
+        working-directory: protocol
+        run: pip install -e .
+      - name: Verify All 10 Deterministic Golden KAT Vectors
+        working-directory: protocol
+        run: python3 -m calyx_qpep.cli verify-vectors
+      - name: Run Full OpenQPEP Protocol Unit & Security Regression Suite
+        working-directory: protocol
+        run: python3 -m unittest discover -s tests -v
+      - name: Verify Suite Packaging, Manifests & Client Cryptographic Hygiene
+        run: python3 verify_suite.py

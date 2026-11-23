@@ -1,8 +1,8 @@
 {
   "schema": "openqpep-kat-v3",
   "family": "structured_lattice",
-  "protocol_version": "OpenQPEP/1.0.2",
-  "universal_version": "1.0.2",
+  "protocol_version": "OpenQPEP/1.1.0",
+  "universal_version": "1.1.0",
   "suite_id": "QLX-16384",
   "suite_name": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold \u2014 HIGH-TIER HARDWARE ONLY)",
   "qlx_tier": "QLX-16384",
@@ -39,7 +39,7 @@
     "key_hash": "AF1E24FF99A56C8B9AFDF1E6FEA16EF18B3FB1C30078611D0D292D3D80FFD4CD",
     "wire_magic_hex": "895150450500",
     "wire_frame_bytes": 60999,
-    "wire_frame_sha3_512": "38a49c5d1954b9240f66bd37c1f6f3402363f67298a3b1e4f5f6f89cfa82e4ed05092c32447704f212b5ac3a5a863640ddbb7775f81a4abcbf2e3397b5707554",
+    "wire_frame_sha3_512": "67f19ced5a50d8691b54421a57f9c699e4f66f55ad6f7ced0b8ba4dd587c2907204a003b3566ca8988490f45920043e54f62f5d746d40924f0d0cb874b75ae6c",
     "wire_frame_prefix_hex": "89515045050001003e7f8f93ec32d9f1123e7ac462e0c4a6d6d9f5f4b04aa9ba8bfa371dd8e9b0bb396440be51e99cf045f45b956ac2511f6da85ca28e4ea99e",
     "cleartext_identity_headers_present": false
   }

@@ -1,7 +1,8 @@
 """
-OpenQPEP by Calyx Labs Inc. — Official Release 1.0.0 (v1.0.0, Modular Cryptographic Kernel)
-Clean official API facade over calyx_qpep.primitives.*, calyx_qpep.lattice.*, and protocol.
+OpenQPEP by Calyx Labs Inc. — Official Release 1.1.0 (v1.1.0, Modular Cryptographic Kernel)
+Clean official API facade over calyx_qpep.primitives.*, calyx_qpep.lattice.*, compat_server, and protocol.
 """
+from .compat_server import SlidingWindowRateLimiter
 from .constants import (
     APP_NAME,
     CALYX_HYPER_TESSERACT_HARDWARE_WARNING,
@@ -80,5 +81,6 @@ __all__ = [
     "is_native_available",
     "native_backend_info",
     "set_native_enabled",
+    "SlidingWindowRateLimiter",
     "__version__",
 ]

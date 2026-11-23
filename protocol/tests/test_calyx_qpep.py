@@ -21,8 +21,8 @@ class TestOpenQPEPProtocol(unittest.TestCase):
         self.valid_pass_2 = "Tristen$%^&99Az"
 
     def test_universal_version_0_1_6(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.2")
-        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.2")
+        self.assertEqual(UNIVERSAL_VERSION, "1.1.0")
+        self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.1.0")
 
     def test_hardcoded_passphrase_policy(self):
         with self.assertRaises(QPEPPassphrasePolicyError):
@@ -39,7 +39,7 @@ class TestOpenQPEPProtocol(unittest.TestCase):
         pub_str = OpenQPEPProtocol.export_qpkrf(kr, include_private=False)
         self.assertIn("Key-Hash:", pub_str)
         self.assertIn("OpenQPEP by Calyx Labs Inc.", pub_str)
-        self.assertIn("Official Release 1.0.2", pub_str)
+        self.assertIn("Official Release 1.1.0", pub_str)
         imported_pub = OpenQPEPProtocol.import_qpkrf(pub_str)
         self.assertFalse(imported_pub.has_private_key)
         self.assertEqual(imported_pub.key_hash, kr.key_hash)
@@ -255,7 +255,7 @@ class TestOpenQPEPProtocol(unittest.TestCase):
 
 
     def test_11_v020_zero_cleartext_armor_headers(self):
-        """Verifies PC 1.2.0 omits cleartext Recipient-Key-Hash and Signer-Key-Hash armor headers."""
+        """Verifies Official Release 1.1.0 omits cleartext Recipient-Key-Hash and Signer-Key-Hash armor headers."""
         sender = OpenQPEPProtocol.generate_keypair("Alice", "alice@calyxlabsinc.org", self.valid_pass_1)
         recip = OpenQPEPProtocol.generate_keypair("Bob", "bob@calyxlabsinc.org", self.valid_pass_2)
         recip_pub = OpenQPEPProtocol.import_qpkrf(OpenQPEPProtocol.export_qpkrf(recip, include_private=False))

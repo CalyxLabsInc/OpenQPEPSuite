@@ -1,6 +1,6 @@
-# 04 — CLI Reference, Ecosystem Integration & Verifiable Key Transparency Guide (`v1.0.0`)
+# 04 — CLI Reference, Ecosystem Integration & Verifiable Key Transparency Guide (`v1.1.0`)
 
-**Protocol:** `OpenQPEP/1.0.0` (`Official Release 1.0.0`)  
+**Protocol:** `OpenQPEP/1.1.0` (`Official Release 1.1.0`)  
 **Core Protocol Repository:** https://github.com/CalyxLabsInc/OpenQPEP  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 
@@ -12,7 +12,7 @@
 # Compile C99/AVX2/NEON libopenqpep accelerator (-Wall -Wextra -Werror)
 make -C calyx_qpep/native/csrc
 
-# Install editable Official Release 1.0.0 package
+# Install editable Official Release 1.1.0 package
 pip install -e .
 
 # Verify all 10 v1.0.0 golden KAT suites bit-for-bit (Native C99 & Pure Python)
@@ -48,9 +48,9 @@ openqpep audit
 
 ---
 
-## 2. OpenQPEP Official Ecosystem Applications (`v1.0.0`)
+## 2. OpenQPEP Official Ecosystem Applications (`v1.1.0`)
 
-The OpenQPEP Core Protocol (`OpenQPEP/1.0.0`) powers the Calyx Labs Inc. post-quantum application ecosystem (developed in dedicated application repositories targeting Official Release `1.0.0`):
+The OpenQPEP Core Protocol (`OpenQPEP/1.1.0`) powers the Calyx Labs Inc. post-quantum application ecosystem (developed in dedicated application repositories targeting Official Release `1.0.0`):
 1. **Calyx QPEP Client (`com.calyxlabs.qpepclient`):** On-device key management across all 10 suites, `.qpkrf` armor, binary file encryption/signing, `QPEP-KT` Merkle inclusion & consistency proof verification, `LT-QR` air-gap transfer, `FIDO2-PRF` hardware passkey binding, `DeniableVault`, and $t$-of-$n$ `ThresholdKEM`.
 2. **Calyx Encrypted Messenger / QPEM (`com.calyxlabs.qpem`):** End-to-end post-quantum messaging (`https://messenger.calyxlabsinc.org`) using `QPEP-Ratchet` (atomic state + rotating-ephemeral PCS), `QPEP-MLS` TreeKEM group rooms (up to 256 members with per-`(epoch, sender)` replay protection), `QPEP-AKE` bidirectional PQ handshake, and fixed-size `Sphinx-PQ` sealed sender.
 3. **Calyx Encrypted Email (`com.calyxlabs.mail`):** Post-quantum E2EE email for `@calyxmail.org` (`https://mail.calyxlabsinc.org`) with $O(1)$-RAM Stream v5 multi-recipient attachments, `BlindSearchVault` zero-knowledge search, rotatable subkeys, and `.qrev` revocation certificates.
@@ -63,7 +63,7 @@ The OpenQPEP Core Protocol (`OpenQPEP/1.0.0`) powers the Calyx Labs Inc. post-qu
 - **Verifiable Key Transparency (`QPEP-KT`):** `calyx_qpep/directory_kt/merkle_log.py` provides publicly verifiable **Ed448-signed Tree Heads (`verify_sth`)**, $O(\log N)$ `qSponge-512` Merkle inclusion proofs (`verify_inclusion_proof`), **RFC 9162 append-only Merkle consistency proofs (`consistency_proof` / `verify_consistency_proof`)**, and mandatory ownership signature verification so clients cryptographically detect split-view equivocation or unauthorized key replacement.
 - **Proprietary Backend Notice:** Calyx Labs Inc. backend servers (`website_server`, `directory_server`, `messenger_server`, `calyxmail_backend`) are proprietary infrastructure and are intentionally excluded from public GitHub repositories.
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.0`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CMT-4 CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Official Wire Format v5 (`\x89QPE\x05\x00`) / Compact TLV v5.1 (`\x89QPE\x05\x01`)**.
 

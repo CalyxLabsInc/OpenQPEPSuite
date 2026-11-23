@@ -1,6 +1,6 @@
-# OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc)
+# OpenQPEP Official Release 1.1.0 (v1.1.0)
 """
-OpenQPEP Release Candidate 1.0.0 (v1.0.0-rc) Verification Tests:
+OpenQPEP Official Release 1.1.0 (v1.1.0) Verification Tests:
   - Calyx Isogeny-Forge (CIF-SQI-512 + QHS-512) encrypt/decrypt & sign/verify
   - Calyx Unstructured-Citadel (CULC-2048 + CGM-8192) encrypt/decrypt, sign/verify & >=12GB RAM guardrail
   - Canonical 10-Suite Registry naming format & per-tier hardware classification
@@ -17,8 +17,8 @@ from calyx_qpep.lattice.citadel_suite import CalyxUnstructuredCitadelSuite
 
 class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
     def test_01_version_and_canonical_10_tier_naming(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.2")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.2")
+        self.assertEqual(UNIVERSAL_VERSION, "1.1.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.1.0")
         self.assertEqual(len(ALL_TEN_SUITES), 10)
         pattern = re.compile(r"^Calyx [A-Za-z -]+: [A-Za-z0-9-]+ \+ [A-Za-z0-9-]+ \(.+\)$")
         for suite_id, meta in ALL_TEN_SUITES.items():

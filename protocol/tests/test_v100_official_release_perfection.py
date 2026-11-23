@@ -384,8 +384,8 @@ class TestOpenQPEPv100OfficialReleasePerfection(unittest.TestCase):
         self.assertFalse(native_ct_eq(b"OpenQPEP-1.0.0", b"OpenQPEP-1.0.1"))
 
     def test_08_zero_backwards_compatibility_all_legacy_prereleases_rejected(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.2")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.2")
+        self.assertEqual(UNIVERSAL_VERSION, "1.1.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.1.0")
         self.assertEqual(MANDATORY_KDF_VERSION, 4)
 
         # Reject ALL legacy -rc, -pc, and -beta wire magics

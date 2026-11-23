@@ -1,4 +1,4 @@
-/* OpenQPEP v1.0.0-rc (Release Candidate 1.0.0) */
+/* OpenQPEP Official Release 1.1.0 (OpenQPEP/1.1.0) */
 package com.calyxlabs.qpem;
 
 import android.webkit.PermissionRequest;

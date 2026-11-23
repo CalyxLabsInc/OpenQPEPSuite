@@ -1,10 +1,10 @@
-> **OpenQPEP `v1.2.0-pc` Production Mapping Note:** This research thesis documents the original design derivation for the Beyond-LWE suites. In production (`v1.2.0-pc`), all 10 suites are implemented and exposed under their canonical names (`Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512`, `Calyx Unstructured-Citadel: CULC-2048 + CGM-8192`, `Calyx Sovereign-Pentad: CSP-Omega + QHS-512`, `Calyx Goppa-Monolith: CGM-8192 + QHS-512`, `Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512`).
+> **OpenQPEP `v1.1.0` Production Mapping Note:** This research thesis documents the original design derivation for the Beyond-LWE suites. In production (`v1.1.0`), all 10 suites are implemented and exposed under their canonical names (`Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512`, `Calyx Unstructured-Citadel: CULC-2048 + CGM-8192`, `Calyx Sovereign-Pentad: CSP-Omega + QHS-512`, `Calyx Goppa-Monolith: CGM-8192 + QHS-512`, `Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512`).
 
 # OpenQPEP Generation II-B: Implementable Flagship Beyond-LWE Hypothetical Key Tiers (`NextGen_ImplementableHypothetical_KeyTiers_Thesis.md`)
 
 * **Document Type:** Cryptographic Research Thesis & Flagship Implementation Blueprint (`OpenQPEP Beyond-LWE / Flagship-Implementable Concept`)
 * **Author & Chief Cryptography Architect:** Tristen Martinez, Founder & Lead Architect at [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
-* **Current Suite Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) (`Production Candidate 1.2.0`, `CPOSLS-1.0`) — Current Apex Production Tier: **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**
+* **Current Suite Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) (`Official Release 1.1.0`, `CPOSLS-1.0`) — Current Apex Production Tier: **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**
 * **Target Reference Hardware:** High-RAM Flagship Smartphones (**Samsung Galaxy Z Fold 8** / 12–16 GB LPDDR5X RAM, ARMv9 multi-core SoC with NEON/SVE2, native NDK/C99 or WebAssembly SIMD) & High-Spec Desktop/Workstation PCs
 * **Live Ecosystem:** [https://calyxlabsinc.org/](https://calyxlabsinc.org/) | [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org) | [https://messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)
 
@@ -12,7 +12,7 @@
 
 ## 1. Executive Thesis: Moving Beyond Module-LWE on Real Flagship Silicon
 
-With **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**, [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/) pushed structured Module-LWE encryption to **16,384 coupled lattice dimensions** ($k = 64$ across four 4,096-dimensional Tesseract manifolds over $\mathcal{R}_{3329} = \mathbb{Z}_{3329}[X]/(X^{256}+1)$) and Lattice Fiat-Shamir with Aborts signatures to **7,680 dimensions** ($(16 \times 14)$ over $\mathcal{R}_{8380417}$), far exceeding the 1,024-dimension single-cipher ceiling of [IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) / [RFC 9580](https://datatracker.ietf.org/doc/rfc9580/) and [NIST FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) / [FIPS 204](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.204.pdf).
+With **`Calyx Hyper-Tesseract` (`QLX-16384 + QVS-1024`)**, [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) pushed structured Module-LWE encryption to **16,384 coupled lattice dimensions** ($k = 64$ across four 4,096-dimensional Tesseract manifolds over $\mathcal{R}_{3329} = \mathbb{Z}_{3329}[X]/(X^{256}+1)$) and Lattice Fiat-Shamir with Aborts signatures to **7,680 dimensions** ($(16 \times 14)$ over $\mathcal{R}_{8380417}$), far exceeding the 1,024-dimension single-cipher ceiling of [IETF RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) / [RFC 9580](https://datatracker.ietf.org/doc/rfc9580/) and [NIST FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) / [FIPS 204](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.204.pdf).
 
 Yet any cryptographic design that relies *exclusively* on structured polynomial lattices (`Module-LWE` / `Module-SIS`) shares a single mathematical assumption class. While `Calyx Hyper-Tesseract` defeats Shor's algorithm, [JVG Hybrid QNTT Factorization](https://www.preprints.org/manuscript/202510.1649/v1), [Grover-Enhanced BKZ Lattice Sieving](https://postquantum.com/quantum-research/quantum-sieving-breakthrough/), and theoretical [Dihedral Coset Problem (DCP)](https://eprint.iacr.org/2026/1591) reductions ([refuted in PQprobe / ePrint 2026/1693](https://pqprobe.com/blog/dcp-claim-refuted)), the July 2026 [Anthropic Claude Mythos Preview](https://www.anthropic.com/research/discovering-cryptographic-weaknesses) attack on `HAWK-256` proved that AI-assisted cryptanalysis can uncover subtle algebraic symmetries inside structured polynomial rings.
 
@@ -134,9 +134,9 @@ Even if an attacker finds an algebraic symmetry break against **every** structur
 
 ---
 
-## 4. OpenQPEP Protocol Integration Path (`v1.2.0-pc+` / Generation II-B)
+## 4. OpenQPEP Protocol Integration Path (`v1.1.0+` / Generation II-B)
 
-Because OpenQPEP `Production Candidate 1.2.0` now uses a modular cryptographic kernel (`calyx_qpep/primitives/`, `calyx_qpep/lattice/`, `calyx_qpep/wire/`, `calyx_qpep/kdf/`, `calyx_qpep/keyring/`), integrating any of Tiers 6–10 requires **zero breaking changes** to `.qpkrf` key rings, `Key Hash` addressing, `QPEP-Ratchet`, or `Calyx-Cascade-512`:
+Because OpenQPEP `Official Release 1.1.0` now uses a modular cryptographic kernel (`calyx_qpep/primitives/`, `calyx_qpep/lattice/`, `calyx_qpep/wire/`, `calyx_qpep/kdf/`, `calyx_qpep/keyring/`), integrating any of Tiers 6–10 requires **zero breaking changes** to `.qpkrf` key rings, `Key Hash` addressing, `QPEP-Ratchet`, or `Calyx-Cascade-512`:
 1. **Modular Plugin Directories:** Add `calyx_qpep/codes/` (`goppa_8192.py`, `rank_rsd512.py`), `calyx_qpep/isogeny/` (`sqi_2d_512.py`), `calyx_qpep/multivariate/` (`qmq_512.py`), and `calyx_qpep/hashsig/` (`qhs_512_hypertree.py`).
 2. **Native ARMv9 / x86_64 Acceleration (`libopenqpep`):** Compile hot inner loops (`PMULL`, `VMLAL`, 64-bit Montgomery limbs, and vectorized Keccak-f[1600]) via C99/Rust NDK (`Android JNI`) and WebAssembly SIMD (`iOS/Web`).
 3. **Mandatory Hardware Guardrails:** Enforce the same automatic RAM/hardware capability check already built into `calyx_qpep/kdf/hardware_tuner.py` and the Calyx QPEP Client High-Tier Hardware Notice, gating Tiers 6–10 to devices with `>= 12 GB RAM` and native SIMD support while keeping **`Calyx Signature` (`QLX-4096 + QVS-256`)** as the fast universal default for all devices.

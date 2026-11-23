@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- OpenQPEP v1.0.0 (Official Release 1.0.0) -->
+<!-- OpenQPEP v1.1.0 (Official Release 1.1.0) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.calyxlabs.qpepclient"
-    android:versionCode="228"
-    android:versionName="1.0.2">
+    android:versionCode="229"
+    android:versionName="1.1.0">
 
     <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="37" />
     <uses-permission android:name="android.permission.INTERNET" />

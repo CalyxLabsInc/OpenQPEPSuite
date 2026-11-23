@@ -1,5 +1,5 @@
 """
-Unit tests for OpenQPEP v1.0.0-rc (Production Candidate Version 1.2.0):
+Unit tests for OpenQPEP Official Release 1.1.0:
   - AUD-06: Automatic Beyond-LWE dispatch in OpenQPEPProtocol.encrypt_text/decrypt_text/sign_text/verify_text_signature
   - AUD-08: Zero broad `except Exception:` blocks in cli.py, hardware_tuner.py, zeroize.py, deniable_vault.py
   - WASM SIMD128 binary integrity & Web Worker presence

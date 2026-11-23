@@ -1,5 +1,5 @@
 """
-OpenQPEP Cryptographic & Protocol Constants (Official Release 1.0.0 / v1.0.0).
+OpenQPEP Cryptographic & Protocol Constants (Official Release 1.1.0 / v1.1.0).
 Project: OpenQPEP by Calyx Labs Inc. (Creator: Tristen Martinez)
 License: Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0)
 """
@@ -7,11 +7,11 @@ from typing import Dict
 
 PROJECT_NAME = "OpenQPEP by Calyx Labs Inc."
 APP_NAME = "OpenQPEP"
-UNIVERSAL_VERSION = "1.0.2"
-UNIVERSAL_VERSION_LABEL = "Official Release 1.0.2"
-PROTOCOL_VERSION = "OpenQPEP/1.0.2"
+UNIVERSAL_VERSION = "1.1.0"
+UNIVERSAL_VERSION_LABEL = "Official Release 1.1.0"
+PROTOCOL_VERSION = "OpenQPEP/1.1.0"
 RELEASE_CHANNEL = "RELEASE"
-API_STABILITY = "v1.0.0-stable"
+API_STABILITY = "v1.1.0-stable"
 MANDATORY_KDF_VERSION = 4
 
 DEFAULT_SUITE = "QLX-4096"
