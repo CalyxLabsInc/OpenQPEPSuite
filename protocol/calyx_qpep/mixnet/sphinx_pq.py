@@ -1,6 +1,6 @@
 """
 Sphinx-PQ: Fixed-Size Multi-Hop Layered Post-Quantum Onion Encryption using QLX-768 + CMT-4 CC-512
-(Official Release 1.0.0 / v1.0.0).
+(Official Release 1.1.0 / v1.1.0).
 Features:
   - Fixed-size padded onion layers so intermediate mix relays learn zero hop-count or path-position metadata.
   - Post-AEAD replay-tag commitment (seen_tags only updated AFTER AEAD decryption succeeds, closing pre-poisoning).

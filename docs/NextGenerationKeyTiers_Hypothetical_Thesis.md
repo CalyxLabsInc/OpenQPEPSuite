@@ -4,7 +4,7 @@
 
 * **Document Type:** Forward-Looking Cryptographic Research Thesis & Architecture Roadmap (`OpenQPEP v2.0 / Generation II — Concept Only`)
 * **Author & Chief Cryptography Architect:** Tristen Martinez, Founder of [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Portal](https://calyxlabsinc.github.io/))
-* **Current Production/Beta Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) (`Official Release 1.1.0`) & [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) (`Signature QLX-4096 + QVS-256`)
+* **Current Official Release Baseline:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) (`Official Release 1.1.0`) & [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client/) (`Signature QLX-4096 + QVS-256`)
 * **Live Public Key Infrastructure:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 
 ---
@@ -127,6 +127,6 @@ True `E91` / `MDI-QKD` requires physical single-photon detectors, entangled-phot
 
 While these five Generation II tiers cannot run on today's commodity mobile hardware as defaults, [Calyx Labs Inc.](https://calyxlabsinc.org/) can pioneer their adoption in stages as hardware evolves:
 
-1. **Near-Term (`OpenQPEP v0.2.x – v1.0`):** Maintain **`Signature QLX-4096 + QVS-256`** (`Official Release 1.1.0`) as the production gold standard—already providing **4× the encryption lattice dimensions** of [RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) `ML-KEM-1024` v6, dual-family `CC-512` payload cascades, 512-bit `qSponge-512` Key Hashes, hardcoded `QPKD-Argon` passphrase witnesses, and `Fault-Guard` signature verification.
+1. **Near-Term (`OpenQPEP v1.0.x – v1.1.0`):** Maintain **`Signature QLX-4096 + QVS-256`** (`Official Release 1.1.0`) as the production gold standard—already providing **4× the encryption lattice dimensions** of [RFC 9980](https://datatracker.ietf.org/doc/rfc9980/) `ML-KEM-1024` v6, dual-family `CC-512` payload cascades, 512-bit `qSponge-512` Key Hashes, hardcoded `QPKD-Argon` passphrase witnesses, and `Fault-Guard` signature verification.
 2. **Mid-Term (`OpenQPEP v2.0 — Desktop & Server CLI Edition`):** Introduce **Tier II (`QIC-32768 + QVS-SLH-512` Tri-Modal Chimera)** as an optional desktop/server cold-storage flag (`--tier QIC-32768`) where `1.85 MB` `.qpkrf` key files are stored on local NVMe drives for multi-decade sovereign archives.
 3. **Long-Term (`OpenQPEP v3.0 — NPU & Quantum-Optic Era`):** As mobile WebGPU/NPU accelerators standardize fast Reed-Solomon FRI provers and chip-scale QRNG/QKD sensors enter consumer hardware, bring **Tier III (`QVS-ZK-STARK`)**, **Tier IV (`QFHE-8192`)**, and **Tier V (`QKD-ENTANGLE-1024 + CC-1024`)** to the [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/).

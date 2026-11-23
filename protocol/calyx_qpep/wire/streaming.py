@@ -1,8 +1,8 @@
 """
-OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Official Release 1.0.0).
+OpenQPEP O(1)-RAM Streaming Chunked AEAD & Seekable Merkle-Tree File Encryption (Official Release 1.1.0).
 
 Features:
-  - Official Release 1.0.0 Stream Magic `STREAM_MAGIC = \\x89QPS\\x05\\x00` (hard-rejects legacy
+  - Official Release 1.1.0 Stream Magic `STREAM_MAGIC = \\x89QPS\\x05\\x00` (hard-rejects legacy
     pre-release `\\x89QPS\\x02\\x07` streams with QPEPLegacyProtocolError).
   - Constant ~256 KiB RAM streaming for arbitrary-sized files in 64 KiB CMT-4 CC-512 frames.
   - Deterministic chunk-bound nonces making chunk reordering, duplication, or mid-stream truncation impossible.
@@ -36,10 +36,10 @@ def _validate_stream_magic(magic: bytes) -> None:
     if magic in LEGACY_STREAM_MAGICS:
         raise QPEPLegacyProtocolError(
             "Legacy pre-release OpenQPEP stream magic (\\x89QPS\\x02\\x07) is strictly rejected in "
-            "Official Release 1.0.0 (zero backwards compatibility). Official stream magic \\x89QPS\\x05\\x00 is required."
+            "Official Release 1.1.0 (zero backwards compatibility). Official stream magic \\x89QPS\\x05\\x00 is required."
         )
     if magic != STREAM_MAGIC:
-        raise QPEPWireFormatError("Invalid OpenQPEP Official Release 1.0.0 streaming magic bytes.")
+        raise QPEPWireFormatError("Invalid OpenQPEP Official Release 1.1.0 streaming magic bytes.")
 
 
 def derive_chunk_nonce24(base_nonce: bytes, chunk_idx: int, is_final: bool) -> bytes:

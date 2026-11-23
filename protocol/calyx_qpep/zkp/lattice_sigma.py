@@ -1,8 +1,8 @@
 """
 Fiat-Shamir Non-Interactive Zero-Knowledge Sigma Protocol over Z_3329[X]/(X^256 + 1)
-(LatticeZKProof — Official Release 1.0.0).
+(LatticeZKProof — Official Release 1.1.0).
 
-Official Release 1.0.0 Hardening:
+Official Release 1.1.0 Hardening:
   - Samples 256 independent uniform masking coefficients in Z_3329 via rejection sampling
     from qSponge-XOF (eliminating the legacy 4x periodic masking vector).
   - Canonical 12-bit byte encoding of ALL three polynomials (a_hat, t_hat, w_hat) inside the

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Automated 10-Suite Benchmark Harness (Official Release 1.0.0 / v1.0.0).
+OpenQPEP Automated 10-Suite Benchmark Harness (Official Release 1.1.0 / v1.1.0).
 Measures keygen, encaps/encrypt, decaps/decrypt, sign, verify, and peak RSS RAM across all 10 canonical suites.
 """
 import json
@@ -41,7 +41,7 @@ def _peak_rss_mib() -> float:
 def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     witness = os.urandom(64)
-    msg = b"OpenQPEP Official Release 1.0.0 Benchmark Message"
+    msg = b"OpenQPEP Official Release 1.1.0 Benchmark Message"
 
     target_qlx = QLX_SUITES if include_heavy else QLX_SUITES[:4]
     for label, qlx_t, qvs_t, hw_tier in target_qlx:
@@ -67,7 +67,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
         ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
 
         rows.append({
-            "release": "v1.0.0", "suite": label, "hardware_tier": hw_tier,
+            "release": "v1.1.0", "suite": label, "hardware_tier": hw_tier,
             "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
             "sign_ms": sign_ms, "verify_ms": ver_ms, "peak_rss_mib": _peak_rss_mib(),
         })
@@ -79,7 +79,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); iso_sig = CalyxIsogenyForgeSuite.sign(msg, iso_priv); sign_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     t0 = time.perf_counter(); ok, _ = CalyxIsogenyForgeSuite.verify(iso_sig, iso_pub); assert ok; ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.0.0",
+        "release": "v1.1.0",
         "suite": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)",
         "hardware_tier": "All Devices",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
@@ -93,7 +93,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); mq_sig = MultivariateQuadraticEngine.sign(mq_sk, msg); sign_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     t0 = time.perf_counter(); assert MultivariateQuadraticEngine.verify(mq_pk, msg, mq_sig); ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.0.0",
+        "release": "v1.1.0",
         "suite": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)",
         "hardware_tier": "All Devices",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
@@ -107,7 +107,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); qhs_sig = QHS512HypertreeEngine.sign(qhs_sk, msg); sign_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     t0 = time.perf_counter(); assert QHS512HypertreeEngine.verify(qhs_pk, msg, qhs_sig); ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.0.0",
+        "release": "v1.1.0",
         "suite": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)",
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
@@ -121,7 +121,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); cit_sig = CalyxUnstructuredCitadelSuite.sign(msg, cit_priv); sign_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     t0 = time.perf_counter(); ok, _ = CalyxUnstructuredCitadelSuite.verify(cit_sig, cit_pub); assert ok; ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.0.0",
+        "release": "v1.1.0",
         "suite": "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)",
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
@@ -135,7 +135,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
     t0 = time.perf_counter(); p_sig = CalyxSovereignPentad.sign(msg, p_pub, p_priv); sign_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     t0 = time.perf_counter(); ok, _ = CalyxSovereignPentad.verify(p_sig, p_pub); assert ok; ver_ms = round((time.perf_counter() - t0) * 1000.0, 2)
     rows.append({
-        "release": "v1.0.0",
+        "release": "v1.1.0",
         "suite": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)",
         "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
         "keygen_ms": kg_ms, "encaps_ms": enc_ms, "decaps_ms": dec_ms,
@@ -147,7 +147,7 @@ def run_benchmarks(include_heavy: bool = True) -> List[Dict[str, Any]]:
 
 def format_markdown_table(rows: List[Dict[str, Any]]) -> str:
     lines = [
-        "| OpenQPEP Suite (`v1.0.0`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |",
+        "| OpenQPEP Suite (`v1.1.0`) | Hardware Tier | Keygen (ms) | Encaps (ms) | Decaps (ms) | Sign (ms) | Verify (ms) | Peak RSS (MiB) |",
         "| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for r in rows:

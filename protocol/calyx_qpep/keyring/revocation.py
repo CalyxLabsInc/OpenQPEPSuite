@@ -1,5 +1,5 @@
 """
-OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Official Release 1.0.0 / Wire v5).
+OpenQPEP Self-Authenticating .qrev Key Revocation Certificates (Official Release 1.1.0 / Wire v5).
 Supports offline revocation certificates signed conjunctively by the Master QVS + Ed448
 identity key with standardized reason codes: KEY_COMPROMISED, KEY_SUPERSEDED, KEY_RETIRED.
 """

@@ -1,6 +1,6 @@
 [
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Signature: QLX-4096 + QVS-256 (Recommended Default \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 80.96,
@@ -11,7 +11,7 @@
     "peak_rss_mib": 35.38
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 15.3,
@@ -22,7 +22,7 @@
     "peak_rss_mib": 35.38
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 21.39,
@@ -33,7 +33,7 @@
     "peak_rss_mib": 35.38
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 44.96,
@@ -44,7 +44,7 @@
     "peak_rss_mib": 35.38
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold \u2014 HIGH-TIER HARDWARE ONLY)",
     "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
     "keygen_ms": 361.78,
@@ -55,7 +55,7 @@
     "peak_rss_mib": 40.27
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 318.25,
@@ -66,7 +66,7 @@
     "peak_rss_mib": 40.27
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based \u2014 All Devices)",
     "hardware_tier": "All Devices",
     "keygen_ms": 587.43,
@@ -77,7 +77,7 @@
     "peak_rss_mib": 40.27
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based \u2014 HIGH-TIER HARDWARE ONLY)",
     "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
     "keygen_ms": 869.39,
@@ -88,7 +88,7 @@
     "peak_rss_mib": 40.27
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa \u2014 HIGH-TIER HARDWARE ONLY)",
     "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
     "keygen_ms": 538.52,
@@ -99,7 +99,7 @@
     "peak_rss_mib": 40.27
   },
   {
-    "release": "v1.0.0",
+    "release": "v1.1.0",
     "suite": "Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel \u2014 HIGH-TIER HARDWARE ONLY)",
     "hardware_tier": "HIGH-TIER HARDWARE ONLY (>= 12 GB RAM)",
     "keygen_ms": 633.56,

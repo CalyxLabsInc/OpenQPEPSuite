@@ -1,5 +1,5 @@
 /*
- * OpenQPEP Official Release 1.0.0 (v1.0.0) — Tamarin Prover Formal Verification Model
+ * OpenQPEP Official Release 1.1.0 (v1.1.0) — Tamarin Prover Formal Verification Model
  * Protocol: QPEP-Ratchet (Post-Quantum Double Ratchet with Rotating Ephemeral QLX + HGC-448 PCS
  *           and Atomic AEAD-Before-Commit CMT-4 CC-512 Chain KDF)
  * Machine-Checked Lemmas:

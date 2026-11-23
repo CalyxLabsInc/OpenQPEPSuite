@@ -1,5 +1,5 @@
 """
-OpenQPEP Compact Binary TLV Wire Format v5.1 (\\x89QPE\\x05\\x01) — Official Release 1.0.0.
+OpenQPEP Compact Binary TLV Wire Format v5.1 (\\x89QPE\\x05\\x01) — Official Release 1.1.0.
 Replaces verbose JSON + Base64 inner envelopes with canonical sorted Tag-Length-Value (TLV)
 binary records, reducing serialized packet overhead by ~28–35% while retaining full qSponge-XOF
 whitening and 256-bit qSponge-512 MAC authentication.
@@ -82,7 +82,7 @@ def unpack_compact_v51(frame: bytes, label: str) -> Tuple[Dict[int, bytes], int,
     magic = frame[:6]
     if magic in ALL_LEGACY_WIRE_MAGICS:
         raise QPEPLegacyProtocolError(
-            "Legacy pre-release (-rc / -pc / -beta) compact wire frame rejected in Official Release 1.0.0 "
+            "Legacy pre-release (-rc / -pc / -beta) compact wire frame rejected in Official Release 1.1.0 "
             "(zero backwards compatibility). Compact TLV v5.1 (\\x89QPE\\x05\\x01) is required."
         )
     if magic != WIRE_MAGIC_V5_1 or len(frame) < 56:

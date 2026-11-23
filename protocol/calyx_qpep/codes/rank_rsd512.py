@@ -1,6 +1,6 @@
 """
 Genuine Rank-Metric Syndrome Decoding (CRT-RSD512) LRPC KEM Engine over GF(2^127)[X]/(X^47 + X^5 + 1)
-(Official Release 1.0.0 / v1.0.0).
+(Official Release 1.1.0 / v1.1.0).
 
 Cryptographic Construction (ROLLO-I / LRPC Rank-Metric Code):
   - Base field: GF(2^127) modulo irreducible trinomial x^127 + x^63 + 1 (prime degree 127 — zero subfields).

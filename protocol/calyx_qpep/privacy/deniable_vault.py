@@ -1,8 +1,8 @@
 """
-OpenQPEP Official Release 1.0.0 — Plausible-Deniability Dual-Volume Container (DeniableVault).
+OpenQPEP Official Release 1.1.0 — Plausible-Deniability Dual-Volume Container (DeniableVault).
 Embeds a hidden inner CMT-4 CC-512 volume inside uniform random bucket padding of an outer decoy volume.
 
-Official Release 1.0.0 Cryptographic Hardening:
+Official Release 1.1.0 Cryptographic Hardening:
   - Eliminates plaintext 4-byte length leakage: both outer and hidden slot headers (nonce24 || len4)
     are XOR-masked under independent key-derived qSponge-XOF streams so EVERY byte from offset 32
     to container_size is statistically indistinguishable from os.urandom() without the passphrase.

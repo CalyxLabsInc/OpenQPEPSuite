@@ -1,5 +1,5 @@
 /**
- * OpenQPEP Official Release 1.0.0 (v1.0.0) — WebAssembly SIMD128 Bridge with Bit-Exact Pure-JS Fallback
+ * OpenQPEP Official Release 1.1.0 (v1.1.0) — WebAssembly SIMD128 Bridge with Bit-Exact Pure-JS Fallback
  * Licensed under Calyx Public Open Source Specifications v1.0 License (CPOSLS-1.0).
  */
 export const QLX_Q = 3329;

@@ -1,4 +1,4 @@
-# OpenQPEP Official Release 1.0.0 (v1.0.0)
+# OpenQPEP Official Release 1.1.0 (v1.1.0)
 CC ?= cc
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)

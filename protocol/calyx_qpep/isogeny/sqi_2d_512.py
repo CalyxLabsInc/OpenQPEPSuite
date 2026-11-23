@@ -1,6 +1,6 @@
 """
 Family 3 of Calyx Sovereign-Pentad (CSP-Omega): Genuine CSIDH-512 Supersingular Elliptic Curve
-Isogeny Class-Group Action Engine (CIF-SQI-512 — Official Release 1.0.0).
+Isogeny Class-Group Action Engine (CIF-SQI-512 — Official Release 1.1.0).
 
 Cryptographic Construction:
   - Prime: Exact 511-bit CSIDH-512 supersingular prime
@@ -281,7 +281,7 @@ def _unpack_exponents(data: bytes, count: int = CSIDH_NUM_PRIMES) -> List[int]:
 class SupersingularIsogenyEngine:
     """
     Genuine CSIDH-512 Supersingular Elliptic Curve Isogeny KEM & Bimodal BLISS-SeaSign
-    Zero-Knowledge Isogeny Signature Engine (CIF-SQI-512 — Official Release 1.0.0).
+    Zero-Knowledge Isogeny Signature Engine (CIF-SQI-512 — Official Release 1.1.0).
     Zero torsion-point hints; strict supersingular validation + implicit rejection;
     independent KEM & Signing ideals.
     """

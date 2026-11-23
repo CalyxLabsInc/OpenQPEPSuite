@@ -1,5 +1,5 @@
 """
-QPEP-Ratchet Periodic Hybrid Post-Quantum Re-Encapsulation with Ephemeral Rotation (Official Release 1.0.0).
+QPEP-Ratchet Periodic Hybrid Post-Quantum Re-Encapsulation with Ephemeral Rotation (Official Release 1.1.0).
 Provides true Post-Compromise Security (PCS) by rotating sender ephemeral QLX + HGC-448 key pairs
 on every PCS epoch and encapsulating fresh hybrid post-quantum entropy into the root chain.
 """

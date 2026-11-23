@@ -1,5 +1,5 @@
 """
-OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Official Release 1.0.0 / Wire v5).
+OpenQPEP Verifiable .qshare Shamir Recovery Shard Codec (Official Release 1.1.0 / Wire v5).
 Wraps GF(256) Shamir shares in whitened \\x89QPE\\x05\\x00 armor authenticated with per-shard
 qSponge-512 commitment MACs and a master secret commitment digest.
 """

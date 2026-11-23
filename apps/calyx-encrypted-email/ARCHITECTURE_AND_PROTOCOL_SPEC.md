@@ -1,7 +1,7 @@
 # Calyx Encrypted Email — System Architecture & OpenQPEP-over-MIME Specification (`Official Release 1.1.0`)
 
 - **Application Name:** Calyx Encrypted Email (`com.calyxlabs.mail`, `vc13`)
-- **Version:** Official Release 1.1.0 (`v1.0.0`, Unified OpenQPEP Suite Sync)
+- **Version:** Official Release 1.1.0 (`v1.1.0`, Unified OpenQPEP Suite Sync)
 - **Publisher:** Tristen Martinez (Founder & Lead Architect) — Calyx Labs Inc.
 - **Email Domain:** `@calyxmail.org`
 - **Web App Endpoint:** `https://mail.calyxlabsinc.org`

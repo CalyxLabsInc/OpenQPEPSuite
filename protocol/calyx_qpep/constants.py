@@ -28,10 +28,10 @@ CALYX_HYPER_TESSERACT_HARDWARE_WARNING = (
     "Do NOT use on low-RAM budget devices (<= 6 GB RAM) due to ~69 KB secret vectors and heavy 16,384-dim NTT math."
 )
 
-# Official Release 1.0.0 Binary Wire Framing Constants (Clean-Slate v5 / v5.1 — Zero Legacy Compatibility)
-WIRE_MAGIC_V5 = b"\x89QPE\x05\x00"        # Official Release 1.0.0 Canonical Wire Format v5
-WIRE_MAGIC_V5_1 = b"\x89QPE\x05\x01"      # Official Release 1.0.0 Compact Binary TLV Wire Format v5.1
-STREAM_MAGIC_V5 = b"\x89QPS\x05\x00"      # Official Release 1.0.0 O(1)-RAM Chunked Streaming AEAD Magic
+# Official Release 1.1.0 Binary Wire Framing Constants (Clean-Slate v5 / v5.1 — Zero Legacy Compatibility)
+WIRE_MAGIC_V5 = b"\x89QPE\x05\x00"        # Official Release 1.1.0 Canonical Wire Format v5
+WIRE_MAGIC_V5_1 = b"\x89QPE\x05\x01"      # Official Release 1.1.0 Compact Binary TLV Wire Format v5.1
+STREAM_MAGIC_V5 = b"\x89QPS\x05\x00"      # Official Release 1.1.0 O(1)-RAM Chunked Streaming AEAD Magic
 
 # Explicitly rejected legacy magics (Release Candidate -rc, Production Candidate -pc, Beta -beta)
 LEGACY_RC_WIRE_MAGICS = (b"\x89QPE\x04\x00", b"\x89QPE\x04\x01")
@@ -122,7 +122,7 @@ QVS_TIERS: Dict[str, Dict[str, int]] = {
 }
 
 # ---------------------------------------------------------------------------
-# All 10 Canonical OpenQPEP Post-Quantum Suites (Official Release 1.0.0)
+# All 10 Canonical OpenQPEP Post-Quantum Suites (Official Release 1.1.0)
 # Uniform Naming Standard: "Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"
 # ---------------------------------------------------------------------------
 ALL_TEN_SUITES: Dict[str, Dict[str, object]] = {

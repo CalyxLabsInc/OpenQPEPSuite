@@ -1,18 +1,18 @@
-# Calyx Encrypted Messenger (`Calyx QPEP Messenger` — `Official Release 1.0.0`)
+# Calyx Encrypted Messenger (`Calyx QPEP Messenger` — `Official Release 1.1.0`)
 
-[![OpenQPEP Ecosystem](https://img.shields.io/badge/OpenQPEP%20Ecosystem-Release%20Candidate%201.0.0-00E5FF)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)
-[![Android Package](https://img.shields.io/badge/Android-com.calyxlabs.qpem%20vc25-2563EB)](https://calyxlabsinc.github.io/)
+[![OpenQPEP Ecosystem](https://img.shields.io/badge/OpenQPEP%20Ecosystem-Official%20Release%201.1.0-00E5FF)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)
+[![Android Package](https://img.shields.io/badge/Android-com.calyxlabs.qpem%20vc29-2563EB)](https://calyxlabsinc.github.io/)
 [![Web Client](https://img.shields.io/badge/Web%20Messenger-messenger.calyxlabsinc.org-00E5FF)](https://messenger.calyxlabsinc.org)
-[![Key Ring Format](https://img.shields.io/badge/Account%20Identity-.qpkrf%20%7C%2064--Char%20Key%20Hash-10B981)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)
+[![Key Ring Format](https://img.shields.io/badge/Account%20Identity-.qpkrf%20%7C%2064--Char%20Key%20Hash-10B981)](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)
 [![License](https://img.shields.io/badge/License-Calyx%20Public%20Open%20Source%20License%201.0-00E5FF)](https://calyxlabsinc.org/LICENSE.txt)
 
-**Calyx Encrypted Messenger** (nicknamed **Calyx QPEP Messenger**, Android package `com.calyxlabs.qpem`, `1.0.0` / `vc25`) is the official post-quantum end-to-end encrypted messaging application of the **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)** (**Open Quantum-Proof Encryption Protocol** / **Calyx QPEP**) ecosystem, created and engineered by **Tristen Martinez** at **[Calyx Labs Inc.](https://calyxlabsinc.github.io/)**
+**Calyx Encrypted Messenger** (nicknamed **Calyx QPEP Messenger**, Android package `com.calyxlabs.qpem`, `1.1.0` / `vc29`) is the official post-quantum end-to-end encrypted messaging application of the **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)** (**Open Quantum-Proof Encryption Protocol** / **Calyx QPEP**) ecosystem, created and engineered by **Tristen Martinez** at **[Calyx Labs Inc.](https://calyxlabsinc.github.io/)**
 
-Built in the signature **Neon Blue & Obsidian Black** colorway of the **[Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/apps/calyx-qpep-client)** ecosystem, **Calyx Encrypted Messenger** replaces phone-number-based accounts and classical PGP/Signal key agreements with self-certified **Quantum Proof Key Ring Files (`.qpkrf`)** where **your QPEP Key Ring is your user account**, enhanced with **`QPEP-Ratchet`** Double Ratchet forward/post-compromise secrecy, **`QPEP-MLS`** TreeKEM encrypted group rooms (up to 256 members), **`Sphinx-PQ`** Sealed Sender metadata privacy, and disappearing messages. Users can access their accounts through the native Android application (`com.calyxlabs.qpem`), iOS (`.mobileconfig`), Desktop Tauri (`desktop/`), and directly in the browser at **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)**.
+Built in the signature **Neon Blue & Obsidian Black** colorway of the **[Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client)** ecosystem, **Calyx Encrypted Messenger** replaces phone-number-based accounts and classical PGP/Signal key agreements with self-certified **Quantum Proof Key Ring Files (`.qpkrf`)** where **your QPEP Key Ring is your user account**, enhanced with **`QPEP-Ratchet`** Double Ratchet forward/post-compromise secrecy, **`QPEP-MLS`** TreeKEM encrypted group rooms (up to 256 members), **`Sphinx-PQ`** Sealed Sender metadata privacy, and disappearing messages. Users can access their accounts through the native Android application (`com.calyxlabs.qpem`), iOS (`.mobileconfig`), Desktop Tauri (`desktop/`), and directly in the browser at **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)**.
 
 ## 1. Core Design Philosophy: QPEP Keys Are User Accounts
 
-Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/rc/protocol/)** (`Official Release 1.0.0`, `v1.0.0`) cryptographic identities:
+Unlike conventional messengers that tie your identity to a SIM card, phone number, or centralized password database, **Calyx Encrypted Messenger (`Calyx QPEP Messenger`)** operates entirely on **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)** (`Official Release 1.1.0`, `v1.1.0`) cryptographic identities:
 
 1. **Create Account = Generate `.qpkrf` Key Ring**:
    - Clicking **Create Account** prompts for your **Key Name** (which operates as your `@Username`), **Email Address** (bound to your QPEP UID), optional profile bio, and selectable **QLX + QVS Security Tier** (`QLX-768`, `QLX-1024 Sovereign Hybrid`, or `QLX-2048 Ultra-Grid`).
@@ -21,12 +21,12 @@ Unlike conventional messengers that tie your identity to a SIM card, phone numbe
    - Every QPEP Key Ring produces a cryptographically unique **64-character Key Hash** bound to the owner's UID and public lattice/curve vectors via `qSponge-512`.
    - Users search and message peers directly by their **64-character Key Hash** (or `@KeyName`) with continuous real-time inbox and directory synchronization across **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)**.
 3. **Full Public & Private `.qpkrf` Key Export & Portability**:
-   - Logged-in users can export their **Public Key Ring (`-----BEGIN CALYX QPKRF PUBLIC KEY RING-----`)** to share out-of-band or import into **[Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client)**.
+   - Logged-in users can export their **Public Key Ring (`-----BEGIN CALYX QPKRF PUBLIC KEY RING-----`)** to share out-of-band or import into **[Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client)**.
    - Users can also export their **Private Key Ring (`-----BEGIN CALYX QPKRF PRIVATE KEY RING-----`)** after passing the mandatory **`QPKD-Argon2id`** passphrase verification gate, allowing seamless account migration between Android devices and the **[messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)** web client.
 
 ## 2. How End-to-End Encryption Works in Calyx QPEP Messenger
 
-Every account action and chat message in **Calyx Encrypted Messenger** is enforced across the five interlocking layers of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)**:
+Every account action and chat message in **Calyx Encrypted Messenger** is enforced across the five interlocking layers of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)**:
 
 1. **Layer 1 — Mandatory `QPKD-Argon2id` Passphrase Gate**:
    - Unencrypted private keys and weak passphrases are rejected at the protocol layer. Before any account key pair is generated, unlocked, imported, or exported as a private `.qpkrf` file, the client enforces the **Calyx QPEP Passphrase Policy**:
@@ -48,7 +48,7 @@ Every account action and chat message in **Calyx Encrypted Messenger** is enforc
 
 ## 3. Supported OpenQPEP `QLX` + `QVS` Account Tiers
 
-When creating an account in **Calyx Encrypted Messenger**, users can select from all three **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** security tiers:
+When creating an account in **Calyx Encrypted Messenger**, users can select from all three **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)** security tiers:
 
 | OpenQPEP Account Suite | Lattice Module Rank & Ring | Signature Vector Rank | Classical Curve Partner | Symmetric Payload Cipher | Target Messaging Profile |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -73,7 +73,7 @@ When creating an account in **Calyx Encrypted Messenger**, users can select from
   - `CalyxEncryptedMessenger.aab` — Google Play Console Android App Bundle.
   - `android_project_source/` — Complete Android application source code (`AndroidManifest.xml`, `MainActivity.java`, `build.gradle`, and Neon Blue/Black UI assets).
 * **`Backend Files/messenger_server/`**:
-  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)** (`Official Release 1.0.0`).
+  - `calyx_qpep.py` — Pure-Python reference implementation of **[OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)** (`Official Release 1.1.0`).
   - `server.py` — Multi-threaded Python 3 + SQLite WAL real-time relay, 64-character Key Hash directory server, and browser web client host (default port `8446`, routed to `https://messenger.calyxlabsinc.org`).
   - `static/index.html` — Full browser web application mirroring the Android client so users can create or import `.qpkrf` accounts on the web.
   - `cli.py` & `test_messenger.py` — Command-line client and automated `unittest` verification suite.
@@ -98,8 +98,8 @@ cd "Backend Files/messenger_server"
 ## 7. Official OpenQPEP & Calyx Labs Inc. Links
 
 * **Live Web Messenger & Key Hash Directory:** [https://messenger.calyxlabsinc.org](https://messenger.calyxlabsinc.org)
-* **OpenQPEP Protocol Specification & SDK:** [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/protocol/)
-* **Calyx QPEP Client (Android Cryptographic Suite):** [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client)
+* **OpenQPEP Protocol Specification & SDK:** [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/)
+* **Calyx QPEP Client (Android Cryptographic Suite):** [https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client)
 * **OpenQPEP Public Key Server:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 * **Calyx Labs Inc. Official Website:** [https://calyxlabsinc.org](https://calyxlabsinc.org) | [https://calyxlabsinc.github.io/](https://calyxlabsinc.github.io/)
 * **Terms of Service:** [https://calyxlabsinc.org/CalyxQPEM_TermsOfService.txt](https://calyxlabsinc.org/CalyxQPEM_TermsOfService.txt)
@@ -110,19 +110,19 @@ cd "Backend Files/messenger_server"
 Licensed under the **Calyx Public Open Source License 1.0 (`CPOSLS-1.0`)**.  
 Copyright © 2026 **[Calyx Labs Inc.](https://calyxlabsinc.github.io/)** — Created, Designed & Engineered by **Tristen Martinez** (`support@calyxlabsinc.org` | `calyxlabsinc@gmail.com`).
 
-## All 10 OpenQPEP Post-Quantum Suites (`v1.0.0`)
+## All 10 OpenQPEP Post-Quantum Suites (`v1.1.0`)
 
 Every OpenQPEP suite uses the canonical naming standard `"Calyx <Key-Name>: <KEM> + <SIG> (<Short Description>)"` paired with **CC-512 AEAD**, **RFC 9106 QPKD-Argon2id + qSponge-512 (`kdf_version: 4`)**, and **Frozen Wire Format v5 (`\x89QPE\x05\x00`) / Compact Binary TLV v5.1 (`\x89QPE\x05\x01`)**.
 
 | Canonical Suite Name | KEM + Signature | Mathematical Family | Hardware Classification | Primary Role |
 | :--- | :--- | :--- | :--- | :--- |
-| **Calyx Signature: QLX-4096 + QVS-256 (Recommended Default — All Devices)** | `QLX-4096` + `QVS-256` | Structured Module-LWE (`k=16`, 4,096-dim) + Hybrid X448 | **All Devices** | Default flagship security for mobile & desktop |
+| **Calyx Lattice-Apex: QLX-4096 + QVS-256 (4,096-Dim Module-LWE — All Devices)** | `QLX-4096` + `QVS-256` | Structured Module-LWE (`k=16`, 4,096-dim) + Hybrid X448 | **All Devices** | Default flagship security for mobile & desktop |
 | **Calyx Velocity: QLX-768 + QVS-65 (High-Speed Mobile — All Devices)** | `QLX-768` + `QVS-65` | Structured Module-LWE (`k=3`, 768-dim) + Hybrid X448 | **All Devices** | Lowest-latency mobile messaging & constrained links |
 | **Calyx Sovereign-Hybrid: QLX-1024 + QVS-87 (Balanced Post-Quantum — All Devices)** | `QLX-1024` + `QVS-87` | Structured Module-LWE (`k=4`, 1,024-dim) + Hybrid X448 | **All Devices** | Balanced NIST-Level-5-class lattice security |
 | **Calyx Ultra-Grid: QLX-2048 + QVS-128 (2,048-Dim Lattice — All Devices)** | `QLX-2048` + `QVS-128` | Structured Module-LWE (`k=8`, 2,048-dim) + Hybrid X448 | **All Devices** | Elevated 2,048-dimensional lattice margin |
 | **Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512 (2D Supersingular Isogeny — All Devices)** | `CIF-SQI-512` + `QHS-512` | 2D Supersingular Abelian Isogeny + Stateless Hash-Based Hypertree | **All Devices** | Beyond-LWE compact isogeny key exchange & hash signatures |
-| **Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (Rank-Syndrome Code-Based — All Devices)** | `CRT-RSD512` + `QMQ-512` | Rank-Metric Syndrome Decoding + Multivariate Quadratic (`MQ`) | **All Devices** | Beyond-LWE rank-metric code & multivariate diversity |
+| **Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512 (All-Devices Signature Default — All Devices)** | `CRT-RSD512` + `QMQ-512` | Rank-Metric Syndrome Decoding + Multivariate Quadratic (`MQ`) | **All Devices** | Beyond-LWE rank-metric code & multivariate diversity |
 | **Calyx Hyper-Tesseract: QLX-16384 + QVS-1024 (16,384-Dim 4-Manifold — HIGH-TIER HARDWARE ONLY)** | `QLX-16384` + `QVS-1024` | 4-Manifold Coupled Module-LWE (`k=64`, 16,384-dim) + `16×14` QVS | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Maximum structured-lattice dimension (~69 KB secret vectors) |
 | **Calyx Goppa-Monolith: CGM-8192 + QHS-512 (Binary Goppa Code-Based — HIGH-TIER HARDWARE ONLY)** | `CGM-8192` + `QHS-512` | Classic McEliece-class Binary Goppa Code (`n=8192`) + Hash Hypertree | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Beyond-LWE conservative code-based encryption (large public matrix) |
 | **Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)** | `CULC-2048` + `CGM-8192` | Unstructured Plain-LWE (`n×n` ring-free) + Binary Goppa Code | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Zero algebraic ring-structure defense against ring/ideal-lattice attacks |
-| **Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (5-Family Beyond-LWE Citadel — HIGH-TIER HARDWARE ONLY)** | `CSP-Omega` + `QHS-512` | 5-Family Combiner (Plain-LWE + Goppa + 2D Isogeny + MQ + Hash + X448) | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Ultimate multi-assumption citadel; secure if any 1 of 5 families holds |
+| **Calyx Sovereign-Pentad: CSP-Omega + QHS-512 (High-Tier Signature Default — HIGH-TIER HARDWARE ONLY)** | `CSP-Omega` + `QHS-512` | 5-Family Combiner (Plain-LWE + Goppa + 2D Isogeny + MQ + Hash + X448) | **HIGH-TIER HARDWARE ONLY (`>= 12 GB RAM`)** | Ultimate multi-assumption citadel; secure if any 1 of 5 families holds |

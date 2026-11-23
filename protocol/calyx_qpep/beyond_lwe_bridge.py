@@ -1,5 +1,5 @@
 """
-OpenQPEP Official Release 1.0.0 (v1.0.0) Beyond-LWE Native .qpkrf Persistence & Dispatch Bridge.
+OpenQPEP Official Release 1.1.0 (v1.1.0) Beyond-LWE Native .qpkrf Persistence & Dispatch Bridge.
 Provides unified Wire Format v5 keygen, encrypt, decrypt, sign, and verify dispatch for all 5 Beyond-LWE suites:
   - CIF-SQI-512  (Calyx Isogeny-Forge: CIF-SQI-512 + QHS-512)
   - CRT-RSD512   (Calyx Rank-Metric Tensor: CRT-RSD512 + QMQ-512)

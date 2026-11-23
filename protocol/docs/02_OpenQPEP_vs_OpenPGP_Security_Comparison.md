@@ -18,7 +18,7 @@
 | **Forward Secrecy & PCS** | None (static key compromise decrypts all historical traffic) | Native **`QPEP-Ratchet`** (atomic AEAD-before-commit state + rotating-ephemeral hybrid `QLX` + `HGC-448` PCS), **`QPEP-MLS`** $O(\log N)$ group TreeKEM with per-`(epoch, sender)` replay defense, and **`QPEP-AKE`** bidirectional PQ-Noise-XX |
 | **Key Lifecycle & Transparency** | Complex WoT / manual revocation / trust-on-first-use | Rotatable encryption/signing subkeys, self-authenticating **`.qrev`** revocations, verifiable $t$-of-$n$ **`.qshare`** Shamir recovery, zero-reconstruction HJKY proactive **`ThresholdKEM`**, and **`QPEP-KT`** Ed448-signed Merkle STHs + RFC 9162 consistency proofs |
 | **Large-File & Privacy Tools** | Whole-file streaming without random-access seek | $O(1)$-RAM 64 KiB streaming AEAD + **full-ciphertext Merkle-tree seekable byte-range decryption**, genuine Module-SIS **`QVS-Ring`**, fixed-size **`Sphinx-PQ`** onion packets, masked-header **`DeniableVault`**, **`TimeLockCapsule`**, **`LT-QR`** air-gap fountain |
-| **Auditability & Verification** | Fragmented test suites | **10 bit-exact `v1.0.0` KAT suites** (Native C99 & Pure-Python parity), adversarial unit & cryptanalytic verification suite (fuzzer, attack simulator, DudeCT Welch's $t$-test, 5-language interop matrix), Tamarin/ProVerif/Cryptol formal models, and SPDX SBOM |
+| **Auditability & Verification** | Fragmented test suites | **10 bit-exact `v1.1.0` KAT suites** (Native C99 & Pure-Python parity), adversarial unit & cryptanalytic verification suite (fuzzer, attack simulator, DudeCT Welch's $t$-test, 5-language interop matrix), Tamarin/ProVerif/Cryptol formal models, and SPDX SBOM |
 
 ## All 10 OpenQPEP Post-Quantum Suites (`v1.1.0`)
 

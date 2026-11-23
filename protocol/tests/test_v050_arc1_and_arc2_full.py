@@ -213,8 +213,8 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.1.0")
         self.assertTrue((REPO_ROOT / "formal/qpep_ake.pv").is_file())
         self.assertTrue((REPO_ROOT / "go/openqpep/wire_v5.go").is_file())
-        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.0.0_OFFICIAL_RELEASE_SPEC.md").is_file())
-        sbom = generate_spdx_sbom(REPO_ROOT, version="1.0.0")
+        self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.1.0_OFFICIAL_RELEASE_SPEC.md").is_file())
+        sbom = generate_spdx_sbom(REPO_ROOT, version="1.1.0")
         self.assertEqual(sbom["dataLicense"], "CPOSLS-1.0")
         self.assertGreater(sbom["filesAnalyzed"], 40)
 

@@ -15,7 +15,7 @@ make -C calyx_qpep/native/csrc
 # Install editable Official Release 1.1.0 package
 pip install -e .
 
-# Verify all 10 v1.0.0 golden KAT suites bit-for-bit (Native C99 & Pure Python)
+# Verify all 10 v1.1.0 golden KAT suites bit-for-bit (Native C99 & Pure Python)
 python3 -m calyx_qpep.cli verify-vectors
 OPENQPEP_DISABLE_NATIVE=1 python3 -m calyx_qpep.cli verify-vectors
 
@@ -50,7 +50,7 @@ openqpep audit
 
 ## 2. OpenQPEP Official Ecosystem Applications (`v1.1.0`)
 
-The OpenQPEP Core Protocol (`OpenQPEP/1.1.0`) powers the Calyx Labs Inc. post-quantum application ecosystem (developed in dedicated application repositories targeting Official Release `1.0.0`):
+The OpenQPEP Core Protocol (`OpenQPEP/1.1.0`) powers the Calyx Labs Inc. post-quantum application ecosystem (synchronized at Official Release `1.1.0`):
 1. **Calyx QPEP Client (`com.calyxlabs.qpepclient`):** On-device key management across all 10 suites, `.qpkrf` armor, binary file encryption/signing, `QPEP-KT` Merkle inclusion & consistency proof verification, `LT-QR` air-gap transfer, `FIDO2-PRF` hardware passkey binding, `DeniableVault`, and $t$-of-$n$ `ThresholdKEM`.
 2. **Calyx Encrypted Messenger / QPEM (`com.calyxlabs.qpem`):** End-to-end post-quantum messaging (`https://messenger.calyxlabsinc.org`) using `QPEP-Ratchet` (atomic state + rotating-ephemeral PCS), `QPEP-MLS` TreeKEM group rooms (up to 256 members with per-`(epoch, sender)` replay protection), `QPEP-AKE` bidirectional PQ handshake, and fixed-size `Sphinx-PQ` sealed sender.
 3. **Calyx Encrypted Email (`com.calyxlabs.mail`):** Post-quantum E2EE email for `@calyxmail.org` (`https://mail.calyxlabsinc.org`) with $O(1)$-RAM Stream v5 multi-recipient attachments, `BlindSearchVault` zero-knowledge search, rotatable subkeys, and `.qrev` revocation certificates.

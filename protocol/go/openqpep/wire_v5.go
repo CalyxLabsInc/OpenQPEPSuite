@@ -21,7 +21,7 @@ var (
 	LegacyWireMagicV3  = []byte{0x89, 'Q', 'P', 'E', 0x03, 0x00}
 	LegacyWireMagicV31 = []byte{0x89, 'Q', 'P', 'E', 0x03, 0x01}
 
-	ErrLegacyProtocol = errors.New("QPEPLegacyProtocolError: legacy -rc, -pc, or -beta wire format rejected in Official Release 1.0.0")
+	ErrLegacyProtocol = errors.New("QPEPLegacyProtocolError: legacy -rc, -pc, or -beta wire format rejected in Official Release 1.1.0")
 	ErrInvalidMagic   = errors.New("QPEPWireFormatError: invalid OpenQPEP Official Wire Format v5 magic")
 )
 

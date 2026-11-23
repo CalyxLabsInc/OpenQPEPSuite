@@ -1,5 +1,5 @@
 """
-Family 1 of Calyx Sovereign-Pentad (CSP-Omega): Pure Unstructured Plain-LWE (CULC-2048 — Official Release 1.0.0).
+Family 1 of Calyx Sovereign-Pentad (CSP-Omega): Pure Unstructured Plain-LWE (CULC-2048 — Official Release 1.1.0).
 Zero cyclotomic polynomial ring, zero NTT, zero Galois symmetry.
 Row-streams unstructured matrix A in Z_{65536}^{n x n} from qSponge-XOF with Fujisaki-Okamoto
 IND-CCA2 re-encryption verification and branchless ct_cmov implicit rejection.

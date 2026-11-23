@@ -1,4 +1,4 @@
-"""OpenQPEP Official Binary Wire Framing v5, Compact TLV v5.1, Zero-Metadata Armor, Streaming & Multi-Recipient Engine (v1.0.0)."""
+"""OpenQPEP Official Binary Wire Framing v5, Compact TLV v5.1, Zero-Metadata Armor, Streaming & Multi-Recipient Engine (v1.1.0)."""
 from .framing import BUCKET_SIZES, pad_to_bucket, unpad_from_bucket, pack_wire_frame, unpack_wire_frame
 from .armor import armor_wrap, armor_unwrap
 from .file_registry import SUPPORTED_FILE_EXTENSIONS, detect_file_extension_and_mime

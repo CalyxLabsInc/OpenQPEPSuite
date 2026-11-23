@@ -1,6 +1,6 @@
 """
 HGC-448 (448-bit Goldilocks X448 Diffie-Hellman & Ed448 Edwards Signatures) Hybrid Combiner
-(Official Release 1.0.0 / v1.0.0).
+(Official Release 1.1.0 / v1.1.0).
 Uses os.urandom(56)/os.urandom(57) so keygen is CSPRNG-secure in production and 100% deterministic
 under KAT DRBG, with SecretBuffer RAM scrubbing on every private-key operation.
 """

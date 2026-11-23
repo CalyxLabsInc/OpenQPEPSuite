@@ -1,6 +1,6 @@
 """
 Family 2 of Calyx Sovereign-Pentad (CSP-Omega): Genuine Classic McEliece / Niederreiter
-Binary Goppa Code Syndrome-Decoding KEM (CGM-8192 — Official Release 1.0.0).
+Binary Goppa Code Syndrome-Decoding KEM (CGM-8192 — Official Release 1.1.0).
 
 Cryptographic Construction:
   - Field: GF(2^10) modulo primitive polynomial x^10 + x^3 + 1 (0x409), n = 1024 bits.
@@ -183,7 +183,7 @@ class BinaryGoppaKEM:
     def keygen(n_bits: int = GOPPA_N, r_bits: int = GOPPA_MT, weight: int = GOPPA_T) -> Tuple[bytes, bytes]:
         if n_bits != GOPPA_N or r_bits != GOPPA_MT or weight != GOPPA_T:
             raise QPEPSuiteError(
-                f"CGM-8192 Official Release 1.0.0 requires canonical Goppa parameters (n={GOPPA_N}, mt={GOPPA_MT}, t={GOPPA_T})."
+                f"CGM-8192 Official Release 1.1.0 requires canonical Goppa parameters (n={GOPPA_N}, mt={GOPPA_MT}, t={GOPPA_T})."
             )
         seed_z = os.urandom(32)
         g = _sample_irreducible_goppa(weight)

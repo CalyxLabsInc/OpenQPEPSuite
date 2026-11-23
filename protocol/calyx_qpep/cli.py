@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenQPEP Interactive Blue-Text English-Command & Production Scriptable CLI (Official Release 1.0.0)
+OpenQPEP Interactive Blue-Text English-Command & Production Scriptable CLI (Official Release 1.1.0)
 Project: OpenQPEP by Calyx Labs Inc. (Creator: Tristen Martinez)
 Repository: https://github.com/CalyxLabsInc/OpenQPEP/
 Directory: https://qpepkeys.calyxlabsinc.org
@@ -595,9 +595,9 @@ def cmd_inspect_packet(raw_or_path: str = "") -> None:
         pass
     magic = raw_bytes[:6]
     if magic == WIRE_MAGIC_V5:
-        wire_label = f"{GREEN}Official Release 1.0.0 Wire Format v5 (\\x89QPE\\x05\\x00){RESET}"
+        wire_label = f"{GREEN}Official Release 1.1.0 Wire Format v5 (\\x89QPE\\x05\\x00){RESET}"
     elif magic == WIRE_MAGIC_V5_1:
-        wire_label = f"{GREEN}Official Release 1.0.0 Compact TLV v5.1 (\\x89QPE\\x05\\x01){RESET}"
+        wire_label = f"{GREEN}Official Release 1.1.0 Compact TLV v5.1 (\\x89QPE\\x05\\x01){RESET}"
     elif magic in LEGACY_RC_WIRE_MAGICS:
         wire_label = f"{RED}REJECTED Legacy Release Candidate (-rc) Wire v4/v4.1 ({magic.hex().upper()}){RESET}"
     elif magic in LEGACY_PC_WIRE_MAGICS:

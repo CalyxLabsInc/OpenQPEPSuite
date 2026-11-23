@@ -38,7 +38,7 @@ class TestOpenQPEPv024MultiRecipient(unittest.TestCase):
             OpenQPEPProtocol.import_qpkrf(OpenQPEPProtocol.export_qpkrf(k, include_private=False))
             for k in (kr_a, kr_b, kr_c)
         ]
-        secret_msg = b"Classified OpenQPEP v1.0.0 Mixed-Tier Broadcast Directive"
+        secret_msg = b"Classified OpenQPEP v1.1.0 Mixed-Tier Broadcast Directive"
         pkt = OpenQPEPProtocol.encrypt_multi_recipient(
             secret_msg, pubs, bucket_size=4096, pad_slots_power_of_2=True, min_slots=8, use_blind_hint=True
         )

@@ -1,5 +1,5 @@
 """
-OpenQPEP Official Release 1.0.0 Wire-Format, .qpkrf, QPEP-MLS & WebView Bridge Continuous Fuzzer
+OpenQPEP Official Release 1.1.0 Wire-Format, .qpkrf, QPEP-MLS & WebView Bridge Continuous Fuzzer
 (libFuzzer / AFL++ / Atheris compatible).
 Hammers decrypt_packet, import_qpkrf, verify_text_signature, unpack_compact_v51, QPEPGroupSession,
 and WebView bridge URI parsers with mutated, truncated, bit-flipped, oversized, and legacy -rc/-pc/-beta

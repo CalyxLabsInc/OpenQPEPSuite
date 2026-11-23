@@ -84,7 +84,7 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
     def test_03_wire_format_v3_and_strict_beta_magic_rejection(self):
         self.assertEqual(UNIVERSAL_VERSION, "1.1.0")
         self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.1.0")
-        payload = b"OpenQPEP Official Release 1.0.0 strict wire v5 payload"
+        payload = b"OpenQPEP Official Release 1.1.0 strict wire v5 payload"
         label = "CALYX QPEP MESSAGE"
 
         f_v5 = pack_wire_frame(payload, label)
@@ -92,7 +92,7 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
         out_v5, _ = unpack_wire_frame(f_v5, label)
         self.assertEqual(out_v5, payload)
 
-        # All legacy -rc (v4/v4.1), -pc (v3/v3.1), and -beta wire magics MUST be strictly rejected in v1.0.0
+        # All legacy -rc (v4/v4.1), -pc (v3/v3.1), and -beta wire magics MUST be strictly rejected in v1.1.0
         for legacy_magic in ALL_LEGACY_WIRE_MAGICS:
             forged = legacy_magic + os.urandom(64)
             with self.assertRaises(QPEPLegacyProtocolError):
@@ -108,7 +108,7 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
 
         set_native_enabled(True)
         pub, priv = CalyxSovereignPentad.keygen(allow_low_ram_override=True)
-        msg = b"Sovereign-Pentad Official Release 1.0.0 strict v5 directive"
+        msg = b"Sovereign-Pentad Official Release 1.1.0 strict v5 directive"
         armored_v5 = CalyxSovereignPentad.encrypt(msg, pub)
         sep = armored_v5.find("\n\n")
         end = armored_v5.rfind("\n=")

@@ -28,7 +28,7 @@ class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
 
     def test_02_tier7_calyx_isogeny_forge_roundtrip_and_signature(self):
         pub, priv = CalyxIsogenyForgeSuite.keygen()
-        msg = b"Calyx Isogeny-Forge CIF-SQI-512 + QHS-512 v1.0.0 payload"
+        msg = b"Calyx Isogeny-Forge CIF-SQI-512 + QHS-512 v1.1.0 payload"
         ct = CalyxIsogenyForgeSuite.encrypt(msg, pub)
         self.assertEqual(CalyxIsogenyForgeSuite.decrypt(ct, priv), msg)
         sig = CalyxIsogenyForgeSuite.sign(msg, priv)
@@ -41,7 +41,7 @@ class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
             with self.assertRaises(QPEPSuiteError):
                 CalyxUnstructuredCitadelSuite.keygen()
         pub, priv = CalyxUnstructuredCitadelSuite.keygen(allow_low_ram_override=True)
-        msg = b"Calyx Unstructured-Citadel CULC-2048 + CGM-8192 v1.0.0 payload"
+        msg = b"Calyx Unstructured-Citadel CULC-2048 + CGM-8192 v1.1.0 payload"
         ct = CalyxUnstructuredCitadelSuite.encrypt(msg, pub)
         self.assertEqual(CalyxUnstructuredCitadelSuite.decrypt(ct, priv), msg)
         sig = CalyxUnstructuredCitadelSuite.sign(msg, priv)

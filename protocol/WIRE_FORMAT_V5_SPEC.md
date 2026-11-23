@@ -1,6 +1,6 @@
 # OpenQPEP Official Wire Format v5 (`\x89QPE\x05\x00`), Compact TLV v5.1 (`\x89QPE\x05\x01`) & Stable API Specification
 
-**Version:** Official Release 1.1.0 (`OpenQPEP/1.1.0`, `v1.0.0`)  
+**Version:** Official Release 1.1.0 (`OpenQPEP/1.1.0`, `v1.1.0`)  
 **Publisher:** Calyx Labs Inc. (Cleveland, Ohio)  
 **License:** Calyx Public Open Source Specifications v1.0 License (`CPOSLS-1.0`)
 

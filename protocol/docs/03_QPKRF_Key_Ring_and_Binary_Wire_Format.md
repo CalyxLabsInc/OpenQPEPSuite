@@ -8,7 +8,7 @@
 
 ## 1. Strict Official Release 1.1.0 Wire Policy (Zero Pre-Release Compatibility)
 
-OpenQPEP Official Release `1.0.0` is the clean-slate public starting point of the ecosystem and strictly accepts **only** Official Release v5 magics across Python, C99, Rust, WASM/JS, and Go:
+OpenQPEP Official Release `1.1.0` preserves 100% Wire Format v5 compatibility across all Official Public Stable Releases (`v1.0.x`–`v1.1.0`) and strictly accepts **only** Official Release v5 magics across Python, C99, Rust, WASM/JS, and Go:
 - **`WIRE_MAGIC_V5 = 0x89 0x51 0x50 0x45 0x05 0x00` (`\x89QPE\x05\x00`)** — Canonical Official Wire Format v5
 - **`WIRE_MAGIC_V5_1 = 0x89 0x51 0x50 0x45 0x05 0x01` (`\x89QPE\x05\x01`)** — Official Compact Binary TLV Wire Format v5.1
 - **`STREAM_MAGIC_V5 = 0x89 0x51 0x50 0x53 0x05 0x00` (`\x89QPS\x05\x00`)** — Official Streaming Chunked AEAD v5

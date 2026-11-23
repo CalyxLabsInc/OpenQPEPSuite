@@ -1,6 +1,6 @@
 """
 Family 4 of Calyx Sovereign-Pentad (CSP-Omega): Genuine Unbalanced Oil-and-Vinegar (UOV)
-Multivariate Quadratic Signature Engine over GF(256) (QMQ-512 — Official Release 1.0.0).
+Multivariate Quadratic Signature Engine over GF(256) (QMQ-512 — Official Release 1.1.0).
 
 Cryptographic Construction (NIST PQC Round 2 Canonical UOV Structure):
   - Field: GF(256) modulo AES irreducible polynomial x^8 + x^4 + x^3 + x + 1 (0x11B),

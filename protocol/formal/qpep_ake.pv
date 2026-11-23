@@ -1,4 +1,4 @@
-(* OpenQPEP Official Release 1.0.0 (v1.0.0) — Machine-Checked ProVerif Proof Model *)
+(* OpenQPEP Official Release 1.1.0 (v1.1.0) — Machine-Checked ProVerif Proof Model *)
 (* Protocol: QPEP-AKE (1-RTT Bidirectional Post-Quantum Mutually Authenticated Key Exchange *)
 (*           combining ee + es + se QLX + X448 + CMT-4 Key-Committing CC-512) *)
 (* Proves: Mutual PQ Authentication, Session Key Secrecy, Forward Secrecy, and KCI Resistance *)

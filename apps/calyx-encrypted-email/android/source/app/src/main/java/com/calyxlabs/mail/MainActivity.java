@@ -184,7 +184,7 @@ public class MainActivity extends Activity implements Runnable {
         } catch (Exception ignored) {}
     }
 
-    /* OpenQPEP Official Release 1.0.0: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
+    /* OpenQPEP Official Release 1.1.0: Read-only native ActivityManager.MemoryInfo helper for >= 12 GB RAM gate */
     private double getDeviceRamGiB() {
         android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(android.content.Context.ACTIVITY_SERVICE);
         if (am == null) return 0.0;

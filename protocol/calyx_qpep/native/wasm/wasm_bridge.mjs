@@ -1,5 +1,5 @@
 /**
- * OpenQPEP Official Release 1.0.0 (v1.0.0) — WebAssembly SIMD128 Bridge & Official Wire Format v5 Engine
+ * OpenQPEP Official Release 1.1.0 (v1.1.0) — WebAssembly SIMD128 Bridge & Official Wire Format v5 Engine
  * Supports all 10 canonical suites, bit-exact NTT_3329 / InvNTT_3329, and strict Official Wire Format v5
  * (\x89QPE\x05\x00 / \x89QPE\x05\x01) with hard QPEPLegacyProtocolError rejection of all legacy
  * Release Candidate (-rc: \x04\x00/\x04\x01), Production Candidate (-pc: \x03\x00/\x03\x01), and Beta frames.
@@ -38,8 +38,8 @@ export class OpenQPEPWasmBridge {
   constructor() {
     this.wasmInstance = null;
     this.backend = "pure-js-reference";
-    this.version = "1.0.0";
-    this.protocol = "OpenQPEP/1.0.0";
+    this.version = "1.1.0";
+    this.protocol = "OpenQPEP/1.1.0";
   }
 
   async init(wasmBytes = null) {
@@ -60,13 +60,13 @@ export class OpenQPEPWasmBridge {
         return true;
       }
       if (frameBytes[4] === 0x04) {
-        throw new Error("QPEPLegacyProtocolError: Legacy Release Candidate (-rc) Wire v4/v4.1 rejected in Official Release 1.0.0.");
+        throw new Error("QPEPLegacyProtocolError: Legacy Release Candidate (-rc) Wire v4/v4.1 rejected in Official Release 1.1.0.");
       }
       if (frameBytes[4] === 0x03) {
-        throw new Error("QPEPLegacyProtocolError: Legacy Production Candidate (-pc) Wire v3/v3.1 rejected in Official Release 1.0.0.");
+        throw new Error("QPEPLegacyProtocolError: Legacy Production Candidate (-pc) Wire v3/v3.1 rejected in Official Release 1.1.0.");
       }
       if (frameBytes[4] === 0x01 || frameBytes[4] === 0x02) {
-        throw new Error("QPEPLegacyProtocolError: Legacy Beta (-beta) wire frame rejected in Official Release 1.0.0.");
+        throw new Error("QPEPLegacyProtocolError: Legacy Beta (-beta) wire frame rejected in Official Release 1.1.0.");
       }
     }
     throw new Error("QPEPLegacyProtocolError: Unsupported wire magic; Official Wire Format v5 (\\x89QPE\\x05\\x00) required.");

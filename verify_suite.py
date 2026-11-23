@@ -95,6 +95,7 @@ def main() -> int:
             inner = p.stdout.decode("utf-8", errors="replace")
             check(EXPECTED_VER in inner, f"{mc_fn} inner plist missing {EXPECTED_VER}")
             check("Production Candidate" not in inner and "PC 1." not in inner, f"{mc_fn} inner plist still contains stale PC text")
+            check("1.0.0" not in inner and "1.0.2" not in inner, f"{mc_fn} inner plist still contains stale 1.0.x version")
 
     # 3. Byte-for-byte parity between QPEP Client Android and iOS HTML
     c_and = SUITE_ROOT / "apps/calyx-qpep-client/android/source/app/src/main/assets/calyx_qpep_app.html"

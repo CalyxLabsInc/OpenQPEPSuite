@@ -21,7 +21,7 @@ class TestOpenQPEPv117PCBeyondLWEAnd10KATs(unittest.TestCase):
     PASS = "Calyx!@#$_2026Aa99"
 
     def test_01_all_5_beyond_lwe_suites_native_qpkrf_and_crypto_parity(self):
-        msg = b"OpenQPEP v1.0.0 End-to-End Beyond-LWE .qpkrf Parity Test"
+        msg = b"OpenQPEP v1.1.0 End-to-End Beyond-LWE .qpkrf Parity Test"
         for suite_id in BEYOND_LWE_SUITES:
             kr = OpenQPEPProtocol.generate_keypair(
                 f"Test {suite_id}",

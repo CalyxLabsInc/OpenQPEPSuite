@@ -1,5 +1,5 @@
 """
-Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Official Release 1.0.0).
+Calyx Sovereign-Pentad (CSP-Omega — Five-Family Cryptographic Citadel) (Official Release 1.1.0).
 
 Simultaneously fuses FIVE mathematically disjoint post-quantum families in parallel threads:
   Family 1 — Unstructured Plain-LWE (CULC-2048): zero ring symmetry, worst-case general lattice
@@ -9,7 +9,7 @@ Simultaneously fuses FIVE mathematically disjoint post-quantum families in paral
   Family 4 — Multivariate Quadratic Signatures (QMQ-512): UOV over GF(256)
   Family 5 — Stateless Hash-Based Hypertree (QHS-512): zero-trapdoor Keccak-f[1600] one-wayness
 
-Official Release 1.0.0:
+Official Release 1.1.0:
   - Strict Official Wire Format v5 (\\x89QPE\\x05\\x00, packet_type=0x06 PACKET_TYPE_PENTAD)
     with zero backwards compatibility for legacy -rc / -pc / -beta packets.
   - CMT-4 Key-Committing CC-512 AEAD and signer key_hash transcript binding.

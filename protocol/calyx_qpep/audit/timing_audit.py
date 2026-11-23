@@ -1,5 +1,5 @@
 """
-OpenQPEP Official Release 1.0.0 Statistical Side-Channel & Constant-Time Audit (dudect / ctgrind).
+OpenQPEP Official Release 1.1.0 Statistical Side-Channel & Constant-Time Audit (dudect / ctgrind).
 Implements DudeCT-style Welch's t-test and constant-time execution checks across:
   1. Constant-time primitives (`ct_cmov`, `ct_eq`)
   2. NTT_3329 & NTT_8380417 butterflies

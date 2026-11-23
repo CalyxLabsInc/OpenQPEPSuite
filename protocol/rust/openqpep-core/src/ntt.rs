@@ -1,4 +1,4 @@
-// OpenQPEP Official Release 1.0.0 (v1.0.0)
+// OpenQPEP Official Release 1.1.0 (v1.1.0)
 //! Bit-exact 7-layer NTT_3329 over Z_3329[X]/(X^256 + 1) matching OpenQPEP KATs.
 pub const QLX_Q: i32 = 3329;
 pub const INV_128_3329: i32 = 3303;

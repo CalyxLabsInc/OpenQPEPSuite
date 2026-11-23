@@ -43,7 +43,7 @@ $$\sigma_\Omega = (\sigma_{\text{QHS-512}},\; \sigma_{\text{QMQ-512}},\; \sigma_
 ## 3. Mandatory `kdf_version: 4` (`QPKD-Argon2id + qSponge-512`) & CMT-4 Key-Committing `CC-512`
 
 - **Passphrase Policy Witness (64 Bytes):** Hardcoded non-bypassable policy (`>= 12` chars, `>= 2` digits, `>= 4` specials, `>= 2` uppercase, `>= 4` lowercase) hashed into a 64-byte witness absorbed directly into key derivation.
-- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 4`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3..4`, `p = 4`, 256-bit salt, `"personalization": "OpenQPEP/1.1.0"`, optional `FIDO2-PRF` hardware passkey secret). All legacy `kdf_version < 4` key rings (`1`, `2`, `3`) are **strictly rejected** in Official Release `1.0.0` with `QPEPLegacyProtocolError`.
+- **RFC 9106 Argon2id + qSponge-512 Cascade (`kdf_version: 4`):** Default `m = 65,536 KiB` (64 MiB) on standard hardware and `m = 262,144 KiB` (256 MiB) on high-tier hardware (`t = 3..4`, `p = 4`, 256-bit salt, `"personalization": "OpenQPEP/1.1.0"`, optional `FIDO2-PRF` hardware passkey secret). All legacy `kdf_version < 4` key rings (`1`, `2`, `3`) are **strictly rejected** in Official Release `1.1.0` with `QPEPLegacyProtocolError`.
 - **CMT-4 Key-Committing Calyx-Cascade-512 (`CC-512`):** Derives independent subkeys `(k_aes, k_chacha, k_commit)` via `qSponge-XOF`, cascades `AES-256-GCM` inside `ChaCha20-Poly1305`, and appends a 32-byte `qSponge-512` CMT-4 key+nonce+AAD+ciphertext commitment tag (`CC512_OVERHEAD_BYTES = 64`) verified in constant time *before* AEAD decryption — completely defeating Invisible Salamanders / multi-key AEAD collision attacks.
 
 ---

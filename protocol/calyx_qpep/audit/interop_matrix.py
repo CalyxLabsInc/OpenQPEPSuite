@@ -1,5 +1,5 @@
 """
-OpenQPEP Official Release 1.0.0 — 5-Language Bit-Exact Interop Matrix Verifier
+OpenQPEP Official Release 1.1.0 — 5-Language Bit-Exact Interop Matrix Verifier
 (Python Reference, Native C99 libopenqpep, Rust openqpep-core, Go openqpep, Browser WASM/JS).
 Verifies 0-byte tolerance across Official Wire Format v5 (\\x89QPE\\x05\\x00) and Compact TLV v5.1
 (\\x89QPE\\x05\\x01), NTT_3329 / InvNTT_3329 bit-exact transforms, hard rejection of legacy -rc/-pc/-beta
@@ -81,28 +81,28 @@ def run_cross_language_interop_matrix() -> Dict[str, Any]:
         mjs_src = wasm_mjs.read_text(encoding="utf-8")
         if "WIRE_MAGIC_V5" not in mjs_src or "verifyWireMagicV5" not in mjs_src or "QPEPLegacyProtocolError" not in mjs_src:
             raise AssertionError("WASM/JS bridge missing Wire Format v5 or QPEPLegacyProtocolError enforcement.")
-    results["languages_verified"].append("WASM-SIMD128 / JS (@calyxlabs/openqpep-wasm 1.0.0)")
+    results["languages_verified"].append("WASM-SIMD128 / JS (@calyxlabs/openqpep-wasm 1.1.0)")
 
     # 3. Rust openqpep-core Wire v5 source & constant-time parity check
     rust_v5 = (REPO_ROOT / "rust/openqpep-core/src/wire_v5.rs").read_text(encoding="utf-8")
     if "\\x89QPE\\x05\\x00" not in rust_v5 or "\\x89QPE\\x05\\x01" not in rust_v5:
         raise AssertionError("Rust openqpep-core missing Wire v5/v5.1 magic definitions.")
-    results["languages_verified"].append("Rust (openqpep-core 1.0.0)")
+    results["languages_verified"].append("Rust (openqpep-core 1.1.0)")
 
     # 4. Go openqpep Wire v5 conformance check
     go_v5 = (REPO_ROOT / "go/openqpep/wire_v5.go").read_text(encoding="utf-8")
     if "0x05, 0x00" not in go_v5 or "ErrLegacyProtocol" not in go_v5:
         raise AssertionError("Go openqpep missing Wire v5 or ErrLegacyProtocol rejection.")
-    results["languages_verified"].append("Go (github.com/CalyxLabsInc/OpenQPEP/go 1.0.0)")
+    results["languages_verified"].append("Go (github.com/CalyxLabsInc/OpenQPEP/go 1.1.0)")
 
     # 5. Wire v5 / Compact v5.1 roundtrip & hard legacy -rc/-pc/-beta rejection
     frame_v5 = pack_wire_frame(b"interop-v5", "CALYX QPEP MESSAGE")
     unpacked_v5, _ = unpack_wire_frame(frame_v5, "CALYX QPEP MESSAGE")
     assert unpacked_v5 == b"interop-v5"
 
-    compact_v51 = pack_compact_v51({1: b"OFFICIAL-1.0.0"}, "CALYX QPEP COMPACT")
+    compact_v51 = pack_compact_v51({1: b"OFFICIAL-1.1.0"}, "CALYX QPEP COMPACT")
     tlv_fields, _, _ = unpack_compact_v51(compact_v51, "CALYX QPEP COMPACT")
-    assert tlv_fields[1] == b"OFFICIAL-1.0.0"
+    assert tlv_fields[1] == b"OFFICIAL-1.1.0"
 
     for legacy_magic in ALL_LEGACY_WIRE_MAGICS:
         try:

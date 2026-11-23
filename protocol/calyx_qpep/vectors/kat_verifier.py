@@ -1,5 +1,5 @@
 """
-OpenQPEP Known Answer Test (KAT) Verifier (Official Release 1.0.0 / v1.0.0).
+OpenQPEP Known Answer Test (KAT) Verifier (Official Release 1.1.0 / v1.1.0).
 Re-runs deterministic KAT derivation across ALL 10 canonical suites (5 structured-lattice + 5 Beyond-LWE)
 from golden JSON files in vectors/*.json and verifies 100% bit-for-bit equality.
 """
@@ -11,7 +11,7 @@ from .kat_generator import SUITE_KAT_SPECS, generate_suite_kat
 
 
 def verify_kat_file(kat_path: Path) -> Tuple[bool, str]:
-    """Verifies a single golden JSON KAT file against the live OpenQPEP Official Release 1.0.0 engine."""
+    """Verifies a single golden JSON KAT file against the live OpenQPEP Official Release 1.1.0 engine."""
     expected: Dict[str, Any] = json.loads(Path(kat_path).read_text(encoding="utf-8"))
     family = expected.get("family", "structured_lattice")
     spec = {

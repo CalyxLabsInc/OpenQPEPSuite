@@ -3,7 +3,7 @@
 
 * **Project:** [OpenQPEP by Calyx Labs Inc.](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) (`Official Release 1.1.0`)
 * **Creator & Lead Architect:** Tristen Martinez, Founder of [Calyx Labs Inc.](https://calyxlabsinc.org/) ([Documentation Mirror](https://calyxlabsinc.github.io/))
-* **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) (Android 10 through Android 17)
+* **Android Client:** [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client/) (Android 10 through Android 17)
 * **Live Public Key Directory:** [https://qpepkeys.calyxlabsinc.org](https://qpepkeys.calyxlabsinc.org)
 
 ---
@@ -77,7 +77,7 @@ Whether you are encrypting a Notepad message or selecting any binary file (`.jpg
 ---
 
 ### B. How Decrypting a Message or File Works (`Decrypt`)
-When you open a `.qpep` packet in [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) or the [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/pc/apps/calyx-qpep-client/) app and click **Decrypt**:
+When you open a `.qpep` packet in [OpenQPEP](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/protocol/) or the [Calyx QPEP Client](https://github.com/CalyxLabsInc/OpenQPEPSuite/tree/main/apps/calyx-qpep-client/) app and click **Decrypt**:
 
 1. **Outer Wire MAC & Checksum Verification:**
    * OpenQPEP verifies the `qSponge` armor checksum and 256-bit wire frame MAC, then unwhitens the binary frame.

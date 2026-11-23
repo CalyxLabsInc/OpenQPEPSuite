@@ -1,5 +1,5 @@
 """
-Calyx-Cascade-512 (CC-512) Provably CMT-4 Key-Committing Dual-Stream AEAD (Official Release 1.0.0).
+Calyx-Cascade-512 (CC-512) Provably CMT-4 Key-Committing Dual-Stream AEAD (Official Release 1.1.0).
 
 Security Guarantees:
   - Dual-Algorithm Confidentiality & Integrity: AES-256-GCM nested inside ChaCha20-Poly1305

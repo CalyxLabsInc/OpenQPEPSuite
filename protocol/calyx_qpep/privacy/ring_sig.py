@@ -1,6 +1,6 @@
 """
 QVS-Ring: Genuine 1-of-N Post-Quantum Linkable Module-SIS Lattice Ring Signatures
-over R_8380417 = Z_8380417[X]/(X^256 + 1) (Official Release 1.0.0 / v1.0.0).
+over R_8380417 = Z_8380417[X]/(X^256 + 1) (Official Release 1.1.0 / v1.1.0).
 
 Cryptographic Construction (AOS Fiat-Shamir with Aborts over Module-SIS):
   - Shared public matrix A in R_Q^{2 x 4} expanded from fixed domain seed.

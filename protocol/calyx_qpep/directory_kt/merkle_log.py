@@ -1,5 +1,5 @@
 """
-QPEP-KT: Append-Only qSponge-512 Merkle Transparency Log (Official Release 1.0.0).
+QPEP-KT: Append-Only qSponge-512 Merkle Transparency Log (Official Release 1.1.0).
 Features:
   - O(log N) Merkle Inclusion Proofs (RFC 6962 / RFC 9162 canonical binary tree structure)
   - O(log N) Merkle Consistency Proofs (`consistency_proof` & `verify_consistency_proof`) proving

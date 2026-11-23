@@ -1,6 +1,6 @@
 """
 Calyx Unstructured-Citadel: CULC-2048 + CGM-8192 (Zero-Ring Plain-LWE + Goppa — HIGH-TIER HARDWARE ONLY)
-OpenQPEP Official Release 1.0.0 (v1.0.0) — Calyx Labs Inc. (CPOSLS-1.0).
+OpenQPEP Official Release 1.1.0 (v1.1.0) — Calyx Labs Inc. (CPOSLS-1.0).
 
 Fuses Zero-Ring Unstructured Plain-LWE (CULC-2048) with Genuine Binary Goppa Patterson Codes (CGM-8192),
 Stateless qSponge-512 Hypertree signatures (QHS-512), and CMT-4 Key-Committing CC-512 over Official Wire Format v5.

@@ -569,7 +569,7 @@
 
 <script>
 /* =========================================================================
-   CALYX ENCRYPTED EMAIL — OPENQPEP OFFICIAL RELEASE 1.0.0 ENGINE & MAIL CLIENT
+   CALYX ENCRYPTED EMAIL — OPENQPEP OFFICIAL RELEASE 1.1.0 ENGINE & MAIL CLIENT
    ========================================================================= */
 const PROTOCOL_VERSION = "OpenQPEP/1.1.0";
 const UNIVERSAL_VERSION = "1.1.0";
@@ -750,7 +750,7 @@ function validateQpkdPassphrase(pass) {
 }
 
 
-/* ===== CANONICAL OPENQPEP 1.0.0 KECCAK-f[1600] (SHA3-512 / SHAKE-256) & WIRE FORMAT v5 ===== */
+/* ===== CANONICAL OPENQPEP 1.1.0 KECCAK-f[1600] (SHA3-512 / SHAKE-256) & WIRE FORMAT v5 ===== */
 const _OQ_KECCAK_RC = [
   0x0000000000000001n,0x0000000000008082n,0x800000000000808an,0x8000000080008000n,
   0x000000000000808bn,0x0000000080000001n,0x8000000080008081n,0x8000000000008009n,
@@ -969,7 +969,7 @@ function _oqUnpackArmorV5(armoredText) {
   }
   return { label, headers, payload, wireFrame: rawFrame };
 }
-/* ===== END CANONICAL OPENQPEP 1.0.0 WIRE FORMAT v5 ===== */
+/* ===== END CANONICAL OPENQPEP 1.1.0 WIRE FORMAT v5 ===== */
 
 function createQpepKeyAccount({ keyName, email, passphrase, qlxTier = "QLX-4096" }) {
   const normTier = normalizeQlxTier(qlxTier);

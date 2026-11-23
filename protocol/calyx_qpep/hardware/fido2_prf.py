@@ -1,5 +1,5 @@
 """
-OpenQPEP Hardware FIDO2 WebAuthn PRF & Enclave Key Wrapper (Official Release 1.0.0).
+OpenQPEP Hardware FIDO2 WebAuthn PRF & Enclave Key Wrapper (Official Release 1.1.0).
 Combines QPKD-Argon2id passphrase key material with hardware-bound FIDO2 WebAuthn PRF
 (or Android StrongBox / Apple Secure Enclave) secret outputs, enforcing mandatory .qshare
 recovery verification before hardware-only lock mode.

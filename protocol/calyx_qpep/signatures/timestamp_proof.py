@@ -1,5 +1,5 @@
 """
-OpenQPEP Cryptographic Timestamp Bindings (Official Release 1.0.0 / Wire v5).
+OpenQPEP Cryptographic Timestamp Bindings (Official Release 1.1.0 / Wire v5).
 Binds a signed payload's qSponge-512 digest to a UTC timestamp, a public hash-chain anchor,
 and/or a Timestamp Authority (TSA) conjunctive QVS + Ed448 attestation.
 """
