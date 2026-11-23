@@ -499,6 +499,28 @@
   </div>
 </div>
 
+<!-- EXPORT PRIVATE KEY PASSPHRASE VERIFICATION MODAL -->
+<div id="modal-export-priv-pass" class="modal-backdrop hidden">
+  <div class="modal-box" style="max-width:460px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div>
+        <div class="mono" style="font-size:11px; color:#F59E0B; letter-spacing:0.8px;">PRIVATE KEY EXPORT GATE</div>
+        <h3 style="margin:2px 0 0; font-size:17px;">Verify Key Passphrase</h3>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="closeExportPrivModal()">✕</button>
+    </div>
+    <p style="font-size:12.5px; color:var(--text-secondary); margin:0 0 12px;">
+      Enter the <strong>QPKD-Argon2id (kdf_version: 4)</strong> passphrase for this key to authorize exporting your Private Key Ring (<code>.qpkrf</code>).
+    </p>
+    <input id="export-priv-pass-input" type="password" class="neon-input" placeholder="Enter your key passphrase..." onkeydown="if(event.key==='Enter') confirmExportPrivateKeyring()" />
+    <div id="export-priv-pass-err" style="display:none; color:#F87171; font-size:12px; margin-top:8px;"></div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px;">
+      <button class="btn btn-secondary btn-sm" onclick="closeExportPrivModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmExportPrivateKeyring()">Verify &amp; Export Private Key</button>
+    </div>
+  </div>
+</div>
+
 <!-- WIRE FORMAT v5 & CMT-4 PACKET INSPECTOR MODAL -->
 <div id="modal-inspector" class="modal-backdrop hidden">
   <div class="modal-box">
@@ -1794,13 +1816,37 @@ async function sendComposedEmail() {
 /* =========================================================================
    KEY RING EXPORT / IMPORT / ONE-CLICK ROTATION & DIRECTORY
    ========================================================================= */
-function exportKeyring(includePrivate) {
-  const kr = state.localKeyrings[state.account.email];
-  let armor = state.account.public_qpkrf;
-  if (includePrivate) {
-    if (!kr || !kr.private_key_locked) { showToast("No local Private .qpkrf stored on this device."); return; }
-    armor = formatQpkrfArmor(kr, true);
+function verifyMailKeyPassphrase(kr, passphrase) {
+  if (!kr || !kr.private_key_locked || !passphrase) return false;
+  const pl = kr.private_key_locked;
+  // Standard Calyx Encrypted Email / Messenger kdf_version 4 verification
+  if (pl.salt_hex && pl.wrapped_secret_hex && pl.secret_mac) {
+    const wrapKey = _oqWrapKeyV4Hex(pl.salt_hex, passphrase);
+    const expectedMac = _oqWrapMacV4Hex(wrapKey, pl.wrapped_secret_hex, kr.key_hash);
+    if (expectedMac === pl.secret_mac) return true;
   }
+  // Fallback check for imported keys that store salt_b64/kdf_params without secret_mac
+  if (pl.salt_hex && pl.wrapped_secret_hex && !pl.secret_mac) {
+    try {
+      const wrapKey = _oqWrapKeyV4Hex(pl.salt_hex, passphrase);
+      const dec = _oqXorHex(pl.wrapped_secret_hex, wrapKey);
+      const parsed = JSON.parse(dec);
+      if (parsed && parsed.key_hash === kr.key_hash) return true;
+    } catch (e) {}
+  }
+  return false;
+}
+
+function closeExportPrivModal() {
+  const m = document.getElementById("modal-export-priv-pass");
+  const inp = document.getElementById("export-priv-pass-input");
+  const err = document.getElementById("export-priv-pass-err");
+  if (inp) inp.value = "";
+  if (err) { err.style.display = "none"; err.textContent = ""; }
+  if (m) m.classList.add("hidden");
+}
+
+function _performKeyringDownload(armor, includePrivate) {
   const hash8 = String(state.account.key_hash || "OPENQPEP").slice(0, 8).toUpperCase();
   const fname = `${hash8}_${includePrivate ? "PrivateKey" : "PublicKey"}.qpkrf`;
   if (window.location.protocol === "file:") {
@@ -1812,6 +1858,40 @@ function exportKeyring(includePrivate) {
   a.download = fname;
   a.click();
   showToast(`Exported ${fname}`);
+}
+
+function confirmExportPrivateKeyring() {
+  const kr = state.localKeyrings[state.account.email];
+  const inp = document.getElementById("export-priv-pass-input");
+  const err = document.getElementById("export-priv-pass-err");
+  const pass = inp ? inp.value : "";
+  if (!pass) {
+    if (err) { err.textContent = "Please enter your key passphrase."; err.style.display = "block"; }
+    return;
+  }
+  if (!verifyMailKeyPassphrase(kr, pass)) {
+    if (err) { err.textContent = "Incorrect passphrase — private key export denied."; err.style.display = "block"; }
+    return;
+  }
+  const armor = formatQpkrfArmor(kr, true);
+  closeExportPrivModal();
+  _performKeyringDownload(armor, true);
+}
+
+function exportKeyring(includePrivate) {
+  const kr = state.localKeyrings[state.account.email];
+  if (includePrivate) {
+    if (!kr || !kr.private_key_locked) { showToast("No local Private .qpkrf stored on this device."); return; }
+    const m = document.getElementById("modal-export-priv-pass");
+    const inp = document.getElementById("export-priv-pass-input");
+    const err = document.getElementById("export-priv-pass-err");
+    if (err) { err.style.display = "none"; err.textContent = ""; }
+    if (inp) inp.value = "";
+    if (m) m.classList.remove("hidden");
+    if (inp) setTimeout(() => inp.focus(), 50);
+    return;
+  }
+  _performKeyringDownload(state.account.public_qpkrf, false);
 }
 
 function importPrivateKeyring() {
@@ -1919,6 +1999,32 @@ if (state.token && state.account) {
 /* === OpenQPEP Official Release 1.0.1 Dynamic >= 12 GB RAM Hardware Enforcement & Web Worker Offloading === */
 (function initOpenQPEPv100HardwareAndWorker() {
   const HIGH_TIER_SUITES = ['QLX-16384', 'CGM-8192', 'CULC-2048', 'CSP-Omega'];
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
+  function detectDeviceRamInfo() {
+    try {
+      if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
+        const gb = Number(window.CalyxHardwareBridge.getDeviceRamGiB());
+        if (gb > 0) return { gb: gb, capped: false };
+      }
+      if (typeof navigator !== 'undefined' && typeof navigator.deviceMemory === 'number' && navigator.deviceMemory > 0) {
+        // W3C Device Memory spec hard-caps navigator.deviceMemory at 8 GB on 8/12/16/24+ GB flagships & desktops
+        return { gb: navigator.deviceMemory, capped: true };
+      }
+    } catch (e) {}
+    return { gb: 0, capped: true };
+  }
   function detectDeviceRamInfo() {
     try {
       if (window.CalyxHardwareBridge && typeof window.CalyxHardwareBridge.getDeviceRamGiB === 'function') {
