@@ -857,7 +857,7 @@ function _oqB64ToU8(b64) {
   return out;
 }
 function _oqWrapKeyV4Hex(saltHex, passphrase) {
-  return _oqBytesToHex(_oqSha3_512(`QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.1.0|kdf_version=4|${passphrase}`));
+  return _oqBytesToHex(_oqSha3_512(`QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.0.0|kdf_version=4|${passphrase}`));
 }
 function _oqWrapMacV4Hex(wrapKeyHex, wrappedSecretHex, keyHash) {
   return _oqBytesToHex(_oqSha3_512(`QPKD-WRAP-MAC-v4|${wrapKeyHex}|${wrappedSecretHex}|${String(keyHash || "").toUpperCase()}`));
@@ -1850,13 +1850,13 @@ function verifyMailKeyPassphrase(kr, passphrase) {
   if (pl.salt_hex && pl.wrapped_secret_hex && pl.secret_mac) {
     const wrapKey = _oqWrapKeyV4Hex(pl.salt_hex, passphrase);
     const expectedMac = _oqWrapMacV4Hex(wrapKey, pl.wrapped_secret_hex, kr.key_hash);
-    if (expectedMac === pl.secret_mac) return true;
+    if (_oqCtEq(utf8Bytes(expectedMac), utf8Bytes(String(pl.secret_mac || "").toUpperCase()))) return true;
   }
   // Fallback check for imported keys that store salt_b64/kdf_params without secret_mac
   if (pl.salt_hex && pl.wrapped_secret_hex && !pl.secret_mac) {
     try {
       const wrapKey = _oqWrapKeyV4Hex(pl.salt_hex, passphrase);
-      const dec = _oqXorHex(pl.wrapped_secret_hex, wrapKey);
+      const dec = _oqUnxorHex(pl.wrapped_secret_hex, wrapKey);
       const parsed = JSON.parse(dec);
       if (parsed && parsed.key_hash === kr.key_hash) return true;
     } catch (e) {}
