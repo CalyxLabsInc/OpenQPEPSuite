@@ -82,8 +82,8 @@ class TestOpenQPEPPC100NativeAndStrictWireV3(unittest.TestCase):
         self.assertLess(t_nat, t_py)
 
     def test_03_wire_format_v3_and_strict_beta_magic_rejection(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.1")
         payload = b"OpenQPEP Official Release 1.0.0 strict wire v5 payload"
         label = "CALYX QPEP MESSAGE"
 

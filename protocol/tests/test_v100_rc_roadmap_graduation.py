@@ -53,9 +53,9 @@ class TestOpenQPEPOfficialRelease100Graduation(unittest.TestCase):
     PASS = "Calyx!@#$_2026Rel100Aa99"
 
     def test_01_official_wire_v5_and_hard_legacy_prerelease_rejection(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
         self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.0")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.1")
 
         # Full Wire Format v5 (\x89QPE\x05\x00)
         f5 = pack_wire_frame(b"Official-1.0.0 payload", "CALYX QPEP MESSAGE")

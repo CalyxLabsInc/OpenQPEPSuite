@@ -209,8 +209,8 @@ class TestOpenQPEPv050Arc1AndArc2(unittest.TestCase):
         self.assertEqual(dev_a.snapshot(), dev_b.snapshot())
 
         # v1.0.0 Formal models, Go port, Spec freeze, SPDX SBOM
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.1")
         self.assertTrue((REPO_ROOT / "formal/qpep_ake.pv").is_file())
         self.assertTrue((REPO_ROOT / "go/openqpep/wire_v5.go").is_file())
         self.assertTrue((REPO_ROOT / "specs/OPENQPEP_v1.0.0_OFFICIAL_RELEASE_SPEC.md").is_file())

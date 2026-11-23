@@ -17,8 +17,8 @@ from calyx_qpep.lattice.citadel_suite import CalyxUnstructuredCitadelSuite
 
 class TestOpenQPEPPC110All10Tiers(unittest.TestCase):
     def test_01_version_and_canonical_10_tier_naming(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
-        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
+        self.assertEqual(PROTOCOL_VERSION, "OpenQPEP/1.0.1")
         self.assertEqual(len(ALL_TEN_SUITES), 10)
         pattern = re.compile(r"^Calyx [A-Za-z -]+: [A-Za-z0-9-]+ \+ [A-Za-z0-9-]+ \(.+\)$")
         for suite_id, meta in ALL_TEN_SUITES.items():

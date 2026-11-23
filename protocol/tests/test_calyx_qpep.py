@@ -21,7 +21,7 @@ class TestOpenQPEPProtocol(unittest.TestCase):
         self.valid_pass_2 = "Tristen$%^&99Az"
 
     def test_universal_version_0_1_6(self):
-        self.assertEqual(UNIVERSAL_VERSION, "1.0.0")
+        self.assertEqual(UNIVERSAL_VERSION, "1.0.1")
         self.assertEqual(UNIVERSAL_VERSION_LABEL, "Official Release 1.0.0")
 
     def test_hardcoded_passphrase_policy(self):
