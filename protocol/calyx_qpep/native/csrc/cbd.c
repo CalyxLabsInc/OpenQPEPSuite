@@ -25,7 +25,12 @@ uint32_t openqpep_native_abi_info(void) {
     return flags;
 }
 
+static inline int32_t ct_caddq_cbd(int32_t a, int32_t q) {
+    return a + ((a >> 31) & q);
+}
+
 void openqpep_cbd2_3329(const uint8_t *buf, int32_t *out) {
+    if (!buf || !out) return;
     for (int i = 0; i < 128; i++) {
         uint8_t b = buf[i];
         int32_t a0 = (b & 1) + ((b >> 1) & 1);
@@ -34,24 +39,26 @@ void openqpep_cbd2_3329(const uint8_t *buf, int32_t *out) {
         int32_t b1 = ((b >> 6) & 1) + ((b >> 7) & 1);
         int32_t d0 = a0 - b0;
         int32_t d1 = a1 - b1;
-        out[2 * i] = d0 < 0 ? d0 + QLX_Q : d0;
-        out[2 * i + 1] = d1 < 0 ? d1 + QLX_Q : d1;
+        out[2 * i] = ct_caddq_cbd(d0, QLX_Q);
+        out[2 * i + 1] = ct_caddq_cbd(d1, QLX_Q);
     }
 }
 
 void openqpep_cbd1_3329(const uint8_t *buf, int32_t *out) {
+    if (!buf || !out) return;
     for (int i = 0; i < 64; i++) {
         uint8_t b = buf[i];
         for (int j = 0; j < 4; j++) {
             int32_t a = (b >> (2 * j)) & 1;
             int32_t c = (b >> (2 * j + 1)) & 1;
             int32_t d = a - c;
-            out[4 * i + j] = d < 0 ? d + QLX_Q : d;
+            out[4 * i + j] = ct_caddq_cbd(d, QLX_Q);
         }
     }
 }
 
 void openqpep_cbd2_qvs(const uint8_t *buf, int32_t *out) {
+    if (!buf || !out) return;
     for (int i = 0; i < 128; i++) {
         uint8_t b = buf[i];
         int32_t a0 = (b & 1) + ((b >> 1) & 1);
@@ -60,8 +67,8 @@ void openqpep_cbd2_qvs(const uint8_t *buf, int32_t *out) {
         int32_t b1 = ((b >> 6) & 1) + ((b >> 7) & 1);
         int32_t d0 = a0 - b0;
         int32_t d1 = a1 - b1;
-        out[2 * i] = d0 < 0 ? d0 + QVS_Q : d0;
-        out[2 * i + 1] = d1 < 0 ? d1 + QVS_Q : d1;
+        out[2 * i] = ct_caddq_cbd(d0, QVS_Q);
+        out[2 * i + 1] = ct_caddq_cbd(d1, QVS_Q);
     }
 }
 
@@ -76,6 +83,7 @@ void openqpep_plain_lwe_row_accum_u16(
     uint16_t scalar,
     uint32_t n
 ) {
+    if (!dst || !row) return;
     for (uint32_t j = 0; j < n; j++) {
         dst[j] = (uint16_t)(dst[j] + (uint16_t)(scalar * row[j]));
     }
@@ -93,10 +101,12 @@ void openqpep_plain_lwe_keygen_row_u16(
     uint32_t n,
     uint32_t nbar
 ) {
+    if (!b_row || !e_row || !a_row || !s_flat) return;
     for (uint32_t j = 0; j < nbar; j++) {
         uint16_t acc = e_row[j];
         for (uint32_t k = 0; k < n; k++) {
-            acc = (uint16_t)(acc + (uint16_t)(a_row[k] * s_flat[k * nbar + j]));
+            size_t idx = (size_t)k * (size_t)nbar + (size_t)j;
+            acc = (uint16_t)(acc + (uint16_t)(a_row[k] * s_flat[idx]));
         }
         b_row[j] = acc;
     }

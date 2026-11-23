@@ -15,9 +15,12 @@ jobs:
       - name: Install OpenQPEP Protocol Package
         working-directory: protocol
         run: pip install -e .
-      - name: Verify All 10 Deterministic Golden KAT Vectors
+      - name: Verify All 10 Deterministic Golden KAT Vectors (Native C99)
         working-directory: protocol
         run: python3 -m calyx_qpep.cli verify-vectors
+      - name: Verify All 10 Deterministic Golden KAT Vectors (Pure-Python Reference)
+        working-directory: protocol
+        run: OPENQPEP_DISABLE_NATIVE=1 python3 -m calyx_qpep.cli verify-vectors
       - name: Run Full OpenQPEP Protocol Unit & Security Regression Suite
         working-directory: protocol
         run: python3 -m unittest discover -s tests -v

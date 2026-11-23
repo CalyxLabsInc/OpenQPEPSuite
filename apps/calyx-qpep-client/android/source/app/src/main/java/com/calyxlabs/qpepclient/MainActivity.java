@@ -26,6 +26,9 @@ public class MainActivity extends Activity {
         ws.setJavaScriptEnabled(true);
         ws.setDomStorageEnabled(true);
         ws.setDatabaseEnabled(true);
+        ws.setAllowContentAccess(false);
+        ws.setAllowFileAccessFromFileURLs(false);
+        ws.setAllowUniversalAccessFromFileURLs(false);
         wv.addJavascriptInterface(new CalyxHardwareBridge(), "CalyxHardwareBridge");
         wv.loadUrl("file:///android_asset/calyx_qpep_app.html");
         setContentView(wv);

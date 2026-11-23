@@ -79,6 +79,8 @@ def main() -> int:
                     check("initOpenQPEPRC100" not in html and "v1.3.0-pc" not in html and "v1.4.0-pc" not in html, f"{apk_fn} still contains stale RC/PC function or comment markers")
                     check("QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.0.0|kdf_version=4|${passphrase}" in html, f"{apk_fn} {apk_html_entry} missing immutable OpenQPEP/1.0.0 KDF v4 wrap domain tag (breaks v1.0.x key import!)")
                     check("QPKD-Argon2id-WRAP-v4|${saltHex}|OpenQPEP/1.1.0|" not in html, f"{apk_fn} {apk_html_entry} mutated immutable KDF v4 wrap domain tag to OpenQPEP/1.1.0")
+                    check("1.0.2" not in html, f"{apk_fn} {apk_html_entry} still contains stale 1.0.2 version string")
+                    check("Math.random()" not in html, f"{apk_fn} {apk_html_entry} uses non-cryptographic Math.random()")
 
         # Verify CMS-signed .mobileconfig
         mc_path = base / "ios" / mc_fn

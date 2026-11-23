@@ -70,6 +70,8 @@ public class MainActivity extends Activity implements Runnable {
         ws.setDomStorageEnabled(true);
         ws.setAllowFileAccess(true);
         ws.setAllowContentAccess(false);
+        ws.setAllowFileAccessFromFileURLs(false);
+        ws.setAllowUniversalAccessFromFileURLs(false);
         wv.clearCache(true);
         ws.setMediaPlaybackRequiresUserGesture(false);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -123,7 +125,7 @@ public class MainActivity extends Activity implements Runnable {
             lastUrl = url;
             int idx = url.lastIndexOf("|");
             if (idx < 0) return;
-            pendingTarget = url.substring(idx + 1);
+            pendingTarget = url.substring(idx + 1).replaceAll("[^a-zA-Z0-9_]", "");
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");

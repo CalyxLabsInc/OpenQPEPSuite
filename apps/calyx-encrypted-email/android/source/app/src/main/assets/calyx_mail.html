@@ -572,7 +572,7 @@
    CALYX ENCRYPTED EMAIL — OPENQPEP OFFICIAL RELEASE 1.0.0 ENGINE & MAIL CLIENT
    ========================================================================= */
 const PROTOCOL_VERSION = "OpenQPEP/1.1.0";
-const UNIVERSAL_VERSION = "1.0.2";
+const UNIVERSAL_VERSION = "1.1.0";
 const MANDATORY_KDF_VERSION = 4;
 const WIRE_MAGIC_V5 = [0x89, 0x51, 0x50, 0x45, 0x05, 0x00];
 const WIRE_MAGIC_V5_1 = [0x89, 0x51, 0x50, 0x45, 0x05, 0x01];
@@ -1411,9 +1411,9 @@ const FOLDER_ICONS = { INBOX: "📥", Sent: "📤", Drafts: "📝", Starred: "�
 function renderFolders() {
   const el = document.getElementById("folder-list");
   el.innerHTML = state.folders.map(f => `
-    <div class="folder-item ${state.currentFolder === f.name ? "active" : ""}" onclick="selectFolder('${f.name}')">
-      <span>${FOLDER_ICONS[f.name] || "📁"} ${f.name}</span>
-      ${f.unread > 0 ? `<span class="unread-pill">${f.unread}</span>` : ""}
+    <div class="folder-item ${state.currentFolder === f.name ? "active" : ""}" onclick="selectFolder('${escapeHtml(f.name)}')">
+      <span>${FOLDER_ICONS[f.name] || "📁"} ${escapeHtml(f.name)}</span>
+      ${f.unread > 0 ? `<span class="unread-pill">${Number(f.unread)}</span>` : ""}
     </div>
   `).join("");
 }
@@ -1521,7 +1521,7 @@ function renderMailList() {
     const peer = m.direction === "outbound" ? ("To: " + (m.to_addresses || []).join(", ")) : (m.from_name || m.from_address);
     const dt = (m.created_utc || "").slice(0, 16).replace("T", " ");
     return `
-      <div class="mail-row ${m.is_read ? "" : "unread"} ${state.selectedMessageId === m.message_id ? "selected" : ""}" onclick="openMessage('${m.message_id}')">
+      <div class="mail-row ${m.is_read ? "" : "unread"} ${state.selectedMessageId === m.message_id ? "selected" : ""}" onclick="openMessage('${escapeHtml(m.message_id)}')">
         <div class="mail-row-top">
           <div class="mail-sender">${m.is_starred ? "⭐ " : ""}${escapeHtml(peer)}</div>
           <div class="mail-time mono">${escapeHtml(dt)}</div>
@@ -1555,21 +1555,22 @@ async function openMessage(msgId) {
   const container = document.getElementById("reading-content");
   container.classList.remove("hidden");
 
+  const safeMsgId = escapeHtml(msgId);
   const attHtml = view.attachments.length
     ? `<div style="margin-top:16px;"><div class="mono" style="font-size:11px; color:var(--neon-blue); margin-bottom:4px;">ATTACHMENTS</div>${
-        view.attachments.map((a, idx) => `<button class="att-chip" onclick="downloadAttachment('${msgId}', ${idx})">📎 ${escapeHtml(a.filename)} (${Math.round((a.size_bytes || 0) / 1024)} KB)</button>`).join("")
+        view.attachments.map((a, idx) => `<button class="att-chip" onclick="downloadAttachment('${safeMsgId}', ${idx})">📎 ${escapeHtml(a.filename)} (${Math.round((a.size_bytes || 0) / 1024)} KB)</button>`).join("")
       }</div>`
     : "";
 
   container.innerHTML = `
     <div class="msg-toolbar">
       <button class="btn btn-secondary btn-sm" onclick="closeMobileReading()">← Back</button>
-      <button class="btn btn-primary btn-sm" onclick="replyMessage('${msgId}')">↩ Reply</button>
-      <button class="btn btn-secondary btn-sm" onclick="toggleStar('${msgId}', ${!m.is_starred})">${m.is_starred ? "★ Unstar" : "☆ Star"}</button>
-      ${m.is_openqpep ? `<button class="btn btn-secondary btn-sm" onclick="inspectMessagePacket('${msgId}')">🔬 Inspect v5 Packet</button>` : ""}
-      <button class="btn btn-secondary btn-sm" onclick="exportRawMessage('${msgId}')">⬇ Export ${m.is_openqpep ? ".qpep" : ".eml"}</button>
-      <button class="btn btn-secondary btn-sm" onclick="moveMessage('${msgId}', 'Archive')">📦 Archive</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteMessage('${msgId}')">🗑️ ${m.folder === "Trash" ? "Delete Forever" : "Trash"}</button>
+      <button class="btn btn-primary btn-sm" onclick="replyMessage('${safeMsgId}')">↩ Reply</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleStar('${safeMsgId}', ${!m.is_starred})">${m.is_starred ? "★ Unstar" : "☆ Star"}</button>
+      ${m.is_openqpep ? `<button class="btn btn-secondary btn-sm" onclick="inspectMessagePacket('${safeMsgId}')">🔬 Inspect v5 Packet</button>` : ""}
+      <button class="btn btn-secondary btn-sm" onclick="exportRawMessage('${safeMsgId}')">⬇ Export ${m.is_openqpep ? ".qpep" : ".eml"}</button>
+      <button class="btn btn-secondary btn-sm" onclick="moveMessage('${safeMsgId}', 'Archive')">📦 Archive</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMessage('${safeMsgId}')">🗑️ ${m.folder === "Trash" ? "Delete Forever" : "Trash"}</button>
     </div>
     <h2 style="margin:0 0 10px; font-size:20px;">${escapeHtml(view.subject)}</h2>
     <div style="display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--text-secondary); margin-bottom:14px;">

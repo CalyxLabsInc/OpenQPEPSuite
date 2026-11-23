@@ -4,6 +4,7 @@ Rateless Luby-Transform (LT) QR Fountain Codec for transferring 24–69 KB PQ ke
 over air-gapped cameras with automatic drop resilience and qSponge-512 integrity check.
 """
 import base64
+import hmac
 import json
 import random
 from typing import Dict, List, Optional, Set, Tuple
@@ -54,16 +55,28 @@ class QRFountainDecoder:
 
     def feed_frame(self, frame_str: str) -> Optional[bytes]:
         obj = json.loads(frame_str)
-        self.k = int(obj["k"])
-        self.total_len = int(obj["n"])
-        self.digest = str(obj["d"])
+        k = int(obj["k"])
+        total_len = int(obj["n"])
+        digest = str(obj["d"])
+        if k <= 0 or k > 65536 or total_len < 0 or total_len > 16 * 1024 * 1024:
+            raise ValueError("QR Fountain frame parameters out of safe bounds.")
+        if self.k is None:
+            self.k = k
+            self.total_len = total_len
+            self.digest = digest
+        elif self.k != k or self.total_len != total_len or not hmac.compare_digest(self.digest, digest):
+            raise ValueError("QR Fountain frame stream metadata mismatch.")
         indices = set(int(i) for i in obj["idx"])
+        if not indices or any(i < 0 or i >= self.k for i in indices):
+            raise ValueError("QR Fountain frame contains out-of-range block index.")
         data = bytearray(base64.b64decode(obj["b"]))
 
         # Peel already-solved blocks
         for idx in list(indices):
             if idx in self.solved:
                 blk = self.solved[idx]
+                if len(blk) != len(data):
+                    raise ValueError("QR Fountain block length mismatch.")
                 for i in range(len(data)):
                     data[i] ^= blk[i]
                 indices.remove(idx)
@@ -77,7 +90,7 @@ class QRFountainDecoder:
 
         if self.k is not None and len(self.solved) == self.k:
             raw = b"".join(self.solved[i] for i in range(self.k))[: self.total_len]
-            if qsponge_512(raw)[:16].hex() != self.digest:
+            if not hmac.compare_digest(qsponge_512(raw)[:16].hex(), self.digest):
                 raise ValueError("QR Fountain integrity digest mismatch.")
             return raw
         return None

@@ -3,7 +3,7 @@
 **Organization:** Calyx Labs Inc. (Cleveland, Ohio)  
 **Founder & Lead Architect:** Tristen Martinez (aka Calyxia)  
 **Scope:** Complete synchronized evolution of **both** `/home/ubuntu/OpenQPEP/OpenQPEPSuite` (**219 files**: Core Protocol, Calyx QPEP Client, Calyx Encrypted Email, Calyx Encrypted Messenger, Docs, CI) **and** `/home/ubuntu/OpenQPEP/OpenQPEP_ServerFiles` (**154 files**: `Directory_Server`, `Messenger_Server`, `CalyxMail_Backend`, `CalyxMail_Frontend`, `Website_Server`, `GitHub_Mirror`)  
-**Starting Baseline:** Official Stable Public Release **`v1.0.2`** → **Current Applied Release:** **`v1.1.0`** (`OpenQPEP/1.0.2`, Wire Format v5 `\x89QPE\x05\x00` / Compact TLV v5.1 `\x89QPE\x05\x01`, Stream v5 `\x89QPS\x05\x00`, Mandatory `kdf_version: 4`, CMT-4 Key-Committing `CC-512`)  
+**Starting Baseline:** Official Stable Public Release **`v1.0.2`** → **Current Applied Release:** **`v1.1.0`** (`OpenQPEP/1.1.0`, Wire Format v5 `\x89QPE\x05\x00` / Compact TLV v5.1 `\x89QPE\x05\x01`, Stream v5 `\x89QPS\x05\x00`, Mandatory `kdf_version: 4`, CMT-4 Key-Committing `CC-512`)  
 **Target Horizon:** Official Stable Public Release **`v2.0.0`** — The Worldwide Post-Quantum Standard Replacing OpenPGP  
 
 ---

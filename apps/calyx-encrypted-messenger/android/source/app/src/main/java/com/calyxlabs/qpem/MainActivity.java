@@ -16,6 +16,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -30,6 +31,12 @@ public class MainActivity extends Activity implements Runnable {
         public double getDeviceRamGiB() {
             return MainActivity.this.getDeviceRamGiB();
         }
+    }
+
+    private static String sanitizeFilename(String rawName) {
+        if (rawName == null) return "calyx_messenger_export.bin";
+        String base = new File(rawName).getName().replaceAll("[\\\\/:*?\"<>|]", "_").trim();
+        return base.isEmpty() ? "calyx_messenger_export.bin" : base;
     }
 
     private void hideSystemBars() {
@@ -61,6 +68,9 @@ public class MainActivity extends Activity implements Runnable {
         WebSettings ws = wv.getSettings();
         ws.setJavaScriptEnabled(true);
         ws.setDomStorageEnabled(true);
+        ws.setAllowContentAccess(false);
+        ws.setAllowFileAccessFromFileURLs(false);
+        ws.setAllowUniversalAccessFromFileURLs(false);
         wv.clearCache(true);
         ws.setMediaPlaybackRequiresUserGesture(false);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -114,7 +124,7 @@ public class MainActivity extends Activity implements Runnable {
             lastUrl = url;
             int idx = url.lastIndexOf("|");
             if (idx < 0) return;
-            pendingTarget = url.substring(idx + 1);
+            pendingTarget = url.substring(idx + 1).replaceAll("[^a-zA-Z0-9_]", "");
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");
@@ -129,7 +139,7 @@ public class MainActivity extends Activity implements Runnable {
             String head = url.substring(0, idx);
             int idx2 = head.lastIndexOf("|");
             if (idx2 < 0) return;
-            String fname = head.substring(idx2 + 1);
+            String fname = sanitizeFilename(head.substring(idx2 + 1));
             Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");

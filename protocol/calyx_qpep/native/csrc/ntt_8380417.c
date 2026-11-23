@@ -56,6 +56,7 @@ static inline int64_t ct_csubq_qvs(int64_t a) {
 }
 
 void openqpep_ntt_qvs(int32_t *p) {
+    if (!p) return;
     int k = 0;
     for (int length = 128; length >= 1; length >>= 1) {
         for (int start = 0; start < 256; start += 2 * length) {
@@ -71,6 +72,7 @@ void openqpep_ntt_qvs(int32_t *p) {
 }
 
 void openqpep_inv_ntt_qvs(int32_t *p) {
+    if (!p) return;
     int k = 256;
     for (int length = 1; length < 256; length <<= 1) {
         for (int start = 0; start < 256; start += 2 * length) {
@@ -90,6 +92,7 @@ void openqpep_inv_ntt_qvs(int32_t *p) {
 }
 
 void openqpep_ntt_mul_qvs(const int32_t *a_hat, const int32_t *b_hat, int32_t *out) {
+    if (!a_hat || !b_hat || !out) return;
     for (int i = 0; i < 256; i++) {
         out[i] = (int32_t)(((int64_t)a_hat[i] * (int64_t)b_hat[i]) % QVS_Q);
     }

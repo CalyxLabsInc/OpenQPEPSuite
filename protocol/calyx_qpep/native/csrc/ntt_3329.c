@@ -49,6 +49,7 @@ static inline int32_t cmod_3329(int32_t x) {
 }
 
 void openqpep_ntt_3329(int32_t *p) {
+    if (!p) return;
     int k = 1;
     for (int length = 128; length >= 2; length >>= 1) {
         for (int start = 0; start < 256; start += 2 * length) {
@@ -64,6 +65,7 @@ void openqpep_ntt_3329(int32_t *p) {
 }
 
 void openqpep_inv_ntt_3329(int32_t *p) {
+    if (!p) return;
     int k = 127;
     for (int length = 2; length <= 128; length <<= 1) {
         for (int start = 0; start < 256; start += 2 * length) {
@@ -83,6 +85,7 @@ void openqpep_inv_ntt_3329(int32_t *p) {
 }
 
 void openqpep_ntt_base_mul_3329(const int32_t *a_hat, const int32_t *b_hat, int32_t *out) {
+    if (!a_hat || !b_hat || !out) return;
     for (int i = 0; i < 128; i++) {
         int32_t a0 = a_hat[2 * i];
         int32_t a1 = a_hat[2 * i + 1];
@@ -97,12 +100,14 @@ void openqpep_ntt_base_mul_3329(const int32_t *a_hat, const int32_t *b_hat, int3
 }
 
 void openqpep_poly_add_3329(const int32_t *a, const int32_t *b, int32_t *out) {
+    if (!a || !b || !out) return;
     for (int i = 0; i < 256; i++) {
         out[i] = ct_csubq_3329(a[i] + b[i]);
     }
 }
 
 void openqpep_poly_sub_3329(const int32_t *a, const int32_t *b, int32_t *out) {
+    if (!a || !b || !out) return;
     for (int i = 0; i < 256; i++) {
         out[i] = ct_caddq_3329(a[i] - b[i]);
     }

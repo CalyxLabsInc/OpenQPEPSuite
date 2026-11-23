@@ -32,8 +32,10 @@ pub fn ntt_3329(p: &mut [i32; 256]) {
             k += 1;
             for j in start..(start + length) {
                 let t = (zeta * p[j + length]) % QLX_Q;
-                let mut v = p[j] - t; if v < 0 { v += QLX_Q; }
-                let mut w = p[j] + t; if w >= QLX_Q { w -= QLX_Q; }
+                let diff = p[j] - t;
+                let v = diff + ((diff >> 31) & QLX_Q);
+                let sum_m = (p[j] + t) - QLX_Q;
+                let w = sum_m + ((sum_m >> 31) & QLX_Q);
                 p[j + length] = v;
                 p[j] = w;
             }
